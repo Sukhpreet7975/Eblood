@@ -107,6 +107,32 @@
 
 </div>
 
+<!-- Request Analytics -->
+
+<div class="grid md:grid-cols-4 gap-6 mb-10">
+
+    <div class="bg-white dark:bg-gray-800 p-6 rounded-3xl shadow">
+        <h3 class="text-sm text-gray-500">Pending</h3>
+        <p class="text-3xl font-bold text-yellow-500">{{ $pendingRequests ?? 0 }}</p>
+    </div>
+
+    <div class="bg-white dark:bg-gray-800 p-6 rounded-3xl shadow">
+        <h3 class="text-sm text-gray-500">Approved</h3>
+        <p class="text-3xl font-bold text-blue-500">{{ $approvedRequests ?? 0 }}</p>
+    </div>
+
+    <div class="bg-white dark:bg-gray-800 p-6 rounded-3xl shadow">
+        <h3 class="text-sm text-gray-500">Completed</h3>
+        <p class="text-3xl font-bold text-green-500">{{ $completedRequests ?? 0 }}</p>
+    </div>
+
+    <div class="bg-white dark:bg-gray-800 p-6 rounded-3xl shadow">
+        <h3 class="text-sm text-gray-500">Rejected</h3>
+        <p class="text-3xl font-bold text-red-500">{{ $rejectedRequests ?? 0 }}</p>
+    </div>
+
+</div>
+
 <!-- Search -->
 
 <div class="bg-white dark:bg-gray-800

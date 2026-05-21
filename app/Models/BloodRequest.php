@@ -18,5 +18,6 @@ class BloodRequest extends Model
         'phone',
         'message',
         'status',
+        'user_id',
     ];
 }

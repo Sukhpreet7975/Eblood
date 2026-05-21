@@ -108,6 +108,15 @@
                         </a>
                     @endunless
 
+                        @unless(auth()->user()->is_admin)
+                            <a href="/my-requests" class="hover:text-red-200 transition">My Requests
+                                @php $myCount = \App\Models\BloodRequest::where('user_id', auth()->id())->count(); @endphp
+                                @if($myCount)
+                                    <span class="ml-2 text-xs bg-red-600 text-white px-2 rounded-full">{{ $myCount }}</span>
+                                @endif
+                            </a>
+                        @endunless
+
                     @if(auth()->user()->is_admin)
                         <a href="/admin" class="hover:text-red-200 transition">
                             Admin Dashboard
@@ -219,6 +228,16 @@
 
                         Profile
 
+                    </a>
+                @endunless
+
+                @unless(auth()->user()->is_admin)
+                    <a href="/my-requests" class="block">
+                        My Requests
+                        @php $myCount = \App\Models\BloodRequest::where('user_id', auth()->id())->count(); @endphp
+                        @if($myCount)
+                            <span class="ml-2 text-xs bg-red-600 text-white px-2 rounded-full">{{ $myCount }}</span>
+                        @endif
                     </a>
                 @endunless
 

@@ -14,8 +14,9 @@ use App\Http\Controllers\AdminController;
 Route::get('/', [DonorController::class, 'home']);
 Route::get('/search', [DonorController::class, 'search']);
 Route::get('/live-search', [DonorController::class, 'liveSearch']);
-Route::get('/blood-request', [RequestController::class, 'create']);
-Route::post('/blood-request', [RequestController::class, 'store']);
+// Emergency request routes require authentication so users can track status
+// Access is controlled in controller to prevent admins from creating requests
+
 
 /*
 |--------------------------------------------------------------------------
@@ -41,6 +42,15 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/toggle-status', [DonorController::class, 'toggleStatus']);
 
     Route::post('/upload-image', [DonorController::class, 'uploadImage']);
+
+    // Emergency Request Routes (authenticated users only)
+    Route::get('/blood-request', [RequestController::class, 'create']);
+    Route::post('/blood-request', [RequestController::class, 'store']);
+
+    // User request pages
+    Route::get('/my-requests', [RequestController::class, 'myRequests']);
+    Route::get('/request/{id}', [RequestController::class, 'show']);
+    Route::post('/request/{id}/cancel', [RequestController::class, 'cancel'])->name('request.cancel');
 
 });
 

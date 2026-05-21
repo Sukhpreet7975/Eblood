@@ -204,6 +204,12 @@ class AdminController extends Controller
             )->count();
         }
 
+        // Request analytics
+        $pendingRequests = BloodRequest::where('status', 'Pending')->count();
+        $approvedRequests = BloodRequest::where('status', 'Approved')->count();
+        $completedRequests = BloodRequest::where('status', 'Completed')->count();
+        $rejectedRequests = BloodRequest::where('status', 'Rejected')->count();
+
         /*
         |--------------------------------------------------------------------------
         | Search
@@ -278,6 +284,8 @@ class AdminController extends Controller
 
                 'totalRequests',
                 'requests'
+
+                , 'pendingRequests', 'approvedRequests', 'completedRequests', 'rejectedRequests'
 
             )
         );
