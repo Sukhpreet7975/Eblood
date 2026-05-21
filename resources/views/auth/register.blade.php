@@ -120,6 +120,30 @@
                 @enderror
             </div>
 
+            <!-- Role Selection -->
+            <div class="mb-5">
+                <label class="block mb-2 font-semibold">Register As</label>
+                <div class="flex items-center gap-6">
+                    <label class="inline-flex items-center">
+                        <input type="radio" name="role" value="donor" {{ old('role', 'donor') == 'donor' ? 'checked' : '' }} class="form-radio" />
+                        <span class="ml-2">Donor</span>
+                    </label>
+
+                    <label class="inline-flex items-center">
+                        <input type="radio" name="role" value="admin" {{ (isset($adminExists) && $adminExists) ? 'disabled' : '' }} {{ old('role') == 'admin' ? 'checked' : '' }} class="form-radio" />
+                        <span class="ml-2">Admin</span>
+                    </label>
+                </div>
+
+                @if(isset($adminExists) && $adminExists)
+                    <p class="text-xs text-gray-500 mt-2">An admin account already exists. Admin registration is disabled.</p>
+                @endif
+
+                @error('role')
+                <p class="text-red-500 mt-1 text-xs">{{ $message }}</p>
+                @enderror
+            </div>
+
             <!-- Register Button -->
             <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white py-3 rounded-lg font-bold transition">
                 Register

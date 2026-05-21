@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\BloodRequest;
 
 use App\Exports\UsersExport;
+use Illuminate\Http\Request;
 
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -38,17 +39,32 @@ class AdminController extends Controller
         |--------------------------------------------------------------------------
         */
 
+        $donorQuery = User::where(
+            'is_admin',
+            '!=',
+            true
+        );
+
         $totalDonors =
-            User::count();
+            $donorQuery->count();
 
         $availableDonors =
             User::where(
+                'is_admin',
+                '!=',
+                true
+            )
+            ->where(
                 'available',
                 'yes'
-            )->count();
+            )
+            ->count();
 
         $bloodRequests =
             BloodRequest::count();
+
+        // Total requests count (can be filtered later)
+        $totalRequests = BloodRequest::count();
 
         /*
         |--------------------------------------------------------------------------
@@ -61,6 +77,21 @@ class AdminController extends Controller
                 ->take(5)
                 ->get();
 
+        // Requests table with optional status filter
+        $requestQuery = BloodRequest::query();
+
+        if (request('status')) {
+            $requestQuery->where('status', request('status'));
+        }
+
+        $requests = $requestQuery->latest()->paginate(10);
+
+        // Recent donor registrations
+        $recentDonors = User::where('is_admin', '!=', true)
+            ->latest()
+            ->take(5)
+            ->get();
+
         /*
         |--------------------------------------------------------------------------
         | Blood Group Analytics
@@ -70,41 +101,73 @@ class AdminController extends Controller
         $bloodGroupData = [
 
             User::where(
+                'is_admin',
+                '!=',
+                true
+            )->where(
                 'blood_group',
                 'A+'
             )->count(),
 
             User::where(
+                'is_admin',
+                '!=',
+                true
+            )->where(
                 'blood_group',
                 'A-'
             )->count(),
 
             User::where(
+                'is_admin',
+                '!=',
+                true
+            )->where(
                 'blood_group',
                 'B+'
             )->count(),
 
             User::where(
+                'is_admin',
+                '!=',
+                true
+            )->where(
                 'blood_group',
                 'B-'
             )->count(),
 
             User::where(
+                'is_admin',
+                '!=',
+                true
+            )->where(
                 'blood_group',
                 'O+'
             )->count(),
 
             User::where(
+                'is_admin',
+                '!=',
+                true
+            )->where(
                 'blood_group',
                 'O-'
             )->count(),
 
             User::where(
+                'is_admin',
+                '!=',
+                true
+            )->where(
                 'blood_group',
                 'AB+'
             )->count(),
 
             User::where(
+                'is_admin',
+                '!=',
+                true
+            )->where(
                 'blood_group',
                 'AB-'
             )->count(),
@@ -117,7 +180,12 @@ class AdminController extends Controller
         |--------------------------------------------------------------------------
         */
 
-        $cityLabels = User::whereNotNull('city')
+        $cityLabels = User::where(
+                'is_admin',
+                '!=',
+                true
+            )
+            ->whereNotNull('city')
             ->pluck('city')
             ->unique()
             ->values();
@@ -127,6 +195,10 @@ class AdminController extends Controller
         foreach($cityLabels as $city)
         {
             $cityData[] = User::where(
+                'is_admin',
+                '!=',
+                true
+            )->where(
                 'city',
                 $city
             )->count();
@@ -138,7 +210,11 @@ class AdminController extends Controller
         |--------------------------------------------------------------------------
         */
 
-        $query = User::query();
+        $query = User::where(
+            'is_admin',
+            '!=',
+            true
+        );
 
         if(request('search'))
         {
@@ -196,7 +272,12 @@ class AdminController extends Controller
 
                 'cityLabels',
 
-                'cityData'
+                'cityData',
+
+                'recentDonors',
+
+                'totalRequests',
+                'requests'
 
             )
         );
@@ -215,7 +296,17 @@ class AdminController extends Controller
             return redirect('/');
         }
 
-        User::find($id)?->delete();
+        $user = User::find($id);
+
+        if (!$user) {
+            return redirect('/admin')->with('error', 'User not found.');
+        }
+
+        if ($user->is_admin) {
+            return redirect('/admin')->with('error', 'Admin users cannot be deleted.');
+        }
+
+        $user->delete();
 
         return redirect('/admin')
             ->with(
@@ -256,7 +347,12 @@ class AdminController extends Controller
             return redirect('/');
         }
 
-        $users = User::all();
+        $users = User::where(
+                'is_admin',
+                '!=',
+                true
+            )
+            ->get();
 
         $pdf = Pdf::loadView(
             'admin.users-pdf',
@@ -266,5 +362,33 @@ class AdminController extends Controller
         return $pdf->download(
             'donors.pdf'
         );
+    }
+
+    /**
+     * Update the status of a blood request
+     */
+    public function updateRequestStatus($id, Request $request)
+    {
+        if(!auth()->user()->is_admin)
+        {
+            return redirect('/');
+        }
+
+        $status = $request->input('status');
+
+        if (!in_array($status, ['Pending','Approved','Completed','Rejected'])) {
+            return redirect('/admin')->with('error', 'Invalid status');
+        }
+
+        $req = BloodRequest::find($id);
+
+        if (!$req) {
+            return redirect('/admin')->with('error', 'Request not found');
+        }
+
+        $req->status = $status;
+        $req->save();
+
+        return redirect('/admin')->with('success', 'Request status updated');
     }
 }

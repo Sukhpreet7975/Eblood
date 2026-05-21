@@ -36,59 +36,19 @@ class AuthenticatedSessionController extends Controller
         LoginRequest $request
     ): RedirectResponse|JsonResponse
     {
-        $credentials = $request->only(
+        // Use LoginRequest authenticate flow (includes role checks)
+        $request->authenticate();
 
-            'email',
-
-            'password'
-
-        );
-
-        /*
-        |--------------------------------------------------------------------------
-        | Attempt Login
-        |--------------------------------------------------------------------------
-        */
-
-        if(
-            Auth::attempt(
-                $credentials,
-                $request->remember
-            )
-        )
-        {
-            $request->session()
-                ->regenerate();
-
-            if ($request->expectsJson()) {
-                return response()->json([
-                    'success' => true,
-                    'redirect' => auth()->user()->is_admin ? '/admin' : '/dashboard',
-                ]);
-            }
-
-            if (auth()->user()->is_admin) {
-                return redirect('/admin');
-            }
-
-            return redirect('/dashboard');
-        }
+        $request->session()->regenerate();
 
         if ($request->expectsJson()) {
             return response()->json([
-                'success' => false,
-                'message' => 'Invalid credentials. Please try again.',
-            ], 422);
+                'success' => true,
+                'redirect' => auth()->user()->is_admin ? '/admin' : '/dashboard',
+            ]);
         }
 
-        return back()
-            ->with(
-                'error',
-                'Invalid credentials. Please try again.'
-            )
-            ->withInput(
-                $request->only('email')
-            );
+        return redirect(auth()->user()->is_admin ? '/admin' : '/dashboard');
     }
 
     /*

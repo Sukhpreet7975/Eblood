@@ -79,6 +79,19 @@
             </div>
 
             <!-- Remember -->
+            <!-- Role Selection -->
+            <div class="flex items-center mb-4 gap-6 text-sm">
+                <label class="inline-flex items-center">
+                    <input type="radio" name="role" value="donor" checked class="mr-2" />
+                    <span>Donor Login</span>
+                </label>
+
+                <label class="inline-flex items-center">
+                    <input type="radio" name="role" value="admin" class="mr-2" />
+                    <span>Admin Login</span>
+                </label>
+            </div>
+
             <div class="flex items-center mb-4 text-sm">
                 <input
                     type="checkbox"
@@ -407,6 +420,7 @@
             email: formData.get('email'),
             password: formData.get('password'),
             remember: formData.get('remember') ? true : false,
+            role: formData.get('role') || 'donor',
         };
 
         const response = await fetch(loginForm.action, {

@@ -83,12 +83,14 @@
 
                 </a>
 
-                <a href="/blood-request"
-                   class="hover:text-red-200 transition">
+                @unless(auth()->check() && auth()->user()->is_admin)
+                    <a href="/blood-request"
+                       class="hover:text-red-200 transition">
 
-                    Emergency Request
+                        Emergency Request
 
-                </a>
+                    </a>
+                @endunless
 
                 <a href="/search"
                    class="hover:text-red-200 transition">
@@ -99,17 +101,19 @@
 
                 @auth
 
-                    <a href="/profile"
-                       class="hover:text-red-200 transition">
-                        Profile
-                    </a>
+                    @unless(auth()->user()->is_admin)
+                        <a href="/profile"
+                           class="hover:text-red-200 transition">
+                            Profile
+                        </a>
+                    @endunless
 
                     @if(auth()->user()->is_admin)
-                        <a href="/admin"class="hover:text-red-200 transition">
+                        <a href="/admin" class="hover:text-red-200 transition">
                             Admin Dashboard
                         </a>
                     @else
-                        <a href="/dashboard"class="hover:text-red-200 transition">
+                        <a href="/dashboard" class="hover:text-red-200 transition">
                             Dashboard
                         </a>
                     @endif
@@ -191,12 +195,14 @@
 
             </a>
 
-            <a href="/blood-request"
-               class="block">
+            @unless(auth()->check() && auth()->user()->is_admin)
+                <a href="/blood-request"
+                   class="block">
 
-                Emergency Request
+                    Emergency Request
 
-            </a>
+                </a>
+            @endunless
 
             <a href="/search"
                class="block">
@@ -207,19 +213,21 @@
 
             @auth
 
-                <a href="/profile"
-                   class="block">
+                @unless(auth()->user()->is_admin)
+                    <a href="/profile"
+                       class="block">
 
-                    Profile
+                        Profile
 
-                </a>
+                    </a>
+                @endunless
 
                 @if(auth()->user()->is_admin)
 
                 <a href="/admin"
                    class="block">
 
-                    Admin
+                    Admin Dashboard
 
                 </a>
 
@@ -390,13 +398,15 @@
 
                     @auth
 
-                    <a href="/profile"
-                       class="text-gray-400
-                              hover:text-red-500 transition">
+                    @unless(auth()->user()->is_admin)
+                        <a href="/profile"
+                           class="text-gray-400
+                                  hover:text-red-500 transition">
 
-                        Profile
+                            Profile
 
-                    </a>
+                        </a>
+                    @endunless
 
                     @endif
 

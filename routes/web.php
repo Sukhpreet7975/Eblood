@@ -67,6 +67,10 @@ Route::prefix('admin')
         Route::get('/export-pdf', [AdminController::class, 'exportPdf'])
             ->name('export-pdf');
 
+        // Update request status
+        Route::post('/request/{id}/status', [AdminController::class, 'updateRequestStatus'])
+            ->name('request-status');
+
     });
 
 /*

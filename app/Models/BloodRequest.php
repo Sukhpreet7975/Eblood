@@ -17,5 +17,6 @@ class BloodRequest extends Model
         'city',
         'phone',
         'message',
+        'status',
     ];
 }

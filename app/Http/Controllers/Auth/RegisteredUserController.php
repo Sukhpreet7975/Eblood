@@ -18,7 +18,9 @@ class RegisteredUserController extends Controller
      */
     public function create()
     {
-        return view('auth.register');
+        $adminExists = User::where('is_admin', true)->exists();
+
+        return view('auth.register', compact('adminExists'));
     }
 
     /**
@@ -30,12 +32,23 @@ class RegisteredUserController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()->min(8)],
+            'role' => ['required', 'in:donor,admin'],
         ]);
+
+        // Prevent duplicate admin creation
+        $adminExists = User::where('is_admin', true)->exists();
+
+        if ($request->role === 'admin' && $adminExists) {
+            return back()->withErrors(['role' => 'An admin account already exists.'])->withInput();
+        }
+
+        $isAdmin = $request->role === 'admin' ? true : false;
 
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'is_admin' => $isAdmin,
         ]);
 
         event(new Registered($user));

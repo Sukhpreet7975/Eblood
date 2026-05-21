@@ -22,7 +22,9 @@ class RequestController extends Controller
             'phone' => 'required',
         ]);
 
-        BloodRequest::create($request->all());
+        $data = array_merge($request->all(), ['status' => 'Pending']);
+
+        BloodRequest::create($data);
         Mail::to('admin@eblood.com')
             ->send(new EmergencyRequestMail($request->all()));
 

@@ -148,11 +148,10 @@
 
     <div class="p-6 border-b dark:border-gray-700">
 
-        <h2 class="text-3xl font-bold">
-
-            All Donors
-
-        </h2>
+        <div class="flex items-center justify-between">
+            <h2 class="text-3xl font-bold">All Donors</h2>
+            <div class="text-sm text-gray-500">{{ $users->total() }} results</div>
+        </div>
 
     </div>
 
@@ -163,14 +162,14 @@
             <thead class="bg-gray-100 dark:bg-gray-700">
 
                 <tr>
-
-                    <th class="p-4 text-left">Name</th>
+                    <th class="p-4 text-left">#</th>
+                    <th class="p-4 text-left">Donor</th>
                     <th class="p-4 text-left">Email</th>
                     <th class="p-4 text-left">Blood Group</th>
                     <th class="p-4 text-left">City</th>
                     <th class="p-4 text-left">Status</th>
+                    <th class="p-4 text-left">Joined</th>
                     <th class="p-4 text-left">Action</th>
-
                 </tr>
 
             </thead>
@@ -179,67 +178,41 @@
 
                 @foreach($users as $user)
 
-                <tr class="border-b dark:border-gray-700">
+                <tr class="border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-900 transition">
 
                     <td class="p-4">
-
-                        {{ $user->name }}
-
+                        {{ $loop->iteration + ($users->firstItem() - 1) }}
                     </td>
 
-                    <td class="p-4">
-
-                        {{ $user->email }}
-
-                    </td>
-
-                    <td class="p-4">
-
-                        {{ $user->blood_group ?? '-' }}
-
-                    </td>
-
-                    <td class="p-4">
-
-                        {{ $user->city ?? '-' }}
-
-                    </td>
-
-                    <td class="p-4">
-
-                        @if($user->available == 'yes')
-
-                        <span class="bg-green-500 text-white
-                                     px-3 py-1 rounded-full">
-
-                            Available
-
-                        </span>
-
+                    <td class="p-4 flex items-center gap-3">
+                        @if($user->profile_image)
+                            <img src="{{ asset('storage/profile_images/' . $user->profile_image) }}" class="w-10 h-10 rounded-full object-cover" alt="avatar">
                         @else
-
-                        <span class="bg-red-500 text-white
-                                     px-3 py-1 rounded-full">
-
-                            Unavailable
-
-                        </span>
-
+                            <div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-600">{{ strtoupper(substr($user->name,0,1)) }}</div>
                         @endif
-
+                        <div>
+                            <div class="font-semibold">{{ $user->name }}</div>
+                        </div>
                     </td>
 
+                    <td class="p-4">{{ $user->email }}</td>
+
+                    <td class="p-4">{{ $user->blood_group ?? '-' }}</td>
+
+                    <td class="p-4">{{ $user->city ?? '-' }}</td>
+
                     <td class="p-4">
+                        @if($user->available == 'yes')
+                            <span class="bg-green-500 text-white px-3 py-1 rounded-full">Available</span>
+                        @else
+                            <span class="bg-red-500 text-white px-3 py-1 rounded-full">Unavailable</span>
+                        @endif
+                    </td>
 
-                        <a href="/admin/delete-user/{{ $user->_id }}"
-                           class="bg-red-600 text-white
-                                  px-4 py-2 rounded-xl
-                                  hover:bg-red-700 transition">
+                    <td class="p-4">{{ optional($user->created_at)->format('Y-m-d') ?? '-' }}</td>
 
-                            Delete
-
-                        </a>
-
+                    <td class="p-4">
+                        <a href="/admin/delete-user/{{ $user->_id }}" onclick="return confirm('Are you sure you want to delete this donor?')" class="bg-red-600 text-white px-4 py-2 rounded-xl hover:bg-red-700 transition">Delete</a>
                     </td>
 
                 </tr>
@@ -278,6 +251,26 @@
 
     </div>
 
+    <div class="p-6 border-b dark:border-gray-700 flex items-center justify-between gap-4">
+        <div>
+            <form method="GET" action="/admin">
+                <div class="flex items-center gap-3">
+                    <label class="text-sm">Filter:</label>
+                    <select name="status" class="border p-2 rounded-lg">
+                        <option value="">All</option>
+                        <option value="Pending" {{ request('status') == 'Pending' ? 'selected' : '' }}>Pending</option>
+                        <option value="Approved" {{ request('status') == 'Approved' ? 'selected' : '' }}>Approved</option>
+                        <option value="Completed" {{ request('status') == 'Completed' ? 'selected' : '' }}>Completed</option>
+                        <option value="Rejected" {{ request('status') == 'Rejected' ? 'selected' : '' }}>Rejected</option>
+                    </select>
+                    <button class="bg-red-600 text-white px-3 py-2 rounded-lg">Apply</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="text-sm text-gray-500">Total Requests: {{ $totalRequests ?? 0 }}</div>
+    </div>
+
     <div class="overflow-x-auto">
 
         <table class="w-full">
@@ -287,10 +280,13 @@
                 <tr>
 
                     <th class="p-4 text-left">Patient</th>
+                    <th class="p-4 text-left">Phone</th>
                     <th class="p-4 text-left">Blood Group</th>
                     <th class="p-4 text-left">Hospital</th>
                     <th class="p-4 text-left">City</th>
-                    <th class="p-4 text-left">Phone</th>
+                    <th class="p-4 text-left">Message</th>
+                    <th class="p-4 text-left">Status</th>
+                    <th class="p-4 text-left">Action</th>
 
                 </tr>
 
@@ -298,48 +294,59 @@
 
             <tbody>
 
-                @foreach($recentRequests as $request)
+                @forelse($requests as $request)
 
-                <tr class="border-b dark:border-gray-700">
+                <tr class="border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-900 transition">
 
+                    <td class="p-4">{{ $request->patient_name }}</td>
+                    <td class="p-4">{{ $request->phone }}</td>
+                    <td class="p-4">{{ $request->blood_group }}</td>
+                    <td class="p-4">{{ $request->hospital }}</td>
+                    <td class="p-4">{{ $request->city }}</td>
+                    <td class="p-4">{{ $request->message ?? '-' }}</td>
                     <td class="p-4">
-
-                        {{ $request->patient_name }}
-
+                        @php
+                            $status = $request->status ?? 'Pending';
+                        @endphp
+                        @if($status == 'Pending')
+                            <span class="bg-yellow-400 text-black px-3 py-1 rounded-full">Pending</span>
+                        @elseif($status == 'Approved')
+                            <span class="bg-green-500 text-white px-3 py-1 rounded-full">Approved</span>
+                        @elseif($status == 'Completed')
+                            <span class="bg-blue-500 text-white px-3 py-1 rounded-full">Completed</span>
+                        @else
+                            <span class="bg-red-500 text-white px-3 py-1 rounded-full">Rejected</span>
+                        @endif
                     </td>
-
                     <td class="p-4">
-
-                        {{ $request->blood_group }}
-
-                    </td>
-
-                    <td class="p-4">
-
-                        {{ $request->hospital }}
-
-                    </td>
-
-                    <td class="p-4">
-
-                        {{ $request->city }}
-
-                    </td>
-
-                    <td class="p-4">
-
-                        {{ $request->phone }}
-
+                        <form method="POST" action="{{ route('admin.request-status', $request->_id) }}" class="flex items-center gap-2">
+                            @csrf
+                            <select name="status" class="border p-2 rounded-lg">
+                                <option value="Pending" {{ ($request->status ?? 'Pending') == 'Pending' ? 'selected' : '' }}>Pending</option>
+                                <option value="Approved" {{ ($request->status ?? '') == 'Approved' ? 'selected' : '' }}>Approved</option>
+                                <option value="Completed" {{ ($request->status ?? '') == 'Completed' ? 'selected' : '' }}>Completed</option>
+                                <option value="Rejected" {{ ($request->status ?? '') == 'Rejected' ? 'selected' : '' }}>Rejected</option>
+                            </select>
+                            <button class="bg-blue-600 text-white px-3 py-2 rounded-lg">Save</button>
+                        </form>
                     </td>
 
                 </tr>
 
-                @endforeach
+                @empty
+                    <tr>
+                        <td class="p-6 text-center" colspan="8">No emergency requests found.</td>
+                    </tr>
+                @endforelse
 
             </tbody>
 
         </table>
 
+    </div>
+
+    <div class="mt-6 p-6">
+        {{ $requests->withQueryString()->links() }}
     </div>
 
 </div>
