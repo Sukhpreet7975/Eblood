@@ -174,7 +174,7 @@
                 <div>
                     <label class="block mb-1 text-sm font-semibold text-gray-700 dark:text-gray-200">New Password</label>
                     <div class="relative">
-                        <input id="new-password" type="password" name="password" class="w-full border p-3 rounded-xl dark:bg-gray-800 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-red-500" placeholder="Enter new password" required>
+                        <input id="new-password" type="password" name="password" minlength="8" class="w-full border p-3 rounded-xl dark:bg-gray-800 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-red-500" placeholder="Enter new password" required>
                         <button type="button" onclick="toggleResetPassword('new-password', 'new-eye-icon')" class="absolute right-3 top-3 text-gray-500 hover:text-red-600 transition">
                             <svg id="new-eye-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7 -1.274 4.057-5.065 7 -9.542 7-4.477 0 -8.268-2.943-9.542-7z" />
@@ -187,7 +187,7 @@
                 <div>
                     <label class="block mb-1 text-sm font-semibold text-gray-700 dark:text-gray-200">Confirm Password</label>
                     <div class="relative">
-                        <input id="confirm-password" type="password" name="password_confirmation" class="w-full border p-3 rounded-xl dark:bg-gray-800 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-red-500" placeholder="Confirm new password" required>
+                        <input id="confirm-password" type="password" name="password_confirmation" minlength="8" class="w-full border p-3 rounded-xl dark:bg-gray-800 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-red-500" placeholder="Confirm new password" required>
                         <button type="button" onclick="toggleResetPassword('confirm-password', 'confirm-eye-icon')" class="absolute right-3 top-3 text-gray-500 hover:text-red-600 transition">
                             <svg id="confirm-eye-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7 -1.274 4.057-5.065 7 -9.542 7-4.477 0 -8.268-2.943-9.542-7z" />

@@ -15,6 +15,17 @@
 
         <form method="POST" action="{{ route('register') }}">
             @csrf
+
+            @if ($errors->any())
+                <div class="bg-red-50 border border-red-300 text-red-700 px-4 py-3 rounded-lg mb-6">
+                    <ul class="list-disc list-inside text-sm space-y-1">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
             <!-- Name -->
             <div class="mb-5">
                 <label class="block mb-2 font-semibold">
@@ -23,8 +34,14 @@
                 <input
                     type="text"
                     name="name"
+                    value="{{ old('name') }}"
                     required
                     class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-red-500">
+                @error('name')
+                <p class="text-red-500 mt-1 text-xs">
+                    {{ $message }}
+                </p>
+                @enderror
             </div>
 
             <!-- Email -->
@@ -35,8 +52,14 @@
                 <input
                     type="email"
                     name="email"
+                    value="{{ old('email') }}"
                     required
                     class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-red-500">
+                @error('email')
+                <p class="text-red-500 mt-1 text-xs">
+                    {{ $message }}
+                </p>
+                @enderror
             </div>
 
             <!-- Password -->
@@ -49,18 +72,23 @@
                         type="password"
                         name="password"
                         id="password"
+                        minlength="8"
                         required
-                        class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-red-500">
-                    
-                    <button type="button" onclick="togglePassword('password', 'passwordToggleIcon')" 
-                        class="absolute right-3 top-3 text-gray-500 hover:text-red-600">
+                        class="w-full border border-gray-300 rounded-lg p-3 pr-11 focus:outline-none focus:ring-2 focus:ring-red-500"
+                        autocomplete="new-password"
+                    >
+                    <button type="button" onclick="togglePassword('password', 'passwordToggleIcon')" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-red-600">
                         <svg id="passwordToggleIcon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
-                            <!-- Eye icon -->
                             <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                             <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                         </svg>
                     </button>
                 </div>
+                @error('password')
+                <p class="text-red-500 mt-1 text-xs">
+                    {{ $message }}
+                </p>
+                @enderror
             </div>
 
             <!-- Confirm Password -->
@@ -73,18 +101,23 @@
                         type="password"
                         name="password_confirmation"
                         id="confirm_password"
+                        minlength="8"
                         required
-                        class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-red-500">
-                    
-                    <button type="button" onclick="togglePassword('confirm_password', 'confirmPasswordToggleIcon')" 
-                        class="absolute right-3 top-3 text-gray-500 hover:text-red-600">
+                        class="w-full border border-gray-300 rounded-lg p-3 pr-11 focus:outline-none focus:ring-2 focus:ring-red-500"
+                        autocomplete="new-password"
+                    >
+                    <button type="button" onclick="togglePassword('confirm_password', 'confirmPasswordToggleIcon')" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-red-600">
                         <svg id="confirmPasswordToggleIcon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
-                            <!-- Eye icon -->
                             <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                             <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                         </svg>
                     </button>
                 </div>
+                @error('password_confirmation')
+                <p class="text-red-500 mt-1 text-xs">
+                    {{ $message }}
+                </p>
+                @enderror
             </div>
 
             <!-- Register Button -->
