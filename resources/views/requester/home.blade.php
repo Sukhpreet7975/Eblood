@@ -12,8 +12,8 @@
                 <p class="mt-3 text-xs sm:text-sm italic">"Help is closer when you make your needs visible."</p>
 
                 <div class="mt-4 flex flex-wrap gap-2 sm:gap-3">
-                    <a href="/blood-request" class="inline-flex items-center gap-2 bg-white text-red-600 px-3 sm:px-4 py-2 rounded-full text-sm sm:text-base font-semibold shadow hover:opacity-95">New Request</a>
-                    <a href="/my-requests" class="inline-flex items-center gap-2 bg-white/20 text-white px-3 sm:px-4 py-2 rounded-full text-sm sm:text-base font-semibold border border-white/30 hover:opacity-95">My Requests</a>
+                    <a href="{{ route('requester.requests.create') }}" class="inline-flex items-center gap-2 bg-white text-red-600 px-3 sm:px-4 py-2 rounded-full text-sm sm:text-base font-semibold shadow hover:opacity-95">New Request</a>
+                    <a href="{{ route('requester.requests.index') }}" class="inline-flex items-center gap-2 bg-white/20 text-white px-3 sm:px-4 py-2 rounded-full text-sm sm:text-base font-semibold border border-white/30 hover:opacity-95">My Requests</a>
                 </div>
             </div>
 
@@ -35,34 +35,31 @@
     </section>
 
     <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow">
-            <p class="text-sm text-gray-500">Total Requests</p>
+        <div class="card-panel dark:card-panel-dark">
+            <p class="text-sm text-slate-500 dark:text-slate-400">Total Requests</p>
             <p class="text-2xl font-bold text-red-600">{{ $totalRequests }}</p>
         </div>
-        <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow">
-            <p class="text-sm text-gray-500">Pending</p>
+        <div class="card-panel dark:card-panel-dark">
+            <p class="text-sm text-slate-500 dark:text-slate-400">Pending</p>
             <p class="text-2xl font-bold text-yellow-600">{{ $pendingRequests }}</p>
         </div>
-        <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow">
-            <p class="text-sm text-gray-500">Approved</p>
+        <div class="card-panel dark:card-panel-dark">
+            <p class="text-sm text-slate-500 dark:text-slate-400">Approved</p>
             <p class="text-2xl font-bold text-blue-600">{{ $approvedRequests }}</p>
         </div>
-        <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow">
-            <p class="text-sm text-gray-500">Completed</p>
+        <div class="card-panel dark:card-panel-dark">
+            <p class="text-sm text-slate-500 dark:text-slate-400">Completed</p>
             <p class="text-2xl font-bold text-green-600">{{ $completedRequests }}</p>
         </div>
     </div>
 
-    <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow">
+    <div class="card-panel dark:card-panel-dark">
         <div class="flex items-center justify-between mb-4">
             <h3 class="text-lg font-semibold">Recent Requests</h3>
-            <a href="/my-requests" class="text-sm text-blue-600 hover:underline">View all</a>
-        </div>
-
-        @if($recentRequests->count())
+            <a href="{{ route('requester.requests.index') }}" class="text-sm text-blue-600 hover:underline">View all</a>
             <div class="space-y-4">
-                @foreach($recentRequests as $request)
-                    <div class="rounded-3xl border border-slate-200/80 p-5 shadow-sm dark:border-slate-700/80 dark:bg-slate-950">
+                @forelse($recentRequests as $request)
+                    <div class="card-panel dark:card-panel-dark">
                         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                             <div>
                                 <h4 class="text-lg font-semibold">{{ $request->patient_name }}</h4>
@@ -75,11 +72,10 @@
                         @endif
                         <p class="mt-3 text-xs text-slate-400">Submitted {{ optional($request->created_at)->diffForHumans() }}</p>
                     </div>
-                @endforeach
+                @empty
+                    <p class="text-slate-500">No recent requests yet. Start by creating a new emergency request.</p>
+                @endforelse
             </div>
-        @else
-            <p class="text-slate-500">No recent requests yet. Start by creating a new emergency request.</p>
-        @endif
     </div>
 
 </div>

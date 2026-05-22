@@ -51,16 +51,43 @@ class AdminController extends Controller
             ->take(5)
             ->get();
 
-        return view('admin.dashboard', compact(
-            'totalDonors',
-            'availableDonors',
-            'bloodRequests',
-            'recentDonors',
-            'pendingRequests',
-            'approvedRequests',
-            'completedRequests',
-            'rejectedRequests'
-        ));
+        // Prepare chart data: blood group distribution and top cities
+        $bloodGroups = ['A+','A-','B+','B-','O+','O-','AB+','AB-'];
+        $donorList = User::donors()->get(['blood_group', 'city']);
+
+        $bloodGroupCounts = array_fill(0, count($bloodGroups), 0);
+        foreach ($donorList as $donor) {
+            $bg = $donor->blood_group ?? null;
+            $idx = array_search($bg, $bloodGroups, true);
+            if ($idx !== false) {
+                $bloodGroupCounts[$idx]++;
+            }
+        }
+
+        // City counts (top 8)
+        $cityCounts = [];
+        foreach ($donorList as $donor) {
+            $city = $donor->city ?? 'Unknown';
+            if (!isset($cityCounts[$city])) $cityCounts[$city] = 0;
+            $cityCounts[$city]++;
+        }
+        arsort($cityCounts);
+        $cityLabels = array_slice(array_keys($cityCounts), 0, 8);
+        $cityData = array_values(array_slice($cityCounts, 0, 8));
+
+        return view('admin.dashboard', [
+            'totalDonors' => $totalDonors,
+            'availableDonors' => $availableDonors,
+            'bloodRequests' => $bloodRequests,
+            'recentDonors' => $recentDonors,
+            'pendingRequests' => $pendingRequests,
+            'approvedRequests' => $approvedRequests,
+            'completedRequests' => $completedRequests,
+            'rejectedRequests' => $rejectedRequests,
+            'bloodGroupData' => $bloodGroupCounts,
+            'cityLabels' => $cityLabels,
+            'cityData' => $cityData,
+        ]);
     }
 
     /**

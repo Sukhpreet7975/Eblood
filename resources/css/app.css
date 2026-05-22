@@ -1,7 +1,141 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-html
-{
-    scroll-behavior: smooth;
+
+@layer base {
+    html {
+        scroll-behavior: smooth;
+    }
+
+    body {
+        font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        min-height: 100vh;
+        color: #0f172a;
+        background-color: #f8fafc;
+        background-image: radial-gradient(circle at top left, rgba(239, 68, 68, 0.14), transparent 20%), radial-gradient(circle at 80% 15%, rgba(56, 189, 248, 0.16), transparent 22%), radial-gradient(circle at bottom right, rgba(248, 113, 113, 0.08), transparent 28%);
+    }
+
+    body::before {
+        content: '';
+        position: fixed;
+        inset: 0;
+        z-index: -1;
+        pointer-events: none;
+        background: radial-gradient(circle at 20% 10%, rgba(248, 113, 113, 0.18), transparent 22%), radial-gradient(circle at 85% 85%, rgba(14, 165, 233, 0.12), transparent 24%);
+    }
+
+    * {
+        transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    *::selection {
+        background: rgba(239, 68, 68, 0.18);
+        color: #991b1b;
+    }
+
+    button,
+    input,
+    textarea,
+    select {
+        font-family: inherit;
+    }
+}
+
+@layer components {
+    .glass-card {
+        @apply rounded-[1.75rem] border border-slate-200/60 bg-white/85 backdrop-blur-xl shadow-[0_24px_80px_-40px_rgba(15,23,42,0.32)];
+    }
+
+    .glass-card-dark {
+        @apply rounded-[1.75rem] border border-slate-700/70 bg-slate-950/80 backdrop-blur-xl shadow-[0_24px_80px_-40px_rgba(0,0,0,0.45)];
+    }
+
+    .card-panel {
+        @apply rounded-[1.75rem] border border-slate-200/70 bg-white/90 p-6 shadow-xl shadow-slate-500/10;
+    }
+
+    .card-panel-dark {
+        @apply rounded-[1.75rem] border border-slate-700/70 bg-slate-950/80 p-6 shadow-xl shadow-slate-950/30;
+    }
+
+    .form-field {
+        @apply w-full rounded-3xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 shadow-sm transition focus:border-red-500 focus:outline-none focus:ring-4 focus:ring-red-100;
+    }
+
+    .form-field-dark {
+        @apply w-full rounded-3xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-100 shadow-sm transition focus:border-red-400 focus:outline-none focus:ring-4 focus:ring-red-500/10;
+    }
+
+    .btn-primary {
+        @apply inline-flex items-center justify-center rounded-full bg-red-600 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-red-500/20 transition hover:bg-red-700;
+    }
+
+    .btn-secondary {
+        @apply inline-flex items-center justify-center rounded-full border border-slate-300 bg-white px-5 py-3 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-slate-400 hover:bg-slate-50;
+    }
+
+    .section-panel {
+        @apply rounded-[2rem] border border-slate-200/60 bg-white/90 p-8 shadow-xl shadow-slate-500/10;
+    }
+
+    .section-panel-dark {
+        @apply rounded-[2rem] border border-slate-700/70 bg-slate-950/80 p-8 shadow-xl shadow-slate-950/30;
+    }
+
+    .hero-panel {
+        @apply relative overflow-hidden rounded-[2rem] px-6 py-10 sm:px-10 sm:py-12 text-white shadow-2xl;
+        background: linear-gradient(135deg, rgba(239, 68, 68, 0.96), rgba(236, 72, 153, 0.9) 45%, rgba(244, 114, 182, 0.82));
+    }
+
+    .hero-panel::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(circle at top right, rgba(255, 255, 255, 0.2), transparent 32%);
+        opacity: 0.95;
+        pointer-events: none;
+    }
+
+    .hero-panel > * {
+        position: relative;
+        z-index: 1;
+    }
+}
+
+@layer utilities {
+    .fade-in-up {
+        animation: fadeInUp 0.75s ease both;
+    }
+
+    .slide-in {
+        animation: slideIn 0.75s ease both;
+    }
+
+    .text-muted {
+        @apply text-slate-500 dark:text-slate-400;
+    }
+}
+
+@keyframes fadeInUp {
+    0% {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideIn {
+    0% {
+        opacity: 0;
+        transform: translateX(-18px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateX(0);
+    }
 }

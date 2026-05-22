@@ -33,36 +33,36 @@
 
         <!-- Stats Cards -->
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div class="bg-white dark:bg-gray-800 p-4 rounded-xl shadow hover:shadow-xl transition">
-                <p class="text-sm text-gray-500">Total Requests</p>
+            <div class="card-panel dark:card-panel-dark transition hover:-translate-y-0.5">
+                <p class="text-sm text-slate-500 dark:text-slate-400">Total Requests</p>
                 <p class="text-2xl font-bold text-red-600">{{ $totalRequests ?? 0 }}</p>
             </div>
 
-            <div class="bg-white dark:bg-gray-800 p-4 rounded-xl shadow hover:shadow-xl transition">
-                <p class="text-sm text-gray-500">Approved</p>
+            <div class="card-panel dark:card-panel-dark transition hover:-translate-y-0.5">
+                <p class="text-sm text-slate-500 dark:text-slate-400">Approved</p>
                 <p class="text-2xl font-bold text-blue-600">{{ $approvedRequests ?? 0 }}</p>
             </div>
 
-            <div class="bg-white dark:bg-gray-800 p-4 rounded-xl shadow hover:shadow-xl transition">
-                <p class="text-sm text-gray-500">Completed</p>
+            <div class="card-panel dark:card-panel-dark transition hover:-translate-y-0.5">
+                <p class="text-sm text-slate-500 dark:text-slate-400">Completed</p>
                 <p class="text-2xl font-bold text-green-600">{{ $completedRequests ?? 0 }}</p>
             </div>
 
-            <div class="bg-white dark:bg-gray-800 p-4 rounded-xl shadow hover:shadow-xl transition">
-                <p class="text-sm text-gray-500">Availability</p>
+            <div class="card-panel dark:card-panel-dark transition hover:-translate-y-0.5">
+                <p class="text-sm text-slate-500 dark:text-slate-400">Availability</p>
                 <p class="text-2xl font-bold">{{ $user->available == 'yes' ? 'Available' : 'Unavailable' }}</p>
             </div>
         </div>
 
         <!-- Quick Actions -->
-        <div class="bg-white dark:bg-gray-800 p-4 rounded-xl shadow">
+        <div class="card-panel dark:card-panel-dark">
             <h3 class="font-semibold mb-3">Quick Actions</h3>
 
                 <div class="grid grid-cols-2 gap-3">
-                <a href="/profile/edit" class="block text-center bg-gradient-to-r from-red-500 to-pink-500 text-white px-4 py-2 rounded-lg hover:opacity-95 transition">Edit Profile</a>
-                <a href="/blood-request" class="block text-center bg-blue-600 text-white px-4 py-2 rounded-lg hover:opacity-95 transition">Create Request</a>
-                <a href="/my-requests" class="block text-center bg-green-600 text-white px-4 py-2 rounded-lg hover:opacity-95 transition">View My Requests</a>
-                <button id="toggle-availability-btn" data-url="{{ route('toggle.availability') }}" class="flex items-center justify-center gap-2 text-center bg-gray-200 dark:bg-gray-700 text-black dark:text-white px-4 py-2 rounded-lg hover:opacity-95 transition">
+                <a href="/profile/edit" class="btn-primary">Edit Profile</a>
+                <a href="{{ route('requester.requests.create') }}" class="btn-secondary">Create Request</a>
+                <a href="{{ route('requester.requests.index') }}" class="btn-secondary">View My Requests</a>
+                <button id="toggle-availability-btn" data-url="{{ route('toggle.availability') }}" class="btn-secondary inline-flex items-center justify-center gap-2">
                     <span id="toggle-spinner" class="hidden w-4 h-4 border-2 border-transparent border-t-gray-700 rounded-full animate-spin"></span>
                     Toggle Availability
                 </button>
@@ -76,7 +76,7 @@
                 <p class="text-sm mt-2">Donating blood saves lives. It also improves your health and community resilience.</p>
             </div>
 
-            <div class="bg-white dark:bg-gray-800 p-4 rounded-xl shadow hover:shadow-lg transition">
+            <div class="card-panel dark:card-panel-dark transition hover:-translate-y-0.5">
                 <h4 class="font-semibold">Tips</h4>
                 <ul class="mt-2 text-sm list-disc list-inside">
                     <li>Stay hydrated before donation.</li>
@@ -85,7 +85,7 @@
                 </ul>
             </div>
 
-            <div class="bg-white dark:bg-gray-800 p-4 rounded-xl shadow hover:shadow-lg transition">
+            <div class="card-panel dark:card-panel-dark transition hover:-translate-y-0.5">
                 <h4 class="font-semibold">Eligibility</h4>
                 <p class="text-sm mt-2">Most healthy adults can donate. Check local guidelines or contact support if unsure.</p>
             </div>
@@ -97,7 +97,7 @@
     <div class="lg:col-span-2 space-y-6">
 
         <!-- My Requests -->
-        <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow">
+        <div class="card-panel dark:card-panel-dark">
             <div class="flex justify-between items-center mb-4">
                 <h3 class="text-xl font-semibold">My Requests</h3>
                 <a href="/my-requests" class="text-sm text-blue-600 hover:underline">View all</a>
@@ -142,13 +142,13 @@
                     <svg class="mx-auto mb-6 w-20 h-20 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4l3 3"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 12A9 9 0 1112 3a9 9 0 019 9z"></path></svg>
                     <h4 class="text-lg font-semibold mb-2">No requests yet</h4>
                     <p class="text-sm text-gray-400 mb-4">Create your first emergency request to help patients in need.</p>
-                    <a href="/blood-request" class="inline-flex items-center gap-2 bg-red-600 text-white px-4 py-2 rounded-lg">Create Emergency Request</a>
+                    <a href="{{ route('requester.requests.create') }}" class="inline-flex items-center gap-2 bg-red-600 text-white px-4 py-2 rounded-lg">Create Emergency Request</a>
                 </div>
             @endif
         </div>
 
         <!-- Recent Activity -->
-        <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow">
+        <div class="card-panel dark:card-panel-dark">
             <h3 class="text-lg font-semibold mb-3">Recent Activity</h3>
 
             @if($recentActivity && $recentActivity->count())

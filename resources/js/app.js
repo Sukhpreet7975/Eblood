@@ -29,3 +29,12 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
+window.addEventListener('load', function() {
+    const pageLoader = document.getElementById('page-loader');
+    if (pageLoader) {
+        pageLoader.classList.add('opacity-0');
+        pageLoader.classList.remove('pointer-events-auto');
+        setTimeout(() => pageLoader.remove(), 300);
+    }
+});
+

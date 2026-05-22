@@ -39,24 +39,24 @@
     </section>
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow">
-            <p class="text-sm text-gray-500">Joined</p>
+        <div class="card-panel dark:card-panel-dark">
+            <p class="text-sm text-slate-500 dark:text-slate-400">Joined</p>
             <p class="text-2xl font-bold text-red-600">{{ optional($user->created_at)->format('M Y') ?? 'N/A' }}</p>
         </div>
-        <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow">
-            <p class="text-sm text-gray-500">Contact</p>
+        <div class="card-panel dark:card-panel-dark">
+            <p class="text-sm text-slate-500 dark:text-slate-400">Contact</p>
             <p class="text-2xl font-bold text-slate-900 dark:text-white">{{ $user->phone ?? 'Not added' }}</p>
         </div>
-        <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow">
-            <p class="text-sm text-gray-500">Location</p>
+        <div class="card-panel dark:card-panel-dark">
+            <p class="text-sm text-slate-500 dark:text-slate-400">Location</p>
             <p class="text-2xl font-bold text-slate-900 dark:text-white">{{ $user->city ?? 'Not added' }}</p>
         </div>
     </div>
 
-    <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow">
+    <div class="card-panel dark:card-panel-dark">
         <div class="flex items-center justify-between mb-4">
             <h3 class="text-lg font-semibold">Donor actions</h3>
-            <span class="text-sm text-gray-500">Manage your profile and availability</span>
+            <span class="text-sm text-slate-500 dark:text-slate-400">Manage your profile and availability</span>
         </div>
         <div class="grid gap-3 sm:grid-cols-3">
             <a href="/profile" class="block rounded-2xl border border-red-200 bg-red-50 px-5 py-4 text-center text-sm font-semibold text-red-600 hover:bg-red-100 transition">View Profile</a>

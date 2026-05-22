@@ -2,40 +2,40 @@
 
 @section('content')
 
-<div class="max-w-2xl mx-auto bg-white dark:bg-gray-800 p-8 rounded-xl shadow-lg">
+<div class="max-w-2xl mx-auto card-panel dark:card-panel-dark">
     <h1 class="text-3xl font-bold mb-6 text-center text-red-600">
-        Become Blood Donor
+        Become a Blood Donor
     </h1>
-@if($errors->any())
-<div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
-    <ul>
-        @foreach($errors->all() as $error)
-            <li>{{ $error }}</li>
-        @endforeach
-    </ul>
-</div>
-@endif
+    @if($errors->any())
+    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-3xl mb-6">
+        <ul class="list-disc list-inside space-y-1">
+            @foreach($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+    @endif
 
-    <form action="/save-donor" method="POST">
+    <form action="/save-donor" method="POST" class="space-y-5">
         @csrf
-        <div class="mb-4">
-            <label class="block mb-2 font-bold">
+        <div>
+            <label class="block mb-2 font-semibold text-slate-700 dark:text-slate-200">
                 Phone Number
             </label>
 
             <input
                 type="text"
                 name="phone"
-                class="w-full border p-3 rounded dark:bg-gray-700 dark:border-gray-600"
+                class="form-field dark:form-field-dark"
                 required>
         </div>
 
-        <div class="mb-4">
-            <label class="block mb-2 font-bold">
+        <div class="space-y-2">
+            <label class="block mb-2 font-semibold text-slate-700 dark:text-slate-200">
                 Blood Group
             </label>
 
-            <select name="blood_group" class="w-full border p-3 rounded dark:bg-gray-700 dark:border-gray-600">
+            <select name="blood_group" class="form-field dark:form-field-dark">
                 <option>A+</option>
                 <option>A-</option>
                 <option>B+</option>
@@ -47,26 +47,26 @@
             </select>
         </div>
 
-        <div class="mb-4">
-            <label class="block mb-2 font-bold">
+        <div class="space-y-2">
+            <label class="block mb-2 font-semibold text-slate-700 dark:text-slate-200">
                 City
             </label>
 
             <input
                 type="text"
                 name="city"
-                class="w-full border p-3 rounded dark:bg-gray-700 dark:border-gray-600"
+                class="form-field dark:form-field-dark"
                 required>
         </div>
 
-        <div class="mb-4">
-            <label class="block mb-2 font-bold">
+        <div class="space-y-2">
+            <label class="block mb-2 font-semibold text-slate-700 dark:text-slate-200">
                 Address
             </label>
 
             <textarea
                 name="address"
-                class="w-full border p-3 rounded dark:bg-gray-700 dark:border-gray-600"
+                class="form-field dark:form-field-dark"
                 rows="4"></textarea>
         </div>
 

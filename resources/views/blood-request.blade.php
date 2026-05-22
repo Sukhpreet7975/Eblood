@@ -2,30 +2,30 @@
 
 @section('content')
 
-<div class="max-w-2xl mx-auto bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-lg">
+<div class="max-w-2xl mx-auto card-panel dark:card-panel-dark">
     <h1 class="text-4xl font-bold text-red-600 mb-6">
         Emergency Blood Request
     </h1>
 
-    <form method="POST" action="/blood-request">
+    <form method="POST" action="{{ route('requester.requests.store') }}" class="space-y-5">
         @csrf
-        <div class="mb-4">
-            <label class="block mb-2 font-bold">
+        <div>
+            <label class="block mb-2 font-semibold text-slate-700 dark:text-slate-200">
                 Patient Name
             </label>
 
             <input
                 type="text"
                 name="patient_name"
-                class="w-full border p-3 rounded dark:bg-gray-700 dark:border-gray-600">
+                class="form-field dark:form-field-dark">
         </div>
 
-        <div class="mb-4">
-            <label class="block mb-2 font-bold">
+        <div class="space-y-2">
+            <label class="block mb-2 font-semibold text-slate-700 dark:text-slate-200">
                 Blood Group
             </label>
 
-            <select name="blood_group" class="w-full border p-3 rounded dark:bg-gray-700 dark:border-gray-600">
+            <select name="blood_group" class="form-field dark:form-field-dark">
                 <option>A+</option>
                 <option>A-</option>
                 <option>B+</option>
@@ -37,48 +37,48 @@
             </select>
         </div>
 
-        <div class="mb-4">
-            <label class="block mb-2 font-bold">
+        <div class="space-y-2">
+            <label class="block mb-2 font-semibold text-slate-700 dark:text-slate-200">
                 Hospital
             </label>
 
             <input
                 type="text"
                 name="hospital"
-                class="w-full border p-3 rounded dark:bg-gray-700 dark:border-gray-600">
+                class="form-field dark:form-field-dark">
         </div>
 
-        <div class="mb-4">
-            <label class="block mb-2 font-bold">
+        <div class="space-y-2">
+            <label class="block mb-2 font-semibold text-slate-700 dark:text-slate-200">
                 City
             </label>
 
             <input
                 type="text"
                 name="city"
-                class="w-full border p-3 rounded dark:bg-gray-700 dark:border-gray-600">
+                class="form-field dark:form-field-dark">
         </div>
 
-        <div class="mb-4">
-            <label class="block mb-2 font-bold">
+        <div class="space-y-2">
+            <label class="block mb-2 font-semibold text-slate-700 dark:text-slate-200">
                 Phone
             </label>
 
             <input
                 type="text"
                 name="phone"
-                class="w-full border p-3 rounded dark:bg-gray-700 dark:border-gray-600">
+                class="form-field dark:form-field-dark">
         </div>
 
-        <div class="mb-4">
-            <label class="block mb-2 font-bold">
+        <div class="space-y-2">
+            <label class="block mb-2 font-semibold text-slate-700 dark:text-slate-200">
                 Message
             </label>
 
             <textarea
                 name="message"
                 rows="4"
-                class="w-full border p-3 rounded dark:bg-gray-700 dark:border-gray-600"></textarea>
+                class="form-field dark:form-field-dark"></textarea>
         </div>
 
         <button id="submit-btn" class="bg-red-600 text-white px-8 py-3 rounded-xl hover:bg-red-700 transition-all duration-300">

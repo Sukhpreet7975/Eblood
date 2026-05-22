@@ -2,14 +2,14 @@
 
 @section('content')
 <div class="container mx-auto px-6 py-8">
-    <div class="mb-8 rounded-3xl bg-white p-8 shadow-xl shadow-slate-200/50 dark:bg-slate-900 dark:shadow-none">
+    <div class="mb-8 section-panel dark:section-panel-dark">
         <div class="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
             <div class="max-w-2xl">
                 <p class="mb-3 inline-flex rounded-full bg-red-100 px-4 py-1 text-sm font-semibold uppercase tracking-[0.3em] text-red-700 dark:bg-red-900 dark:text-red-300">Admin Home</p>
                 <h1 class="text-3xl font-semibold text-slate-900 dark:text-slate-100 sm:text-4xl">Welcome back, {{ $admin->name }}.</h1>
                 <p class="mt-4 max-w-2xl text-slate-600 dark:text-slate-300">Monitor donor availability, review recent requests, and take action from your admin dashboard in one place.</p>
             </div>
-            <div class="rounded-3xl border border-slate-200 bg-slate-50 p-6 text-slate-900 shadow-sm dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100">
+            <div class="card-panel dark:card-panel-dark text-slate-900 dark:text-slate-100">
                 <p class="text-sm uppercase tracking-[0.24em] text-slate-500 dark:text-slate-400">Account</p>
                 <p class="mt-4 text-2xl font-semibold">{{ $admin->email }}</p>
                 <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">Admin since {{ optional($admin->created_at)->format('M d, Y') }}</p>
@@ -18,22 +18,22 @@
     </div>
 
     <div class="grid gap-6 xl:grid-cols-4">
-        <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900">
+        <div class="card-panel dark:card-panel-dark">
             <p class="text-sm font-medium text-slate-500 dark:text-slate-400">Total Donors</p>
             <p class="mt-4 text-3xl font-semibold text-slate-900 dark:text-slate-100">{{ number_format($totalDonors) }}</p>
             <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">All donors currently registered.</p>
         </div>
-        <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900">
+        <div class="card-panel dark:card-panel-dark">
             <p class="text-sm font-medium text-slate-500 dark:text-slate-400">Available Donors</p>
             <p class="mt-4 text-3xl font-semibold text-slate-900 dark:text-slate-100">{{ number_format($availableDonors) }}</p>
             <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">Donors marked as available for emergency matches.</p>
         </div>
-        <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900">
+        <div class="card-panel dark:card-panel-dark">
             <p class="text-sm font-medium text-slate-500 dark:text-slate-400">Requests Received</p>
             <p class="mt-4 text-3xl font-semibold text-slate-900 dark:text-slate-100">{{ number_format($totalRequests) }}</p>
             <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">Total active blood requests across the system.</p>
         </div>
-        <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900">
+        <div class="card-panel dark:card-panel-dark">
             <p class="text-sm font-medium text-slate-500 dark:text-slate-400">Pending Requests</p>
             <p class="mt-4 text-3xl font-semibold text-slate-900 dark:text-slate-100">{{ number_format($pendingRequests) }}</p>
             <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">Requests waiting for review or donor assignment.</p>
@@ -41,21 +41,21 @@
     </div>
 
     <div class="mt-8 grid gap-6 xl:grid-cols-3">
-        <a href="/admin" class="group rounded-3xl border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:border-red-300 hover:bg-red-50 dark:border-slate-700 dark:bg-slate-900 dark:hover:border-red-500 dark:hover:bg-slate-800">
+        <a href="/admin" class="group card-panel dark:card-panel-dark transition hover:-translate-y-1 hover:border-red-300 hover:bg-red-50 dark:hover:border-red-500 dark:hover:bg-slate-800">
             <div class="flex items-center justify-between">
                 <p class="text-sm font-semibold text-slate-900 dark:text-slate-100">View admin dashboard</p>
                 <span class="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-red-100 text-red-600 dark:bg-red-900 dark:text-red-200">→</span>
             </div>
             <p class="mt-4 text-sm text-slate-500 dark:text-slate-400">Open the full analytics page and monitor trends, blood group distribution, and city request patterns.</p>
         </a>
-        <a href="/admin" class="group rounded-3xl border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:border-red-300 hover:bg-red-50 dark:border-slate-700 dark:bg-slate-900 dark:hover:border-red-500 dark:hover:bg-slate-800">
+        <a href="/admin" class="group card-panel dark:card-panel-dark transition hover:-translate-y-1 hover:border-red-300 hover:bg-red-50 dark:hover:border-red-500 dark:hover:bg-slate-800">
             <div class="flex items-center justify-between">
                 <p class="text-sm font-semibold text-slate-900 dark:text-slate-100">Manage emergency requests</p>
                 <span class="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-red-100 text-red-600 dark:bg-red-900 dark:text-red-200">→</span>
             </div>
             <p class="mt-4 text-sm text-slate-500 dark:text-slate-400">Review recent blood requests, approve urgent cases, and assign donors quickly.</p>
         </a>
-        <a href="/admin" class="group rounded-3xl border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:border-red-300 hover:bg-red-50 dark:border-slate-700 dark:bg-slate-900 dark:hover:border-red-500 dark:hover:bg-slate-800">
+        <a href="/admin" class="group card-panel dark:card-panel-dark transition hover:-translate-y-1 hover:border-red-300 hover:bg-red-50 dark:hover:border-red-500 dark:hover:bg-slate-800">
             <div class="flex items-center justify-between">
                 <p class="text-sm font-semibold text-slate-900 dark:text-slate-100">Review latest donors</p>
                 <span class="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-red-100 text-red-600 dark:bg-red-900 dark:text-red-200">→</span>
@@ -65,7 +65,7 @@
     </div>
 
     <div class="mt-8 grid gap-6 xl:grid-cols-2">
-        <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900">
+        <div class="card-panel dark:card-panel-dark">
             <div class="flex items-start justify-between gap-4">
                 <div>
                     <h2 class="text-xl font-semibold text-slate-900 dark:text-slate-100">Latest donor signups</h2>
@@ -74,7 +74,7 @@
             </div>
             <div class="mt-6 space-y-4">
                 @forelse($latestDonors as $donor)
-                    <div class="rounded-3xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-700 dark:bg-slate-950">
+                    <div class="card-panel dark:card-panel-dark">
                         <div class="flex items-center justify-between gap-4">
                             <div>
                                 <p class="font-medium text-slate-900 dark:text-slate-100">{{ $donor->name }}</p>
@@ -90,7 +90,7 @@
             </div>
         </div>
 
-        <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900">
+        <div class="card-panel dark:card-panel-dark">
             <div class="flex items-start justify-between gap-4">
                 <div>
                     <h2 class="text-xl font-semibold text-slate-900 dark:text-slate-100">Recent request activity</h2>
@@ -99,7 +99,7 @@
             </div>
             <div class="mt-6 space-y-4">
                 @forelse($recentActivities as $request)
-                    <div class="rounded-3xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-700 dark:bg-slate-950">
+                    <div class="card-panel dark:card-panel-dark">
                         <div class="flex items-center justify-between gap-4">
                             <div>
                                 <p class="font-medium text-slate-900 dark:text-slate-100">{{ $request->patient_name ?? 'Request #' . $request->_id }}</p>

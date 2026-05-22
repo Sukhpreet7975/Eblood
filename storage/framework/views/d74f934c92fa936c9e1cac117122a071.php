@@ -2,7 +2,7 @@
 
 <div class="max-w-sm mx-auto mt-8">
 
-    <div class="bg-white dark:bg-gray-800 shadow-xl rounded-2xl p-6">
+    <div class="card-panel dark:card-panel-dark shadow-xl rounded-2xl p-6">
 
         <!-- Heading -->
         <div class="text-center mb-5">
@@ -30,7 +30,7 @@
                     type="email"
                     name="email"
                     value="<?php echo e(old('email')); ?>"
-                    class="w-full border p-3 rounded-lg dark:bg-gray-700 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-red-500"
+                    class="form-field dark:form-field-dark"
                     placeholder="Enter email">
                 <?php $__errorArgs = ['email'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
@@ -58,7 +58,7 @@ unset($__errorArgs, $__bag); ?>
                         type="password"
                         name="password"
                         id="password"
-                        class="w-full border p-3 rounded-lg dark:bg-gray-700 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-red-500"
+                        class="form-field dark:form-field-dark"
                         placeholder="Enter password">
 
                     <button
@@ -167,7 +167,7 @@ unset($__errorArgs, $__bag); ?>
     <div class="flex min-h-full items-center justify-center w-full">
         <div class="w-full max-w-lg space-y-6">
 
-        <div id="email-modal" class="hidden bg-white dark:bg-gray-900 rounded-3xl shadow-2xl p-6 border border-gray-200 dark:border-gray-700 transition-transform duration-300">
+        <div id="email-modal" class="hidden card-panel dark:card-panel-dark transition-transform duration-300">
             <div class="flex items-start justify-between mb-4">
                 <div>
                     <h2 class="text-2xl font-bold text-gray-900 dark:text-white">
@@ -186,7 +186,7 @@ unset($__errorArgs, $__bag); ?>
             <form id="verify-email-form" class="space-y-4">
                 <div>
                     <label class="block mb-1 text-sm font-semibold text-gray-700 dark:text-gray-200">Email address</label>
-                    <input id="verify-email" type="email" name="email" class="w-full border p-3 rounded-xl dark:bg-gray-800 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-red-500" placeholder="Enter your email address" required>
+                    <input id="verify-email" type="email" name="email" class="form-field dark:form-field-dark" placeholder="Enter your email address" required>
                 </div>
 
                 <div class="flex items-center justify-between gap-3">
@@ -200,7 +200,7 @@ unset($__errorArgs, $__bag); ?>
             </form>
         </div>
 
-        <div id="reset-modal" class="hidden bg-white dark:bg-gray-900 rounded-3xl shadow-2xl p-6 border border-gray-200 dark:border-gray-700 transition-transform duration-300">
+        <div id="reset-modal" class="hidden card-panel dark:card-panel-dark transition-transform duration-300">
             <div class="flex items-start justify-between mb-4">
                 <div>
                     <h2 class="text-2xl font-bold text-gray-900 dark:text-white">
@@ -223,7 +223,7 @@ unset($__errorArgs, $__bag); ?>
                 <div>
                     <label class="block mb-1 text-sm font-semibold text-gray-700 dark:text-gray-200">New Password</label>
                     <div class="relative">
-                        <input id="new-password" type="password" name="password" minlength="8" class="w-full border p-3 rounded-xl dark:bg-gray-800 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-red-500" placeholder="Enter new password" required>
+                        <input id="new-password" type="password" name="password" minlength="8" class="form-field dark:form-field-dark" placeholder="Enter new password" required>
                         <button type="button" onclick="toggleResetPassword('new-password', 'new-eye-icon')" class="absolute right-3 top-3 text-gray-500 hover:text-red-600 transition">
                             <svg id="new-eye-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7 -1.274 4.057-5.065 7 -9.542 7-4.477 0 -8.268-2.943-9.542-7z" />
@@ -236,7 +236,7 @@ unset($__errorArgs, $__bag); ?>
                 <div>
                     <label class="block mb-1 text-sm font-semibold text-gray-700 dark:text-gray-200">Confirm Password</label>
                     <div class="relative">
-                        <input id="confirm-password" type="password" name="password_confirmation" minlength="8" class="w-full border p-3 rounded-xl dark:bg-gray-800 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-red-500" placeholder="Confirm new password" required>
+                        <input id="confirm-password" type="password" name="password_confirmation" minlength="8" class="form-field dark:form-field-dark" placeholder="Confirm new password" required>
                         <button type="button" onclick="toggleResetPassword('confirm-password', 'confirm-eye-icon')" class="absolute right-3 top-3 text-gray-500 hover:text-red-600 transition">
                             <svg id="confirm-eye-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7 -1.274 4.057-5.065 7 -9.542 7-4.477 0 -8.268-2.943-9.542-7z" />

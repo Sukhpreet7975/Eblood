@@ -8,7 +8,7 @@
 
         <!-- Profile Card -->
         <div class="lg:col-span-1">
-            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 hover:shadow-xl transition">
+            <div class="card-panel dark:card-panel-dark hover:shadow-xl transition">
                 <div class="flex flex-col items-center text-center">
                     <div class="w-40 h-40 rounded-full overflow-hidden border-4 border-white shadow-md">
                         @if($user->profile_image)
@@ -43,7 +43,7 @@
 
         <!-- Details -->
         <div class="lg:col-span-2 space-y-6">
-            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6">
+            <div class="card-panel dark:card-panel-dark">
                 <h3 class="text-xl font-semibold mb-4">Personal Information</h3>
 
                 <div class="grid sm:grid-cols-2 gap-4">
@@ -69,7 +69,7 @@
                 </div>
             </div>
 
-            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6">
+            <div class="card-panel dark:card-panel-dark">
                 <h3 class="text-xl font-semibold mb-4">Profile Image</h3>
 
                 <form action="/upload-image" method="POST" enctype="multipart/form-data" class="flex flex-col sm:flex-row items-start sm:items-center gap-4">
@@ -84,7 +84,7 @@
 
     <!-- Edit Modal -->
     <div id="edit-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
-        <div class="bg-white dark:bg-gray-800 rounded-lg w-full max-w-lg p-6">
+        <div class="card-panel dark:card-panel-dark rounded-lg w-full max-w-lg p-6">
             <div class="flex justify-between items-center">
                 <h4 class="text-lg font-semibold">Edit Profile</h4>
                 <button id="close-edit-modal" class="text-gray-500 hover:text-gray-700">✕</button>

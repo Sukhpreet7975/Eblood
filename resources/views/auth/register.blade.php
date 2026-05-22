@@ -2,8 +2,8 @@
 
 @section('content')
 
-<div class="flex justify-center items-center min-h-[80vh]">
-    <div class="bg-white shadow-2xl rounded-2xl p-10 w-full max-w-lg">
+<div class="flex justify-center items-center min-h-[80vh] bg-slate-50 dark:bg-slate-950 py-10">
+    <div class="card-panel dark:card-panel-dark w-full max-w-lg p-10">
         <div class="text-center mb-8">
             <h1 class="text-4xl font-bold text-red-600">
                 Register
@@ -36,7 +36,7 @@
                     name="name"
                     value="{{ old('name') }}"
                     required
-                    class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-red-500">
+                    class="form-field dark:form-field-dark">
                 @error('name')
                 <p class="text-red-500 mt-1 text-xs">
                     {{ $message }}
@@ -54,7 +54,7 @@
                     name="email"
                     value="{{ old('email') }}"
                     required
-                    class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-red-500">
+                    class="form-field dark:form-field-dark">
                 @error('email')
                 <p class="text-red-500 mt-1 text-xs">
                     {{ $message }}
@@ -74,7 +74,7 @@
                         id="password"
                         minlength="8"
                         required
-                        class="w-full border border-gray-300 rounded-lg p-3 pr-11 focus:outline-none focus:ring-2 focus:ring-red-500"
+                        class="form-field dark:form-field-dark pr-11"
                         autocomplete="new-password"
                     >
                     <button type="button" onclick="togglePassword('password', 'passwordToggleIcon')" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-red-600">
@@ -103,7 +103,7 @@
                         id="confirm_password"
                         minlength="8"
                         required
-                        class="w-full border border-gray-300 rounded-lg p-3 pr-11 focus:outline-none focus:ring-2 focus:ring-red-500"
+                        class="form-field dark:form-field-dark pr-11"
                         autocomplete="new-password"
                     >
                     <button type="button" onclick="togglePassword('confirm_password', 'confirmPasswordToggleIcon')" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-red-600">

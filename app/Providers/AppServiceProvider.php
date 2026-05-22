@@ -19,6 +19,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        $router = $this->app->make('router');
+
+        $router->aliasMiddleware('admin', \App\Http\Middleware\AdminMiddleware::class);
+        $router->aliasMiddleware('donor', \App\Http\Middleware\DonorMiddleware::class);
+        $router->aliasMiddleware('requester', \App\Http\Middleware\RequesterMiddleware::class);
     }
 }

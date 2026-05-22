@@ -3,8 +3,8 @@
 @section('content')
 
 <div class="container mx-auto p-6">
-    <div class="bg-white dark:bg-gray-800 rounded-xl p-6">
-        <h1 class="text-2xl font-bold mb-4">Request Details</h1>
+    <div class="section-panel dark:section-panel-dark">
+        <h1 class="text-3xl font-semibold mb-4 text-red-600">Request Details</h1>
 
         <div class="grid md:grid-cols-2 gap-6">
             <div>

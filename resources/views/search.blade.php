@@ -4,32 +4,34 @@
 
 <h1 class="text-4xl font-bold mb-8 text-red-600">Search Donors</h1>
 
-<div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow mb-6">
-    <form id="search-form" class="grid gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-        <input id="q-city" name="city" placeholder="City" class="border p-3 rounded-xl dark:bg-gray-700 dark:border-gray-600" />
-        <select id="q-blood" name="blood_group" class="border p-3 rounded-xl dark:bg-gray-700 dark:border-gray-600">
+<div class="section-panel dark:section-panel-dark mb-6">
+    <form id="search-form" class="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+        <input id="q-city" name="city" placeholder="City" class="form-field dark:form-field-dark" />
+        <select id="q-blood" name="blood_group" class="form-field dark:form-field-dark">
             <option value="">Any blood group</option>
             @foreach(['A+','A-','B+','B-','O+','O-','AB+','AB-'] as $g)
                 <option value="{{ $g }}">{{ $g }}</option>
             @endforeach
         </select>
-        <div class="flex gap-2">
-            <button id="search-btn" class="px-4 py-2 rounded-xl bg-red-600 text-white">Search</button>
-            <button id="clear-btn" type="button" class="px-4 py-2 rounded-xl border">Clear</button>
+        <div class="flex flex-col sm:flex-row gap-3">
+            <button id="search-btn" class="btn-primary w-full">Search</button>
+            <button id="clear-btn" type="button" class="btn-secondary w-full">Clear</button>
         </div>
     </form>
 </div>
 
 <div id="results" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
     @forelse($donors as $donor)
-        <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg donor-card">
-            <div class="flex justify-between items-center">
-                <h2 class="text-2xl font-bold">{{ $donor->name }}</h2>
-                <span class="bg-red-600 text-white px-3 py-1 rounded-full">{{ $donor->blood_group }}</span>
-            </div>
-            <div class="mt-4 space-y-2">
-                <p><strong>City:</strong> {{ $donor->city }}</p>
-                <p><strong>Phone:</strong> {{ $donor->phone }}</p>
+        <div class="card-panel dark:card-panel-dark donor-card">
+            <div class="flex flex-col gap-4">
+                <div class="flex flex-wrap items-center justify-between gap-3">
+                    <h2 class="text-2xl font-semibold">{{ $donor->name }}</h2>
+                    <span class="rounded-full bg-red-600 px-3 py-1 text-sm font-semibold text-white">{{ $donor->blood_group }}</span>
+                </div>
+                <div class="grid gap-2 sm:grid-cols-2 text-sm text-slate-600 dark:text-slate-300">
+                    <p><strong>City:</strong> {{ $donor->city }}</p>
+                    <p><strong>Phone:</strong> {{ $donor->phone }}</p>
+                </div>
             </div>
         </div>
     @empty
@@ -56,7 +58,7 @@ document.addEventListener('DOMContentLoaded', function(){
             return;
         }
         results.innerHTML = donors.map(d => `
-            <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg donor-card">
+            <div class="card-panel dark:card-panel-dark donor-card">
                 <div class="flex justify-between items-center">
                     <h2 class="text-2xl font-bold">${d.name}</h2>
                     <span class="bg-red-600 text-white px-3 py-1 rounded-full">${d.blood_group || ''}</span>
