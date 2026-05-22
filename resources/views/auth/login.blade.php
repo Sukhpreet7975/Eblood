@@ -2,142 +2,162 @@
 
 @section('content')
 
-<div class="max-w-sm mx-auto mt-8">
+<div class="min-h-screen flex items-center justify-center px-4 py-10 sm:px-6 bg-slate-50 dark:bg-slate-950">
+    <div class="w-full max-w-6xl grid gap-8 lg:grid-cols-[1.2fr_0.9fr]">
+        <div class="hidden overflow-hidden rounded-[2rem] bg-gradient-to-br from-red-600 via-rose-500 to-pink-500 p-10 text-white shadow-2xl lg:flex lg:flex-col lg:justify-between">
+            <div class="space-y-6">
+                <div class="inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.26em] text-white/90">
+                    E-Blood Secure Access
+                </div>
 
-    <div class="card-panel dark:card-panel-dark shadow-xl rounded-2xl p-6">
+                <div class="space-y-4">
+                    <h2 class="text-4xl font-extrabold tracking-tight text-white">
+                        Professional login for donors, requesters and admins
+                    </h2>
+                    <p class="max-w-xl text-sm text-white/80">
+                        Sign in with confidence to manage blood requests, view status updates, and help patients faster.
+                    </p>
+                </div>
 
-        <!-- Heading -->
-        <div class="text-center mb-5">
-            <h1 class="text-3xl font-extrabold text-red-600">
-                Welcome Back
-            </h1>
-
-            <p class="text-sm text-gray-500 dark:text-gray-300 mt-1">
-                Login to continue
-            </p>
-        </div>
-
-        <div id="login-error" class="hidden bg-red-100 border border-red-400 text-red-700 px-3 py-2 rounded-lg mb-4 text-sm"></div>
-
-        <form method="POST" action="{{ route('login') }}" id="login-form">
-            @csrf
-
-            <!-- Email -->
-            <div class="mb-4">
-                <label class="block mb-1 font-semibold text-sm">
-                    Email
-                </label>
-
-                <input
-                    type="email"
-                    name="email"
-                    value="{{ old('email') }}"
-                    class="form-field dark:form-field-dark"
-                    placeholder="Enter email">
-                @error('email')
-                <p class="text-red-500 mt-1 text-xs">
-                    {{ $message }}
-                </p>
-                @enderror
+                <div class="space-y-4 text-sm text-white/90">
+                    <div class="inline-flex items-center gap-3 rounded-3xl bg-white/10 px-4 py-3">
+                        <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-white/20 text-white">
+                            ✓
+                        </span>
+                        <span>Secure, role-based access</span>
+                    </div>
+                    <div class="inline-flex items-center gap-3 rounded-3xl bg-white/10 px-4 py-3">
+                        <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-white/20 text-white">
+                            ✓
+                        </span>
+                        <span>Fast access to your dashboard</span>
+                    </div>
+                    <div class="inline-flex items-center gap-3 rounded-3xl bg-white/10 px-4 py-3">
+                        <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-white/20 text-white">
+                            ✓
+                        </span>
+                        <span>24/7 support for critical requests</span>
+                    </div>
+                </div>
             </div>
 
-            <!-- Password -->
-            <div class="mb-4">
-                <label class="block mb-1 font-semibold text-sm">
-                    Password
-                </label>
+            <div class="rounded-[1.5rem] border border-white/20 bg-white/10 p-5 text-sm text-white/85">
+                <p class="font-semibold">Need help signing in?</p>
+                <p class="mt-2 leading-6 text-white/80">If you have trouble logging in, ask your organization administrator or use the forgot password flow.</p>
+            </div>
+        </div>
 
-                <div class="relative">
-                    <input
-                        type="password"
-                        name="password"
-                        id="password"
-                        class="form-field dark:form-field-dark"
-                        placeholder="Enter password">
+        <div class="glass-card dark:glass-card-dark overflow-hidden">
+            <div class="px-6 py-8 sm:px-10 sm:py-10">
+                <div class="mb-8 text-center">
+                    <p class="text-sm font-semibold uppercase tracking-[0.24em] text-red-600">Secure sign in</p>
+                    <h1 class="mt-4 text-3xl font-extrabold text-slate-900 dark:text-white">Welcome back</h1>
+                    <p class="mx-auto mt-2 max-w-md text-sm text-slate-500 dark:text-slate-400">
+                        Login to continue to your E-Blood dashboard and support urgent requests.
+                    </p>
+                </div>
 
-                    <button
-                        type="button"
-                        onclick="togglePassword()"
-                        class="absolute right-3 top-3 text-gray-500 hover:text-red-600 transition">
-                        <svg id="eyeIcon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
-                            <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7 -1.274 4.057-5.065 7 -9.542 7-4.477 0 -8.268-2.943-9.542-7z" />
-                            <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                        </svg>
+                <div id="login-error" class="hidden rounded-3xl border border-red-200 bg-red-50 px-4 py-3 text-red-700 text-sm shadow-sm mb-5"></div>
+
+                <form method="POST" action="{{ route('login') }}" id="login-form">
+                    @csrf
+
+                    <div class="grid gap-5">
+                        <div>
+                            <label class="mb-2 block text-sm font-semibold text-slate-700 dark:text-slate-200">
+                                Email address
+                            </label>
+                            <input
+                                type="email"
+                                name="email"
+                                value="{{ old('email') }}"
+                                class="form-field dark:form-field-dark"
+                                placeholder="name@example.com">
+                            @error('email')
+                            <p class="mt-2 text-xs text-red-500">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div>
+                            <label class="mb-2 block text-sm font-semibold text-slate-700 dark:text-slate-200">
+                                Password
+                            </label>
+                            <div class="relative">
+                                <input
+                                    type="password"
+                                    name="password"
+                                    id="password"
+                                    class="form-field dark:form-field-dark"
+                                    placeholder="Enter password">
+                                <button
+                                    type="button"
+                                    onclick="togglePassword()"
+                                    class="absolute right-3 top-3 text-slate-400 hover:text-red-600 transition">
+                                    <svg id="eyeIcon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+                                        <path
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7 -1.274 4.057-5.065 7 -9.542 7-4.477 0 -8.268-2.943-9.542-7z" />
+                                        <path
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    </svg>
+                                </button>
+                            </div>
+                            @error('password')
+                            <p class="mt-2 text-xs text-red-500">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div>
+                            <p class="mb-3 text-sm font-semibold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">Login type</p>
+                            <div class="grid gap-3 sm:grid-cols-3">
+                                <div>
+                                    <input id="role-donor" type="radio" name="role" value="donor" {{ old('role', 'donor') === 'donor' ? 'checked' : '' }} class="peer sr-only" required>
+                                    <label for="role-donor" class="block cursor-pointer rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 text-center text-sm font-medium text-slate-700 transition hover:border-red-400 hover:text-red-700 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-200 peer-checked:border-red-600 peer-checked:bg-red-50 peer-checked:text-red-700">
+                                        Donor
+                                    </label>
+                                </div>
+                                <div>
+                                    <input id="role-requester" type="radio" name="role" value="requester" {{ old('role') === 'requester' ? 'checked' : '' }} class="peer sr-only" required>
+                                    <label for="role-requester" class="block cursor-pointer rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 text-center text-sm font-medium text-slate-700 transition hover:border-red-400 hover:text-red-700 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-200 peer-checked:border-red-600 peer-checked:bg-red-50 peer-checked:text-red-700">
+                                        Requester
+                                    </label>
+                                </div>
+                                <div>
+                                    <input id="role-admin" type="radio" name="role" value="admin" {{ old('role') === 'admin' ? 'checked' : '' }} class="peer sr-only" required>
+                                    <label for="role-admin" class="block cursor-pointer rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 text-center text-sm font-medium text-slate-700 transition hover:border-red-400 hover:text-red-700 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-200 peer-checked:border-red-600 peer-checked:bg-red-50 peer-checked:text-red-700">
+                                        Admin
+                                    </label>
+                                </div>
+                            </div>
+                            @error('role')
+                            <p class="mt-2 text-xs text-red-500">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between text-sm text-slate-600 dark:text-slate-400">
+                            <label class="inline-flex items-center gap-2">
+                                <input type="checkbox" name="remember" class="h-4 w-4 rounded border-slate-300 text-red-600 focus:ring-red-500">
+                                Remember me
+                            </label>
+                            <button type="button" id="forgot-password-button" class="font-semibold text-red-600 hover:text-red-700 transition">
+                                Forgot password?
+                            </button>
+                        </div>
+                    </div>
+
+                    <button id="login-btn" type="submit" class="mt-6 w-full rounded-3xl bg-red-600 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-red-500/20 transition hover:bg-red-700">
+                        Login
                     </button>
-                </div>
-                @error('password')
-                <p class="text-red-500 mt-1 text-xs">
-                    {{ $message }}
+                </form>
+
+                <p class="mt-6 text-center text-sm text-slate-500 dark:text-slate-400">
+                    Don’t have an account? <a href="{{ route('register') }}" class="font-semibold text-red-600 hover:text-red-700">Register</a>
                 </p>
-                @enderror
-            </div>
-
-            <!-- Remember -->
-            <!-- Role Selection -->
-            <div class="flex flex-col mb-4 gap-3 text-sm">
-                <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
-                    <label class="inline-flex items-center">
-                        <input type="radio" name="role" value="donor" {{ old('role', 'donor') === 'donor' ? 'checked' : '' }} class="mr-2" required />
-                        <span>Donor Login</span>
-                    </label>
-
-                    <label class="inline-flex items-center">
-                        <input type="radio" name="role" value="requester" {{ old('role') === 'requester' ? 'checked' : '' }} class="mr-2" required />
-                        <span>Requester Login</span>
-                    </label>
-
-                    <label class="inline-flex items-center">
-                        <input type="radio" name="role" value="admin" {{ old('role') === 'admin' ? 'checked' : '' }} class="mr-2" required />
-                        <span>Admin Login</span>
-                    </label>
-                </div>
-
-                @error('role')
-                <p class="text-red-500 text-xs">
-                    {{ $message }}
-                </p>
-                @enderror
-            </div>
-
-            <div class="flex items-center mb-4 text-sm">
-                <input
-                    type="checkbox"
-                    name="remember"
-                    class="mr-2">
-                <label>
-                    Remember Me
-                </label>
-            </div>
-
-            <button id="login-btn" class="w-full bg-red-600 text-white py-3 rounded-lg font-semibold hover:bg-red-700 transition duration-300">
-                Login
-            </button>
-        </form>
-
-        <div id="forgot-password-badge" class="hidden mt-4">
-            <div class="inline-flex items-center gap-2 rounded-full border border-red-200 bg-red-50 px-4 py-2 text-sm text-red-700">
-                <span>Need help?</span>
-                <button
-                    type="button"
-                    id="forgot-password-button"
-                    class="font-semibold text-red-600 hover:text-red-700 transition">
-                    Forgot Password?
-                </button>
             </div>
         </div>
-
-        <p class="text-center mt-5 text-sm text-gray-500">
-            Don't have an account?
-            <a href="{{ route('register') }}" class="text-red-600 font-semibold">
-                Register
-            </a>
-        </p>
     </div>
 </div>
 
@@ -258,7 +278,6 @@
     const resetPasswordError = document.getElementById('reset-password-error');
     const resetPasswordSuccess = document.getElementById('reset-password-success');
     const popupSuccess = document.getElementById('popup-success');
-    const forgotPasswordBadge = document.getElementById('forgot-password-badge');
     const loginError = document.getElementById('login-error');
     const loginForm = document.getElementById('login-form');
     const loginButton = document.getElementById('login-btn');
@@ -402,7 +421,6 @@
 
         if (response.ok && data?.success) {
             failedAttempts = 0;
-            forgotPasswordBadge?.classList.add('hidden');
             loginError.classList.add('hidden');
             resetPasswordSuccess.textContent = data.message;
             resetPasswordSuccess.classList.remove('hidden');
@@ -456,10 +474,6 @@
         }
 
         failedAttempts += 1;
-        if (failedAttempts >= 2) {
-            forgotPasswordBadge?.classList.remove('hidden');
-        }
-
         loginError.textContent = data?.message || 'Invalid credentials. Please try again.';
         loginError.classList.remove('hidden');
         loginButton.innerHTML = 'Login';

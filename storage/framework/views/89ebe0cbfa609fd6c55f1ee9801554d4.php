@@ -1,6 +1,4 @@
-@extends('layouts.app')
-
-@section('content')
+<?php $__env->startSection('content'); ?>
 
 <div class="min-h-screen flex items-center justify-center px-4 py-10 sm:px-6 bg-slate-50 dark:bg-slate-950">
     <div class="w-full max-w-6xl grid gap-8 lg:grid-cols-[1.2fr_0.9fr]">
@@ -68,18 +66,18 @@
                     </p>
                 </div>
 
-                @if ($errors->any())
+                <?php if($errors->any()): ?>
                     <div class="rounded-3xl border border-red-200 bg-red-50 px-4 py-3 text-red-700 text-sm shadow-sm mb-6">
                         <ul class="list-disc list-inside space-y-2">
-                            @foreach ($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
+                            <?php $__currentLoopData = $errors->all(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $error): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                <li><?php echo e($error); ?></li>
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                         </ul>
                     </div>
-                @endif
+                <?php endif; ?>
 
-                <form method="POST" action="{{ route('register') }}">
-                    @csrf
+                <form method="POST" action="<?php echo e(route('register')); ?>">
+                    <?php echo csrf_field(); ?>
 
                     <div class="grid gap-5">
                         <div>
@@ -89,13 +87,20 @@
                             <input
                                 type="text"
                                 name="name"
-                                value="{{ old('name') }}"
+                                value="<?php echo e(old('name')); ?>"
                                 required
                                 class="form-field dark:form-field-dark"
                                 placeholder="Jane Doe">
-                            @error('name')
-                            <p class="mt-2 text-xs text-red-500">{{ $message }}</p>
-                            @enderror
+                            <?php $__errorArgs = ['name'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                            <p class="mt-2 text-xs text-red-500"><?php echo e($message); ?></p>
+                            <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                         </div>
 
                         <div>
@@ -105,13 +110,20 @@
                             <input
                                 type="email"
                                 name="email"
-                                value="{{ old('email') }}"
+                                value="<?php echo e(old('email')); ?>"
                                 required
                                 class="form-field dark:form-field-dark"
                                 placeholder="name@example.com">
-                            @error('email')
-                            <p class="mt-2 text-xs text-red-500">{{ $message }}</p>
-                            @enderror
+                            <?php $__errorArgs = ['email'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                            <p class="mt-2 text-xs text-red-500"><?php echo e($message); ?></p>
+                            <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                         </div>
 
                         <div>
@@ -135,9 +147,16 @@
                                     </svg>
                                 </button>
                             </div>
-                            @error('password')
-                            <p class="mt-2 text-xs text-red-500">{{ $message }}</p>
-                            @enderror
+                            <?php $__errorArgs = ['password'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                            <p class="mt-2 text-xs text-red-500"><?php echo e($message); ?></p>
+                            <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                         </div>
 
                         <div>
@@ -161,39 +180,53 @@
                                     </svg>
                                 </button>
                             </div>
-                            @error('password_confirmation')
-                            <p class="mt-2 text-xs text-red-500">{{ $message }}</p>
-                            @enderror
+                            <?php $__errorArgs = ['password_confirmation'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                            <p class="mt-2 text-xs text-red-500"><?php echo e($message); ?></p>
+                            <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                         </div>
 
                         <div>
                             <p class="mb-3 text-sm font-semibold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">Register as</p>
                             <div class="grid gap-3 sm:grid-cols-3">
                                 <div>
-                                    <input id="role-donor" type="radio" name="role" value="donor" {{ old('role', 'donor') === 'donor' ? 'checked' : '' }} class="peer sr-only" required>
+                                    <input id="role-donor" type="radio" name="role" value="donor" <?php echo e(old('role', 'donor') === 'donor' ? 'checked' : ''); ?> class="peer sr-only" required>
                                     <label for="role-donor" class="block cursor-pointer rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 text-center text-sm font-medium text-slate-700 transition hover:border-red-400 hover:text-red-700 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-200 peer-checked:border-red-600 peer-checked:bg-red-50 peer-checked:text-red-700">
                                         Donor
                                     </label>
                                 </div>
                                 <div>
-                                    <input id="role-requester" type="radio" name="role" value="requester" {{ old('role') === 'requester' ? 'checked' : '' }} class="peer sr-only" required>
+                                    <input id="role-requester" type="radio" name="role" value="requester" <?php echo e(old('role') === 'requester' ? 'checked' : ''); ?> class="peer sr-only" required>
                                     <label for="role-requester" class="block cursor-pointer rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 text-center text-sm font-medium text-slate-700 transition hover:border-red-400 hover:text-red-700 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-200 peer-checked:border-red-600 peer-checked:bg-red-50 peer-checked:text-red-700">
                                         Requester
                                     </label>
                                 </div>
                                 <div>
-                                    <input id="role-admin" type="radio" name="role" value="admin" {{ (isset($adminExists) && $adminExists) ? 'disabled' : '' }} {{ old('role') === 'admin' ? 'checked' : '' }} class="peer sr-only" required>
+                                    <input id="role-admin" type="radio" name="role" value="admin" <?php echo e((isset($adminExists) && $adminExists) ? 'disabled' : ''); ?> <?php echo e(old('role') === 'admin' ? 'checked' : ''); ?> class="peer sr-only" required>
                                     <label for="role-admin" class="block cursor-pointer rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 text-center text-sm font-medium text-slate-700 transition hover:border-red-400 hover:text-red-700 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-200 peer-checked:border-red-600 peer-checked:bg-red-50 peer-checked:text-red-700">
                                         Admin
                                     </label>
                                 </div>
                             </div>
-                            @if(isset($adminExists) && $adminExists)
+                            <?php if(isset($adminExists) && $adminExists): ?>
                                 <p class="mt-2 text-xs text-slate-500 dark:text-slate-400">Admin registration is disabled because an admin account already exists.</p>
-                            @endif
-                            @error('role')
-                            <p class="mt-2 text-xs text-red-500">{{ $message }}</p>
-                            @enderror
+                            <?php endif; ?>
+                            <?php $__errorArgs = ['role'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                            <p class="mt-2 text-xs text-red-500"><?php echo e($message); ?></p>
+                            <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                         </div>
 
                         <button type="submit" class="mt-2 w-full rounded-3xl bg-red-600 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-red-500/20 transition hover:bg-red-700">
@@ -203,7 +236,7 @@
                 </form>
 
                 <p class="mt-6 text-center text-sm text-slate-500 dark:text-slate-400">
-                    Already have an account? <a href="{{ route('login') }}" class="font-semibold text-red-600 hover:text-red-700">Login</a>
+                    Already have an account? <a href="<?php echo e(route('login')); ?>" class="font-semibold text-red-600 hover:text-red-700">Login</a>
                 </p>
             </div>
         </div>
@@ -231,4 +264,5 @@ function togglePassword(inputId, iconId) {
 }
 </script>
 
-@endsection
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\xampp\htdocs\MyProject\eblood\resources\views/auth/register.blade.php ENDPATH**/ ?>
