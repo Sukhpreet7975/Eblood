@@ -133,247 +133,51 @@
 
 </div>
 
-<!-- Search -->
+<!-- Request Management CTA -->
 
-<div class="bg-white dark:bg-gray-800
-            p-6 rounded-3xl shadow-xl mb-10">
-
-    <form method="GET" action="/admin">
-
-        <div class="flex flex-col md:flex-row gap-4">
-
-            <input
-                type="text"
-                name="search"
-                placeholder="Search donors by name, city, blood group..."
-                value="{{ request('search') }}"
-                class="w-full border p-3 rounded-xl
-                       dark:bg-gray-700
-                       dark:border-gray-600">
-
-            <button
-                class="bg-red-600 text-white
-                       px-8 py-3 rounded-xl
-                       hover:bg-red-700 transition">
-
-                Search
-
-            </button>
-
-        </div>
-
-    </form>
-
-</div>
-
-<!-- Donors Table -->
-
-<div class="bg-white dark:bg-gray-800
-            rounded-3xl shadow-xl
-            overflow-hidden mb-10">
-
-    <div class="p-6 border-b dark:border-gray-700">
-
-        <div class="flex items-center justify-between">
-            <h2 class="text-3xl font-bold">All Donors</h2>
-            <div class="text-sm text-gray-500">{{ $users->total() }} results</div>
-        </div>
-
+<div class="grid gap-6 xl:grid-cols-3 mb-10">
+    <div class="bg-white dark:bg-gray-800 p-8 rounded-3xl shadow-xl hover:shadow-red-200/20 transition duration-300">
+        <h2 class="text-2xl font-bold mb-2">Manage Requests</h2>
+        <p class="text-slate-500 dark:text-slate-300 mb-6">All emergency blood requests are now managed on a dedicated request page.</p>
+        <a href="/admin/requests" class="inline-flex items-center gap-2 bg-red-600 text-white px-5 py-3 rounded-xl hover:bg-red-700 transition duration-200">
+            Go to Requests
+            <span>→</span>
+        </a>
     </div>
 
-    <div class="overflow-x-auto">
-
-        <table class="w-full">
-
-            <thead class="bg-gray-100 dark:bg-gray-700">
-
-                <tr>
-                    <th class="p-4 text-left">#</th>
-                    <th class="p-4 text-left">Donor</th>
-                    <th class="p-4 text-left">Email</th>
-                    <th class="p-4 text-left">Blood Group</th>
-                    <th class="p-4 text-left">City</th>
-                    <th class="p-4 text-left">Status</th>
-                    <th class="p-4 text-left">Joined</th>
-                    <th class="p-4 text-left">Action</th>
-                </tr>
-
-            </thead>
-
-            <tbody>
-
-                @foreach($users as $user)
-
-                <tr class="border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-900 transition">
-
-                    <td class="p-4">
-                        {{ $loop->iteration + ($users->firstItem() - 1) }}
-                    </td>
-
-                    <td class="p-4 flex items-center gap-3">
-                        @if($user->profile_image)
-                            <img src="{{ asset('storage/profile_images/' . $user->profile_image) }}" class="w-10 h-10 rounded-full object-cover" alt="avatar">
-                        @else
-                            <div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-600">{{ strtoupper(substr($user->name,0,1)) }}</div>
-                        @endif
-                        <div>
-                            <div class="font-semibold">{{ $user->name }}</div>
-                        </div>
-                    </td>
-
-                    <td class="p-4">{{ $user->email }}</td>
-
-                    <td class="p-4">{{ $user->blood_group ?? '-' }}</td>
-
-                    <td class="p-4">{{ $user->city ?? '-' }}</td>
-
-                    <td class="p-4">
-                        @if($user->available == 'yes')
-                            <span class="bg-green-500 text-white px-3 py-1 rounded-full">Available</span>
-                        @else
-                            <span class="bg-red-500 text-white px-3 py-1 rounded-full">Unavailable</span>
-                        @endif
-                    </td>
-
-                    <td class="p-4">{{ optional($user->created_at)->format('Y-m-d') ?? '-' }}</td>
-
-                    <td class="p-4">
-                        <a href="/admin/delete-user/{{ $user->_id }}" onclick="return confirm('Are you sure you want to delete this donor?')" class="bg-red-600 text-white px-4 py-2 rounded-xl hover:bg-red-700 transition">Delete</a>
-                    </td>
-
-                </tr>
-
-                @endforeach
-
-            </tbody>
-
-        </table>
-
+    <div class="bg-white dark:bg-gray-800 p-8 rounded-3xl shadow-xl hover:shadow-slate-200/20 transition duration-300">
+        <h2 class="text-2xl font-bold mb-2">Total Donors</h2>
+        <p class="text-4xl font-extrabold text-red-600">{{ $totalDonors }}</p>
+        <p class="text-sm text-slate-500 dark:text-slate-400 mt-3">Donor base size for the platform.</p>
     </div>
 
-</div>
-
-<!-- Pagination -->
-
-<div class="mt-10 mb-10">
-
-    {{ $users->links() }}
-
-</div>
-
-<!-- Emergency Blood Requests -->
-
-<div class="bg-white dark:bg-gray-800
-            rounded-3xl shadow-xl
-            overflow-hidden mb-10">
-
-    <div class="p-6 border-b dark:border-gray-700">
-
-        <h2 class="text-3xl font-bold">
-
-            Emergency Blood Requests
-
-        </h2>
-
+    <div class="bg-white dark:bg-gray-800 p-8 rounded-3xl shadow-xl hover:shadow-slate-200/20 transition duration-300">
+        <h2 class="text-2xl font-bold mb-2">Available Donors</h2>
+        <p class="text-4xl font-extrabold text-green-600">{{ $availableDonors }}</p>
+        <p class="text-sm text-slate-500 dark:text-slate-400 mt-3">Donors marked ready for emergency matches.</p>
     </div>
+</div>
 
-    <div class="p-6 border-b dark:border-gray-700 flex items-center justify-between gap-4">
+<!-- Recent Donors -->
+
+<div class="bg-white dark:bg-gray-800 p-8 rounded-3xl shadow-xl mb-10">
+    <div class="flex items-center justify-between gap-4 mb-6">
         <div>
-            <form method="GET" action="/admin">
-                <div class="flex items-center gap-3">
-                    <label class="text-sm">Filter:</label>
-                    <select name="status" class="border p-2 rounded-lg">
-                        <option value="">All</option>
-                        <option value="Pending" {{ request('status') == 'Pending' ? 'selected' : '' }}>Pending</option>
-                        <option value="Approved" {{ request('status') == 'Approved' ? 'selected' : '' }}>Approved</option>
-                        <option value="Completed" {{ request('status') == 'Completed' ? 'selected' : '' }}>Completed</option>
-                        <option value="Rejected" {{ request('status') == 'Rejected' ? 'selected' : '' }}>Rejected</option>
-                    </select>
-                    <button class="bg-red-600 text-white px-3 py-2 rounded-lg">Apply</button>
-                </div>
-            </form>
+            <h2 class="text-2xl font-bold">Latest Donor Registrations</h2>
+            <p class="text-slate-500 dark:text-slate-400">Recent donors joining the network.</p>
         </div>
-
-        <div class="text-sm text-gray-500">Total Requests: {{ $totalRequests ?? 0 }}</div>
     </div>
 
-    <div class="overflow-x-auto">
-
-        <table class="w-full">
-
-            <thead class="bg-gray-100 dark:bg-gray-700">
-
-                <tr>
-
-                    <th class="p-4 text-left">Patient</th>
-                    <th class="p-4 text-left">Phone</th>
-                    <th class="p-4 text-left">Blood Group</th>
-                    <th class="p-4 text-left">Hospital</th>
-                    <th class="p-4 text-left">City</th>
-                    <th class="p-4 text-left">Message</th>
-                    <th class="p-4 text-left">Status</th>
-                    <th class="p-4 text-left">Action</th>
-
-                </tr>
-
-            </thead>
-
-            <tbody>
-
-                @forelse($requests as $request)
-
-                <tr class="border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-900 transition">
-
-                    <td class="p-4">{{ $request->patient_name }}</td>
-                    <td class="p-4">{{ $request->phone }}</td>
-                    <td class="p-4">{{ $request->blood_group }}</td>
-                    <td class="p-4">{{ $request->hospital }}</td>
-                    <td class="p-4">{{ $request->city }}</td>
-                    <td class="p-4">{{ $request->message ?? '-' }}</td>
-                    <td class="p-4">
-                        @php
-                            $status = $request->status ?? 'Pending';
-                        @endphp
-                        @if($status == 'Pending')
-                            <span class="bg-yellow-400 text-black px-3 py-1 rounded-full">Pending</span>
-                        @elseif($status == 'Approved')
-                            <span class="bg-green-500 text-white px-3 py-1 rounded-full">Approved</span>
-                        @elseif($status == 'Completed')
-                            <span class="bg-blue-500 text-white px-3 py-1 rounded-full">Completed</span>
-                        @else
-                            <span class="bg-red-500 text-white px-3 py-1 rounded-full">Rejected</span>
-                        @endif
-                    </td>
-                    <td class="p-4">
-                        <form method="POST" action="{{ route('admin.request-status', $request->_id) }}" class="flex items-center gap-2">
-                            @csrf
-                            <select name="status" class="border p-2 rounded-lg">
-                                <option value="Pending" {{ ($request->status ?? 'Pending') == 'Pending' ? 'selected' : '' }}>Pending</option>
-                                <option value="Approved" {{ ($request->status ?? '') == 'Approved' ? 'selected' : '' }}>Approved</option>
-                                <option value="Completed" {{ ($request->status ?? '') == 'Completed' ? 'selected' : '' }}>Completed</option>
-                                <option value="Rejected" {{ ($request->status ?? '') == 'Rejected' ? 'selected' : '' }}>Rejected</option>
-                            </select>
-                            <button class="bg-blue-600 text-white px-3 py-2 rounded-lg">Save</button>
-                        </form>
-                    </td>
-
-                </tr>
-
-                @empty
-                    <tr>
-                        <td class="p-6 text-center" colspan="8">No emergency requests found.</td>
-                    </tr>
-                @endforelse
-
-            </tbody>
-
-        </table>
-
+    <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+        @foreach($recentDonors as $donor)
+            <div class="rounded-3xl border border-slate-200 bg-slate-50 p-6 dark:border-slate-700 dark:bg-slate-950">
+                <p class="font-semibold text-slate-900 dark:text-slate-100">{{ $donor->name }}</p>
+                <p class="text-sm text-slate-500 dark:text-slate-400">{{ $donor->email }}</p>
+                <p class="mt-3 text-sm text-slate-500 dark:text-slate-400">{{ $donor->blood_group ?? 'Unknown' }} • {{ $donor->city ?? 'No city' }}</p>
+            </div>
+        @endforeach
     </div>
-
-    <div class="mt-6 p-6">
-        {{ $requests->withQueryString()->links() }}
-    </div>
+</div>
 
 </div>
 
@@ -433,89 +237,64 @@
     |--------------------------------------------------------------------------
     */
 
-    const ctx =
-        document.getElementById('bloodChart');
+    const createBloodChart = () => {
+        const ctx = document.getElementById('bloodChart');
+        if (!ctx) return null;
 
-    new Chart(ctx, {
+        const color = getComputedStyle(document.documentElement).getPropertyValue('--color-accent') || '#ef4444';
 
-        type: 'bar',
-
-        data: {
-
-            labels: [
-                'A+',
-                'A-',
-                'B+',
-                'B-',
-                'O+',
-                'O-',
-                'AB+',
-                'AB-'
-            ],
-
-            datasets: [{
-
-                label: 'Donors',
-
-                data: @json($bloodGroupData),
-
-                borderWidth: 1
-
-            }]
-        },
-
-        options: {
-
-            responsive: true,
-
-            maintainAspectRatio: false,
-
-            scales: {
-
-                y: {
-                    beginAtZero: true
-                }
-
+        return new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['A+','A-','B+','B-','O+','O-','AB+','AB-'],
+                datasets: [{
+                    label: 'Donors',
+                    data: @json($bloodGroupData),
+                    backgroundColor: color.trim() || '#ef4444',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: { y: { beginAtZero: true } }
             }
-
-        }
-
-    });
-
+        });
+    };
     /*
     |--------------------------------------------------------------------------
     | City Chart
     |--------------------------------------------------------------------------
     */
 
-    const cityCtx =
-        document.getElementById('cityChart');
+    const createCityChart = () => {
+        const cityCtx = document.getElementById('cityChart');
+        if (!cityCtx) return null;
 
-    new Chart(cityCtx, {
+        return new Chart(cityCtx, {
+            type: 'pie',
+            data: {
+                labels: @json($cityLabels),
+                datasets: [{
+                    data: @json($cityData),
+                    backgroundColor: [
+                        '#ef4444','#f97316','#f59e0b','#84cc16','#10b981','#06b6d4','#3b82f6','#8b5cf6'
+                    ]
+                }]
+            },
+            options: { responsive: true, maintainAspectRatio: false }
+        });
+    };
 
-        type: 'pie',
+    // Create charts and re-render on theme change
+    let bloodChart = createBloodChart();
+    let cityChart = createCityChart();
 
-        data: {
-
-            labels: @json($cityLabels),
-
-            datasets: [{
-
-                data: @json($cityData),
-
-                borderWidth: 1
-
-            }]
-        },
-
-        options: {
-
-            responsive: true,
-
-            maintainAspectRatio: false
-
-        }
-
+    window.addEventListener('themeChanged', () => {
+        if (bloodChart) bloodChart.destroy();
+        if (cityChart) cityChart.destroy();
+        bloodChart = createBloodChart();
+        cityChart = createCityChart();
     });
 
 </script>

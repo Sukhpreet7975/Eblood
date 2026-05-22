@@ -8,14 +8,14 @@
     <meta name="viewport"
           content="width=device-width, initial-scale=1.0">
 
-    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="csrf-token" content="<?php echo e(csrf_token()); ?>">
 
     <title>E-Blood Donation</title>
 
-    @vite([
+    <?php echo app('Illuminate\Foundation\Vite')([
         'resources/css/app.css',
         'resources/js/app.js'
-    ])
+    ]); ?>
 
 </head>
 
@@ -36,45 +36,45 @@
                 E-Blood
             </a>
 
-            @php
+            <?php
                 $homeUrl = auth()->check()
                     ? (auth()->user()->isAdmin()
                         ? route('admin.home')
                         : (auth()->user()->isRequester() ? route('requester.home') : route('donor.home')))
                     : url('/');
-            @endphp
+            ?>
 
             <!-- Desktop Menu -->
             <div class="hidden md:flex items-center gap-4">
 
-                <a href="{{ $homeUrl }}" class="hover:text-red-200 transition duration-200">Home</a>
+                <a href="<?php echo e($homeUrl); ?>" class="hover:text-red-200 transition duration-200">Home</a>
 
-                @guest
+                <?php if(auth()->guard()->guest()): ?>
                     <a href="/search" class="hover:text-red-200 transition duration-200">Search Donors</a>
                     <a href="/login" class="hover:text-red-200 transition duration-200">Login</a>
                     <a href="/register" class="bg-white text-red-600 px-4 py-2 rounded-xl font-bold hover:bg-red-100 transition duration-200">Register</a>
-                @endguest
+                <?php endif; ?>
 
-                @auth
-                    @if(auth()->user()->isAdmin())
-                        <a href="{{ route('admin.home') }}" class="hover:text-red-200 transition duration-200 {{ request()->is('admin/home') ? 'text-red-200 font-semibold' : '' }}">Home</a>
-                        <a href="{{ route('admin.dashboard') }}" class="hover:text-red-200 transition duration-200 {{ request()->is('admin') ? 'text-red-200 font-semibold' : '' }}">Dashboard</a>
-                        <a href="/admin/requests" class="hover:text-red-200 transition duration-200 {{ request()->is('admin/requests*') ? 'text-red-200 font-semibold' : '' }}">Emergency Requests</a>
-                    @elseif(auth()->user()->isRequester())
-                        <a href="{{ route('requester.home') }}" class="hover:text-red-200 transition duration-200 {{ request()->is('requester/home') ? 'text-red-200 font-semibold' : '' }}">Dashboard</a>
+                <?php if(auth()->guard()->check()): ?>
+                    <?php if(auth()->user()->isAdmin()): ?>
+                        <a href="<?php echo e(route('admin.home')); ?>" class="hover:text-red-200 transition duration-200 <?php echo e(request()->is('admin/home') ? 'text-red-200 font-semibold' : ''); ?>">Home</a>
+                        <a href="<?php echo e(route('admin.dashboard')); ?>" class="hover:text-red-200 transition duration-200 <?php echo e(request()->is('admin') ? 'text-red-200 font-semibold' : ''); ?>">Dashboard</a>
+                        <a href="/admin/requests" class="hover:text-red-200 transition duration-200 <?php echo e(request()->is('admin/requests*') ? 'text-red-200 font-semibold' : ''); ?>">Emergency Requests</a>
+                    <?php elseif(auth()->user()->isRequester()): ?>
+                        <a href="<?php echo e(route('requester.home')); ?>" class="hover:text-red-200 transition duration-200 <?php echo e(request()->is('requester/home') ? 'text-red-200 font-semibold' : ''); ?>">Dashboard</a>
                         <a href="/blood-request" class="hover:text-red-200 transition duration-200">Emergency Request</a>
                         <a href="/my-requests" class="hover:text-red-200 transition duration-200">My Requests</a>
-                    @elseif(auth()->user()->isDonor())
+                    <?php elseif(auth()->user()->isDonor()): ?>
                         <a href="/search" class="hover:text-red-200 transition duration-200">Search Donors</a>
-                        <a href="{{ route('donor.home') }}" class="hover:text-red-200 transition duration-200 {{ request()->is('donor/home') ? 'text-red-200 font-semibold' : '' }}">Dashboard</a>
+                        <a href="<?php echo e(route('donor.home')); ?>" class="hover:text-red-200 transition duration-200 <?php echo e(request()->is('donor/home') ? 'text-red-200 font-semibold' : ''); ?>">Dashboard</a>
                         <a href="/profile" class="hover:text-red-200 transition duration-200">Profile</a>
-                    @endif
+                    <?php endif; ?>
 
-                    <form method="POST" action="{{ route('logout') }}" class="inline ml-2">
-                        @csrf
+                    <form method="POST" action="<?php echo e(route('logout')); ?>" class="inline ml-2">
+                        <?php echo csrf_field(); ?>
                         <button class="bg-red-600 px-4 py-2 rounded-xl text-white hover:bg-red-500 transition duration-200">Logout</button>
                     </form>
-                @endauth
+                <?php endif; ?>
 
                 <button type="button" class="js-dark-mode-toggle flex items-center justify-center w-10 h-10 rounded-lg border border-slate-300 bg-white text-slate-700 shadow transition duration-300 hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700" aria-label="Toggle dark mode" title="Toggle dark mode">
                     <svg class="dark-mode-icon w-5 h-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"></svg>
@@ -89,31 +89,31 @@
 
         <!-- Mobile Menu -->
         <div id="mobile-menu" class="hidden flex-col gap-3 mt-6 md:hidden">
-            <a href="{{ $homeUrl }}" class="block px-3 py-2 rounded-lg hover:bg-red-700 hover:bg-opacity-75">Home</a>
+            <a href="<?php echo e($homeUrl); ?>" class="block px-3 py-2 rounded-lg hover:bg-red-700 hover:bg-opacity-75">Home</a>
 
-            @guest
+            <?php if(auth()->guard()->guest()): ?>
                 <a href="/search" class="block px-3 py-2 rounded-lg hover:bg-red-700 hover:bg-opacity-75">Search Donors</a>
                 <a href="/login" class="block px-3 py-2 rounded-lg hover:bg-red-700 hover:bg-opacity-75">Login</a>
                 <a href="/register" class="block px-3 py-2 rounded-lg bg-white text-red-600 font-bold hover:bg-red-100">Register</a>
-            @endguest
+            <?php endif; ?>
 
-            @auth
-                @if(auth()->user()->isAdmin())
-                    <a href="{{ route('admin.home') }}" class="block px-3 py-2 rounded-lg {{ request()->is('admin/home') ? 'bg-red-700' : 'hover:bg-red-700 hover:bg-opacity-75' }}">Home</a>
-                    <a href="{{ route('admin.dashboard') }}" class="block px-3 py-2 rounded-lg {{ request()->is('admin') ? 'bg-red-700' : 'hover:bg-red-700 hover:bg-opacity-75' }}">Dashboard</a>
-                    <a href="/admin/requests" class="block px-3 py-2 rounded-lg {{ request()->is('admin/requests*') ? 'bg-red-700' : 'hover:bg-red-700 hover:bg-opacity-75' }}">Emergency Requests</a>
-                @elseif(auth()->user()->isRequester())
-                    <a href="{{ route('requester.home') }}" class="block px-3 py-2 rounded-lg {{ request()->is('requester/home') ? 'bg-red-700' : 'hover:bg-red-700 hover:bg-opacity-75' }}">Dashboard</a>
+            <?php if(auth()->guard()->check()): ?>
+                <?php if(auth()->user()->isAdmin()): ?>
+                    <a href="<?php echo e(route('admin.home')); ?>" class="block px-3 py-2 rounded-lg <?php echo e(request()->is('admin/home') ? 'bg-red-700' : 'hover:bg-red-700 hover:bg-opacity-75'); ?>">Home</a>
+                    <a href="<?php echo e(route('admin.dashboard')); ?>" class="block px-3 py-2 rounded-lg <?php echo e(request()->is('admin') ? 'bg-red-700' : 'hover:bg-red-700 hover:bg-opacity-75'); ?>">Dashboard</a>
+                    <a href="/admin/requests" class="block px-3 py-2 rounded-lg <?php echo e(request()->is('admin/requests*') ? 'bg-red-700' : 'hover:bg-red-700 hover:bg-opacity-75'); ?>">Emergency Requests</a>
+                <?php elseif(auth()->user()->isRequester()): ?>
+                    <a href="<?php echo e(route('requester.home')); ?>" class="block px-3 py-2 rounded-lg <?php echo e(request()->is('requester/home') ? 'bg-red-700' : 'hover:bg-red-700 hover:bg-opacity-75'); ?>">Dashboard</a>
                     <a href="/blood-request" class="block px-3 py-2 rounded-lg hover:bg-red-700 hover:bg-opacity-75">Emergency Request</a>
                     <a href="/my-requests" class="block px-3 py-2 rounded-lg hover:bg-red-700 hover:bg-opacity-75">My Requests</a>
-                @elseif(auth()->user()->isDonor())
+                <?php elseif(auth()->user()->isDonor()): ?>
                     <a href="/search" class="block px-3 py-2 rounded-lg hover:bg-red-700 hover:bg-opacity-75">Search Donors</a>
-                    <a href="{{ route('donor.home') }}" class="block px-3 py-2 rounded-lg {{ request()->is('donor/home') ? 'bg-red-700' : 'hover:bg-red-700 hover:bg-opacity-75' }}">Dashboard</a>
+                    <a href="<?php echo e(route('donor.home')); ?>" class="block px-3 py-2 rounded-lg <?php echo e(request()->is('donor/home') ? 'bg-red-700' : 'hover:bg-red-700 hover:bg-opacity-75'); ?>">Dashboard</a>
                     <a href="/profile" class="block px-3 py-2 rounded-lg hover:bg-red-700 hover:bg-opacity-75">Profile</a>
-                @endif
+                <?php endif; ?>
 
-                <form method="POST" action="{{ route('logout') }}" class="w-full">
-                    @csrf
+                <form method="POST" action="<?php echo e(route('logout')); ?>" class="w-full">
+                    <?php echo csrf_field(); ?>
                     <button type="submit" class="w-full px-3 py-2 rounded-lg bg-red-600 text-white hover:bg-red-500">Logout</button>
                 </form>
 
@@ -121,7 +121,7 @@
                     <svg class="dark-mode-icon w-5 h-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"></svg>
                     <span>Theme</span>
                 </button>
-            @endauth
+            <?php endif; ?>
 
         </div>
 
@@ -131,7 +131,7 @@
 
 <!-- Success Message -->
 
-@if(session('success'))
+<?php if(session('success')): ?>
 
 <div class="container mx-auto px-6 mt-6">
 
@@ -140,17 +140,18 @@
         class="bg-green-100 border border-green-400
                text-green-700 px-4 py-3 rounded-2xl">
 
-        {{ session('success') }}
+        <?php echo e(session('success')); ?>
+
 
     </div>
 
 </div>
 
-@endif
+<?php endif; ?>
 
 <!-- Error Message -->
 
-@if(session('error'))
+<?php if(session('error')): ?>
 
 <div class="container mx-auto px-6 mt-6">
 
@@ -159,19 +160,20 @@
         class="bg-red-100 border border-red-400
                text-red-700 px-4 py-3 rounded-2xl">
 
-        {{ session('error') }}
+        <?php echo e(session('error')); ?>
+
 
     </div>
 
 </div>
 
-@endif
+<?php endif; ?>
 
 <!-- Main Content -->
 
 <div class="container mx-auto p-6 min-h-screen">
 
-    @yield('content')
+    <?php echo $__env->yieldContent('content'); ?>
 
 </div>
 
@@ -194,11 +196,11 @@
                     <li><a href="/" class="hover:text-red-400">Home</a></li>
                     <li><a href="/search" class="hover:text-red-400">Search Donors</a></li>
                     <li><a href="/blood-request" class="hover:text-red-400">Emergency Request</a></li>
-                    @auth
-                        @unless(auth()->user()->isAdmin())
+                    <?php if(auth()->guard()->check()): ?>
+                        <?php if (! (auth()->user()->isAdmin())): ?>
                             <li><a href="/profile" class="hover:text-red-400">Profile</a></li>
-                        @endunless
-                    @endauth
+                        <?php endif; ?>
+                    <?php endif; ?>
                 </ul>
             </div>
 
@@ -224,7 +226,7 @@
 
         <div class="border-t border-gray-800 mt-8 pt-6 text-center text-gray-400">
             <div class="md:flex md:justify-between md:items-center">
-                <div>© {{ date('Y') }} E-Blood Donation Platform. All rights reserved.</div>
+                <div>© <?php echo e(date('Y')); ?> E-Blood Donation Platform. All rights reserved.</div>
                 <div class="mt-3 md:mt-0">Made with ❤️ to save lives.</div>
             </div>
         </div>
@@ -267,8 +269,8 @@
 
 </script>
 
-@stack('scripts')
+<?php echo $__env->yieldPushContent('scripts'); ?>
 
 </body>
 
-</html>
+</html><?php /**PATH C:\xampp\htdocs\MyProject\eblood\resources\views/layouts/app.blade.php ENDPATH**/ ?>

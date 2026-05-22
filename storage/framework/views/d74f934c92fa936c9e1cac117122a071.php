@@ -1,6 +1,4 @@
-@extends('layouts.app')
-
-@section('content')
+<?php $__env->startSection('content'); ?>
 
 <div class="max-w-sm mx-auto mt-8">
 
@@ -19,8 +17,8 @@
 
         <div id="login-error" class="hidden bg-red-100 border border-red-400 text-red-700 px-3 py-2 rounded-lg mb-4 text-sm"></div>
 
-        <form method="POST" action="{{ route('login') }}" id="login-form">
-            @csrf
+        <form method="POST" action="<?php echo e(route('login')); ?>" id="login-form">
+            <?php echo csrf_field(); ?>
 
             <!-- Email -->
             <div class="mb-4">
@@ -31,14 +29,22 @@
                 <input
                     type="email"
                     name="email"
-                    value="{{ old('email') }}"
+                    value="<?php echo e(old('email')); ?>"
                     class="w-full border p-3 rounded-lg dark:bg-gray-700 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-red-500"
                     placeholder="Enter email">
-                @error('email')
+                <?php $__errorArgs = ['email'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
                 <p class="text-red-500 mt-1 text-xs">
-                    {{ $message }}
+                    <?php echo e($message); ?>
+
                 </p>
-                @enderror
+                <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
             </div>
 
             <!-- Password -->
@@ -71,11 +77,19 @@
                         </svg>
                     </button>
                 </div>
-                @error('password')
+                <?php $__errorArgs = ['password'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
                 <p class="text-red-500 mt-1 text-xs">
-                    {{ $message }}
+                    <?php echo e($message); ?>
+
                 </p>
-                @enderror
+                <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
             </div>
 
             <!-- Remember -->
@@ -83,26 +97,34 @@
             <div class="flex flex-col mb-4 gap-3 text-sm">
                 <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
                     <label class="inline-flex items-center">
-                        <input type="radio" name="role" value="donor" {{ old('role', 'donor') === 'donor' ? 'checked' : '' }} class="mr-2" required />
+                        <input type="radio" name="role" value="donor" <?php echo e(old('role', 'donor') === 'donor' ? 'checked' : ''); ?> class="mr-2" required />
                         <span>Donor Login</span>
                     </label>
 
                     <label class="inline-flex items-center">
-                        <input type="radio" name="role" value="requester" {{ old('role') === 'requester' ? 'checked' : '' }} class="mr-2" required />
+                        <input type="radio" name="role" value="requester" <?php echo e(old('role') === 'requester' ? 'checked' : ''); ?> class="mr-2" required />
                         <span>Requester Login</span>
                     </label>
 
                     <label class="inline-flex items-center">
-                        <input type="radio" name="role" value="admin" {{ old('role') === 'admin' ? 'checked' : '' }} class="mr-2" required />
+                        <input type="radio" name="role" value="admin" <?php echo e(old('role') === 'admin' ? 'checked' : ''); ?> class="mr-2" required />
                         <span>Admin Login</span>
                     </label>
                 </div>
 
-                @error('role')
+                <?php $__errorArgs = ['role'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
                 <p class="text-red-500 text-xs">
-                    {{ $message }}
+                    <?php echo e($message); ?>
+
                 </p>
-                @enderror
+                <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
             </div>
 
             <div class="flex items-center mb-4 text-sm">
@@ -134,7 +156,7 @@
 
         <p class="text-center mt-5 text-sm text-gray-500">
             Don't have an account?
-            <a href="{{ route('register') }}" class="text-red-600 font-semibold">
+            <a href="<?php echo e(route('register')); ?>" class="text-red-600 font-semibold">
                 Register
             </a>
         </p>
@@ -312,7 +334,7 @@
             return;
         }
 
-        const response = await fetch('{{ route('password.verify-email') }}', {
+        const response = await fetch('<?php echo e(route('password.verify-email')); ?>', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -335,7 +357,7 @@
         } else {
             const data = await response.json().catch(() => null);
             verifyEmailError.textContent = data?.message || 'We couldn’t find an account with that email.';
-            verifyEmailError.innerHTML += ' <a href="{{ route('register') }}" class="font-semibold text-red-600 hover:text-red-700">Create an account</a>';
+            verifyEmailError.innerHTML += ' <a href="<?php echo e(route('register')); ?>" class="font-semibold text-red-600 hover:text-red-700">Create an account</a>';
             verifyEmailError.classList.remove('hidden');
         }
     });
@@ -383,7 +405,7 @@
             return;
         }
 
-        const response = await fetch('{{ route('password.reset.direct') }}', {
+        const response = await fetch('<?php echo e(route('password.reset.direct')); ?>', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -503,4 +525,5 @@
 
 </script>
 
-@endsection
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\xampp\htdocs\MyProject\eblood\resources\views/auth/login.blade.php ENDPATH**/ ?>

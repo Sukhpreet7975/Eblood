@@ -9,6 +9,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules;
 
 class RegisteredUserController extends Controller
@@ -18,7 +19,7 @@ class RegisteredUserController extends Controller
      */
     public function create()
     {
-        $adminExists = User::where('is_admin', true)->exists();
+        $adminExists = User::admins()->exists();
 
         return view('auth.register', compact('adminExists'));
     }
@@ -30,25 +31,25 @@ class RegisteredUserController extends Controller
     {
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', Rule::unique('users', 'email')],
             'password' => ['required', 'confirmed', Rules\Password::defaults()->min(8)],
-            'role' => ['required', 'in:donor,admin'],
+            'role' => ['required', 'in:donor,requester,admin'],
         ]);
 
         // Prevent duplicate admin creation
-        $adminExists = User::where('is_admin', true)->exists();
+        $adminExists = User::admins()->exists();
 
         if ($request->role === 'admin' && $adminExists) {
             return back()->withErrors(['role' => 'An admin account already exists.'])->withInput();
         }
 
-        $isAdmin = $request->role === 'admin' ? true : false;
+        $role = $request->role;
 
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'is_admin' => $isAdmin,
+            'role' => $role,
         ]);
 
         event(new Registered($user));
@@ -56,10 +57,10 @@ class RegisteredUserController extends Controller
         Auth::login($user);
 
         // ✅ ROLE BASED REDIRECT
-        if ($user->is_admin) {
-            return redirect('/admin');
+        if ($user->isAdmin()) {
+            return redirect()->route('admin.home');
         }
 
-        return redirect('/dashboard');
+        return $user->isRequester() ? redirect()->route('requester.home') : redirect()->route('donor.home');
     }
 }

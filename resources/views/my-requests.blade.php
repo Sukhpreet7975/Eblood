@@ -40,6 +40,14 @@
                             <span class="bg-red-500 text-white px-3 py-1 rounded-full">Rejected</span>
                         @endif
 
+                        @if($request->admin_message)
+                            <div class="mt-3 w-full rounded-3xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-700 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-200">
+                                <p class="font-semibold">Admin Response</p>
+                                <p class="mt-2 whitespace-pre-line">{{ $request->admin_message }}</p>
+                                <p class="mt-2 text-xs text-slate-500 dark:text-slate-400">Updated {{ optional($request->status_updated_at)->format('Y-m-d H:i') }}</p>
+                            </div>
+                        @endif
+
                         <div class="flex gap-2 mt-2">
                             <a href="/request/{{ $request->_id }}" class="text-sm text-red-600 hover:underline">View</a>
                             <form method="POST" action="{{ route('request.cancel', $request->_id) }}" onsubmit="return confirm('Cancel this request?')">

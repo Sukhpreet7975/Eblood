@@ -3,7 +3,6 @@
 namespace App\Http\Requests\Auth;
 
 use Illuminate\Auth\Events\Lockout;
-use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
@@ -31,7 +30,7 @@ class LoginRequest extends FormRequest
         return [
             'email' => ['required', 'string', 'email'],
             'password' => ['required', 'string'],
-            'role' => ['required', 'in:donor,admin'],
+            'role' => ['required', 'in:donor,requester,admin'],
         ];
     }
 
@@ -48,19 +47,33 @@ class LoginRequest extends FormRequest
         $user = User::where('email', $this->string('email'))->first();
 
         if ($user) {
-            if ($role === 'admin' && !$user->is_admin) {
+            if ($role === 'admin' && ! $user->isAdmin()) {
                 RateLimiter::hit($this->throttleKey());
 
                 throw ValidationException::withMessages([
-                    'email' => 'Selected role does not match this account. Choose donor or use the correct admin account.',
+                    'role' => 'The selected role does not match this account.',
                 ]);
             }
 
-            if ($role === 'donor' && $user->is_admin) {
+            if ($role === 'donor' && $user->isAdmin()) {
                 RateLimiter::hit($this->throttleKey());
 
                 throw ValidationException::withMessages([
-                    'email' => 'Selected role does not match this account. Use Admin Login to continue.',
+                    'role' => 'The selected role does not match this account.',
+                ]);
+            }
+            if ($role === 'requester' && ! $user->isRequester()) {
+                RateLimiter::hit($this->throttleKey());
+
+                throw ValidationException::withMessages([
+                    'role' => 'The selected role does not match this account.',
+                ]);
+            }
+            if ($role !== 'requester' && $user->isRequester()) {
+                RateLimiter::hit($this->throttleKey());
+
+                throw ValidationException::withMessages([
+                    'role' => 'The selected role does not match this account.',
                 ]);
             }
         }

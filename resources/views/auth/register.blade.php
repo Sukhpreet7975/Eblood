@@ -123,10 +123,15 @@
             <!-- Role Selection -->
             <div class="mb-5">
                 <label class="block mb-2 font-semibold">Register As</label>
-                <div class="flex items-center gap-6">
+                <div class="flex flex-col gap-4 sm:flex-row items-start">
                     <label class="inline-flex items-center">
                         <input type="radio" name="role" value="donor" {{ old('role', 'donor') == 'donor' ? 'checked' : '' }} class="form-radio" />
                         <span class="ml-2">Donor</span>
+                    </label>
+
+                    <label class="inline-flex items-center">
+                        <input type="radio" name="role" value="requester" {{ old('role') == 'requester' ? 'checked' : '' }} class="form-radio" />
+                        <span class="ml-2">Requester</span>
                     </label>
 
                     <label class="inline-flex items-center">

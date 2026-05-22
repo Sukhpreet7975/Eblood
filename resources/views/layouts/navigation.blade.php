@@ -1,7 +1,7 @@
 <nav>
 <a href="/">Home</a>
 @if(Auth::check())
-<a href="/dashboard">Dashboard</a>
+<a href="{{ Auth::user()->isAdmin() ? '/admin/home' : (Auth::user()->isRequester() ? '/my-requests' : '/donor/home') }}">Dashboard</a>
 <form method="POST" action="{{ route('logout') }}">
     @csrf
     <button type="submit">Logout</button>

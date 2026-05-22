@@ -2,20 +2,236 @@
 
 @section('content')
 
-<div class="bg-white dark:bg-gray-800 p-10 rounded-xl shadow-lg">
-    <h1 class="text-4xl font-bold text-red-600 mb-4">
-        Dashboard
-    </h1>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-    <p class="text-lg">
-        Welcome {{ Auth::user()->name }}
-    </p>
+    <!-- Left Column: Profile + Stats -->
+    <div class="space-y-6">
 
-    <div class="mt-6">
-        <a href="/become-donor" class="bg-red-600 text-white px-6 py-3 rounded">
-            Become Donor
-        </a>
+        <!-- Welcome Card -->
+        <div class="bg-gradient-to-r from-red-500 to-pink-500 text-white p-6 rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300">
+            <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-full overflow-hidden border-4 border-white flex-shrink-0">
+                    @if(isset($user->profile_image) && $user->profile_image)
+                        <img src="{{ asset('storage/profile_images/' . $user->profile_image) }}" alt="Profile" class="w-full h-full object-cover">
+                    @else
+                        <img src="https://ui-avatars.com/api/?name={{ urlencode($user->name) }}&background=fff&color=dc2626&size=128" alt="avatar" class="w-full h-full object-cover">
+                    @endif
+                </div>
+
+                <div class="flex-1 min-w-0">
+                    <h2 class="text-xl sm:text-2xl font-bold break-words">Hello, {{ $user->name }}</h2>
+                    <p class="mt-1 text-xs sm:text-sm opacity-90">Good to see you — thank you for helping save lives.</p>
+
+                    <div class="mt-3 flex flex-wrap gap-2 items-center text-xs sm:text-sm">
+                        <span class="bg-white bg-opacity-20 px-2 sm:px-3 py-1 rounded-full whitespace-nowrap">Blood: <strong class="ml-1">{{ $user->blood_group ?? 'N/A' }}</strong></span>
+                        <span class="bg-white bg-opacity-20 px-2 sm:px-3 py-1 rounded-full whitespace-nowrap">City: <strong class="ml-1">{{ $user->city ?? 'N/A' }}</strong></span>
+                        <span id="availability-badge" class="inline-flex items-center px-2 sm:px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap {{ $user->available == 'yes' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">{{ $user->available == 'yes' ? 'Available' : 'Unavailable' }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div class="bg-white dark:bg-gray-800 p-4 rounded-xl shadow hover:shadow-xl transition">
+                <p class="text-sm text-gray-500">Total Requests</p>
+                <p class="text-2xl font-bold text-red-600">{{ $totalRequests ?? 0 }}</p>
+            </div>
+
+            <div class="bg-white dark:bg-gray-800 p-4 rounded-xl shadow hover:shadow-xl transition">
+                <p class="text-sm text-gray-500">Approved</p>
+                <p class="text-2xl font-bold text-blue-600">{{ $approvedRequests ?? 0 }}</p>
+            </div>
+
+            <div class="bg-white dark:bg-gray-800 p-4 rounded-xl shadow hover:shadow-xl transition">
+                <p class="text-sm text-gray-500">Completed</p>
+                <p class="text-2xl font-bold text-green-600">{{ $completedRequests ?? 0 }}</p>
+            </div>
+
+            <div class="bg-white dark:bg-gray-800 p-4 rounded-xl shadow hover:shadow-xl transition">
+                <p class="text-sm text-gray-500">Availability</p>
+                <p class="text-2xl font-bold">{{ $user->available == 'yes' ? 'Available' : 'Unavailable' }}</p>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="bg-white dark:bg-gray-800 p-4 rounded-xl shadow">
+            <h3 class="font-semibold mb-3">Quick Actions</h3>
+
+                <div class="grid grid-cols-2 gap-3">
+                <a href="/profile/edit" class="block text-center bg-gradient-to-r from-red-500 to-pink-500 text-white px-4 py-2 rounded-lg hover:opacity-95 transition">Edit Profile</a>
+                <a href="/blood-request" class="block text-center bg-blue-600 text-white px-4 py-2 rounded-lg hover:opacity-95 transition">Create Request</a>
+                <a href="/my-requests" class="block text-center bg-green-600 text-white px-4 py-2 rounded-lg hover:opacity-95 transition">View My Requests</a>
+                <button id="toggle-availability-btn" data-url="{{ route('toggle.availability') }}" class="flex items-center justify-center gap-2 text-center bg-gray-200 dark:bg-gray-700 text-black dark:text-white px-4 py-2 rounded-lg hover:opacity-95 transition">
+                    <span id="toggle-spinner" class="hidden w-4 h-4 border-2 border-transparent border-t-gray-700 rounded-full animate-spin"></span>
+                    Toggle Availability
+                </button>
+            </div>
+        </div>
+
+        <!-- Donation Awareness -->
+        <div class="space-y-3">
+            <div class="bg-gradient-to-r from-yellow-200 via-red-100 to-pink-50 p-4 rounded-xl shadow">
+                <h4 class="font-semibold">Why Donate?</h4>
+                <p class="text-sm mt-2">Donating blood saves lives. It also improves your health and community resilience.</p>
+            </div>
+
+            <div class="bg-white dark:bg-gray-800 p-4 rounded-xl shadow hover:shadow-lg transition">
+                <h4 class="font-semibold">Tips</h4>
+                <ul class="mt-2 text-sm list-disc list-inside">
+                    <li>Stay hydrated before donation.</li>
+                    <li>Eat a healthy meal and avoid fatty foods.</li>
+                    <li>Bring ID and rest after donation.</li>
+                </ul>
+            </div>
+
+            <div class="bg-white dark:bg-gray-800 p-4 rounded-xl shadow hover:shadow-lg transition">
+                <h4 class="font-semibold">Eligibility</h4>
+                <p class="text-sm mt-2">Most healthy adults can donate. Check local guidelines or contact support if unsure.</p>
+            </div>
+        </div>
+
     </div>
+
+    <!-- Right Column: My Requests + Recent Activity -->
+    <div class="lg:col-span-2 space-y-6">
+
+        <!-- My Requests -->
+        <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-semibold">My Requests</h3>
+                <a href="/my-requests" class="text-sm text-blue-600 hover:underline">View all</a>
+            </div>
+
+            @if($requests && $requests->count())
+                <div class="space-y-3">
+                    @foreach($requests as $req)
+                        <div class="flex items-center justify-between p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition">
+                            <div>
+                                <div class="flex items-center gap-3">
+                                    <div class="font-semibold">{{ $req->patient_name }}</div>
+                                    <div class="text-sm text-gray-500">• {{ $req->hospital }}</div>
+                                    <div class="text-sm text-gray-500">• {{ $req->city }}</div>
+                                </div>
+                                <div class="text-sm text-gray-500 mt-1">Blood: <strong>{{ $req->blood_group }}</strong></div>
+                            </div>
+
+                            <div class="text-right">
+                                @php
+                                    $status = $req->status ?? 'Pending';
+                                @endphp
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium
+                                    {{ $status == 'Pending' ? 'bg-yellow-100 text-yellow-800' : '' }}
+                                    {{ $status == 'Approved' ? 'bg-blue-100 text-blue-800' : '' }}
+                                    {{ $status == 'Completed' ? 'bg-green-100 text-green-800' : '' }}
+                                    {{ $status == 'Rejected' ? 'bg-red-100 text-red-800' : '' }}
+                                ">
+                                    {{ $status }}
+                                </span>
+                                <div class="text-xs text-gray-400 mt-2">{{ optional($req->created_at)->diffForHumans() }}</div>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+
+                <div class="mt-4">
+                    {{ $requests->links() }}
+                </div>
+            @else
+                <div class="py-12 text-center text-gray-500">
+                    <svg class="mx-auto mb-6 w-20 h-20 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4l3 3"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 12A9 9 0 1112 3a9 9 0 019 9z"></path></svg>
+                    <h4 class="text-lg font-semibold mb-2">No requests yet</h4>
+                    <p class="text-sm text-gray-400 mb-4">Create your first emergency request to help patients in need.</p>
+                    <a href="/blood-request" class="inline-flex items-center gap-2 bg-red-600 text-white px-4 py-2 rounded-lg">Create Emergency Request</a>
+                </div>
+            @endif
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow">
+            <h3 class="text-lg font-semibold mb-3">Recent Activity</h3>
+
+            @if($recentActivity && $recentActivity->count())
+                <ul class="space-y-3">
+                    @foreach($recentActivity as $act)
+                        <li class="flex items-start gap-3">
+                            <div class="w-2 h-2 mt-2 rounded-full bg-red-500"></div>
+                            <div>
+                                <div class="text-sm font-medium">Request for <strong>{{ $act->patient_name }}</strong> — <span class="text-gray-500">{{ $act->hospital }}, {{ $act->city }}</span></div>
+                                <div class="text-xs text-gray-400">{{ optional($act->created_at)->diffForHumans() }} • Status: {{ $act->status }}</div>
+                            </div>
+                        </li>
+                    @endforeach
+                </ul>
+            @else
+                <div class="text-sm text-gray-500">No recent activity.</div>
+            @endif
+        </div>
+
+    </div>
+
 </div>
 
 @endsection
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+    const btn = document.getElementById('toggle-availability-btn');
+    const badge = document.getElementById('availability-badge');
+    const spinner = document.getElementById('toggle-spinner');
+    if(!btn) return;
+
+    const csrf = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+    btn.addEventListener('click', async function(e){
+        e.preventDefault();
+        if(btn.disabled) return;
+        btn.disabled = true;
+        spinner.classList.remove('hidden');
+        try{
+            const res = await fetch(btn.dataset.url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrf,
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({})
+            });
+
+            const data = await res.json();
+
+            if(res.ok && data.success){
+                const avail = data.available;
+                if(badge){
+                    badge.textContent = avail === 'yes' ? 'Available' : 'Unavailable';
+                    badge.className = avail === 'yes' ? 'inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800' : 'inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-800';
+                }
+                showAlert('Availability updated', 'success');
+            } else {
+                showAlert(data.message || 'Update failed', 'error');
+            }
+
+        } catch(err){
+            showAlert('Network error', 'error');
+        } finally {
+            btn.disabled = false;
+            spinner.classList.add('hidden');
+        }
+    });
+
+    function showAlert(msg, type){
+        const existing = document.getElementById('ajax-alert');
+        if(existing) existing.remove();
+        const div = document.createElement('div');
+        div.id = 'ajax-alert';
+        div.style.zIndex = 9999;
+        div.className = type === 'success' ? 'fixed top-6 right-6 bg-green-100 border border-green-400 text-green-700 px-4 py-2 rounded-lg shadow' : 'fixed top-6 right-6 bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded-lg shadow';
+        div.textContent = msg;
+        document.body.appendChild(div);
+        setTimeout(()=>{ div.remove(); }, 3000);
+    }
+});
+</script>
+@endpush

@@ -7,6 +7,11 @@ use App\Models\User;
 
 class DonorController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware(['auth', 'donor'])->except(['home', 'search', 'liveSearch']);
+    }
+
     /*
     |--------------------------------------------------------------------------
     | Home Page
@@ -15,10 +20,25 @@ class DonorController extends Controller
 
     public function home()
     {
-        $donors = User::where('available', 'yes')
-            ->paginate(6);
+        // Public-facing home previously pointed here; keep backward compatibility
+        $donors = User::donors()->where('available', 'yes')->paginate(6);
 
         return view('home', compact('donors'));
+    }
+
+    /**
+     * Donor Home (separate from dashboard)
+     */
+    public function donorHome()
+    {
+        if(auth()->check() && auth()->user()->isAdmin())
+        {
+            return redirect('/admin');
+        }
+
+        $user = auth()->user();
+
+        return view('donor.home', compact('user'));
     }
 
     /*
@@ -26,16 +46,6 @@ class DonorController extends Controller
     | Dashboard
     |--------------------------------------------------------------------------
     */
-
-    public function dashboard()
-    {
-        // Prevent admins from accessing user dashboard
-        if(auth()->check() && auth()->user()->is_admin)
-        {
-            return redirect('/admin');
-        }
-        return view('dashboard');
-    }
 
     /*
     |--------------------------------------------------------------------------
@@ -45,11 +55,11 @@ class DonorController extends Controller
 
     public function profile()
     {
-        // Prevent admins from accessing user profile
-        if(auth()->check() && auth()->user()->is_admin)
-        {
-            return redirect('/admin');
-        }
+          // Prevent admins from accessing user profile
+          if(auth()->check() && auth()->user()->isAdmin())
+          {
+              return redirect('/admin');
+          }
 
         $user = auth()->user();
 
@@ -64,11 +74,11 @@ class DonorController extends Controller
 
     public function edit()
     {
-        // Prevent admins from accessing user profile edit
-        if(auth()->check() && auth()->user()->is_admin)
-        {
-            return redirect('/admin');
-        }
+          // Prevent admins from accessing user profile edit
+          if(auth()->check() && auth()->user()->isAdmin())
+          {
+              return redirect('/admin');
+          }
 
         $user = auth()->user();
 
@@ -83,11 +93,11 @@ class DonorController extends Controller
 
     public function update(Request $request)
     {
-        // Prevent admins from updating user profile
-        if(auth()->check() && auth()->user()->is_admin)
-        {
-            return redirect('/admin');
-        }
+          // Prevent admins from updating user profile
+          if(auth()->check() && auth()->user()->isAdmin())
+          {
+              return redirect('/admin');
+          }
 
         $request->validate([
 
@@ -139,11 +149,11 @@ class DonorController extends Controller
 
     public function store(Request $request)
     {
-        // Prevent admins from becoming donors
-        if(auth()->check() && auth()->user()->is_admin)
-        {
-            return redirect('/admin');
-        }
+          // Prevent admins from becoming donors
+          if(auth()->check() && auth()->user()->isAdmin())
+          {
+              return redirect('/admin');
+          }
 
         $request->validate([
 
@@ -189,10 +199,7 @@ class DonorController extends Controller
 
     public function search(Request $request)
     {
-        $query = User::where(
-            'available',
-            'yes'
-        );
+        $query = User::donors()->where('available', 'yes');
 
         if($request->blood_group)
         {
@@ -224,11 +231,11 @@ class DonorController extends Controller
 
     public function uploadImage(Request $request)
     {
-        // Prevent admins from uploading profile images
-        if(auth()->check() && auth()->user()->is_admin)
-        {
-            return redirect('/admin');
-        }
+          // Prevent admins from uploading profile images
+          if(auth()->check() && auth()->user()->isAdmin())
+          {
+              return redirect('/admin');
+          }
 
         $request->validate([
 
@@ -275,11 +282,11 @@ class DonorController extends Controller
 
     public function toggleStatus()
     {
-        // Prevent admins from toggling donor status
-        if(auth()->check() && auth()->user()->is_admin)
-        {
-            return redirect('/admin');
-        }
+          // Prevent admins from toggling donor status
+          if(auth()->check() && auth()->user()->isAdmin())
+          {
+              return redirect('/admin');
+          }
 
         $user = auth()->user();
 
@@ -301,6 +308,35 @@ class DonorController extends Controller
             );
     }
 
+    /**
+     * Toggle availability via AJAX (returns JSON)
+     */
+    public function toggleAvailability(Request $request)
+    {
+        if(!auth()->check()){
+            return response()->json(['success' => false, 'message' => 'Unauthenticated'], 401);
+        }
+
+          if(auth()->user()->isAdmin()){
+              return response()->json(['success' => false, 'message' => 'Admins cannot change availability'], 403);
+          }
+
+        $user = auth()->user();
+
+        try {
+            $user->available = $user->available === 'yes' ? 'no' : 'yes';
+            $user->save();
+
+            return response()->json([
+                'success' => true,
+                'available' => $user->available,
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Could not update availability'], 500);
+        }
+    }
+
     /*
     |--------------------------------------------------------------------------
     | Live Search
@@ -309,10 +345,7 @@ class DonorController extends Controller
 
     public function liveSearch(Request $request)
     {
-        $query = User::where(
-            'available',
-            'yes'
-        );
+        $query = User::donors()->where('available', 'yes');
 
         if($request->blood_group)
         {
@@ -331,7 +364,7 @@ class DonorController extends Controller
             );
         }
 
-        $donors = $query->get();
+        $donors = $query->get(['name','phone','city','blood_group','available','profile_image']);
 
         return response()->json($donors);
     }

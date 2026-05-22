@@ -41,14 +41,18 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
+        $redirectPath = auth()->user()->isAdmin()
+            ? route('admin.home')
+            : (auth()->user()->isRequester() ? route('requester.home') : route('donor.home'));
+
         if ($request->expectsJson()) {
             return response()->json([
                 'success' => true,
-                'redirect' => auth()->user()->is_admin ? '/admin' : '/dashboard',
+                'redirect' => $redirectPath,
             ]);
         }
 
-        return redirect(auth()->user()->is_admin ? '/admin' : '/dashboard');
+        return redirect($redirectPath);
     }
 
     /*

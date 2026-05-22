@@ -13,11 +13,15 @@ class AdminMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if(auth()->check() && auth()->user()->is_admin)
+        if(auth()->check() && auth()->user()->isAdmin())
         {
             return $next($request);
         }
 
-        abort(403, 'Unauthorized Access');
+        if(!auth()->check()){
+            return redirect('/login')->with('error', 'Please login as admin to access this page.');
+        }
+
+        return redirect('/')->with('error', 'Unauthorized admin access.');
     }
 }

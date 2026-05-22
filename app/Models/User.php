@@ -23,7 +23,7 @@ class User extends Authenticatable
         'address',
         'available',
         'profile_image',
-        'is_admin',
+        'role',
     ];
 
     protected $hidden = [
@@ -37,5 +37,35 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function isAdmin(): bool
+    {
+        return ($this->role ?? null) === 'admin';
+    }
+
+    public function isDonor(): bool
+    {
+        return ($this->role ?? null) === 'donor';
+    }
+
+    public function isRequester(): bool
+    {
+        return ($this->role ?? null) === 'requester';
+    }
+
+    public function scopeAdmins($query)
+    {
+        return $query->where('role', 'admin');
+    }
+
+    public function scopeDonors($query)
+    {
+        return $query->where('role', 'donor');
+    }
+
+    public function scopeRequesters($query)
+    {
+        return $query->where('role', 'requester');
     }
 }

@@ -1,6 +1,6 @@
-﻿@extends('layouts.app')
+﻿
 
-@section('content')
+<?php $__env->startSection('content'); ?>
 
 <section class="relative overflow-hidden bg-gradient-to-br from-red-600 via-red-700 to-slate-950 text-white">
     <div class="container mx-auto px-6 py-24 lg:py-28">
@@ -34,15 +34,15 @@
                     <p class="text-sm uppercase tracking-[0.2em] text-rose-200">Fast access</p>
                     <div class="mt-4 grid gap-4 sm:grid-cols-3">
                         <div class="rounded-3xl bg-white/10 p-4 text-center">
-                            <p class="text-2xl font-bold">{{ $totalDonors }}</p>
+                            <p class="text-2xl font-bold"><?php echo e($totalDonors); ?></p>
                             <p class="text-sm text-rose-100/80">Total Donors</p>
                         </div>
                         <div class="rounded-3xl bg-white/10 p-4 text-center">
-                            <p class="text-2xl font-bold">{{ $availableDonors }}</p>
+                            <p class="text-2xl font-bold"><?php echo e($availableDonors); ?></p>
                             <p class="text-sm text-rose-100/80">Available Now</p>
                         </div>
                         <div class="rounded-3xl bg-white/10 p-4 text-center">
-                            <p class="text-2xl font-bold">{{ $citiesCovered }}</p>
+                            <p class="text-2xl font-bold"><?php echo e($citiesCovered); ?></p>
                             <p class="text-sm text-rose-100/80">Cities Covered</p>
                         </div>
                     </div>
@@ -88,22 +88,22 @@
     <div class="container mx-auto px-6">
         <div class="grid gap-10 lg:grid-cols-4">
             <article class="rounded-3xl border border-slate-200/80 bg-white p-8 shadow-lg shadow-slate-900/5 transition hover:-translate-y-2 dark:border-slate-700/80 dark:bg-slate-900 dark:text-slate-100">
-                <p class="text-4xl font-bold text-red-600">{{ $totalDonors }}</p>
+                <p class="text-4xl font-bold text-red-600"><?php echo e($totalDonors); ?></p>
                 <p class="mt-3 text-sm uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">Total Donors</p>
             </article>
 
             <article class="rounded-3xl border border-slate-200/80 bg-white p-8 shadow-lg shadow-slate-900/5 transition hover:-translate-y-2 dark:border-slate-700/80 dark:bg-slate-900 dark:text-slate-100">
-                <p class="text-4xl font-bold text-emerald-500">{{ $availableDonors }}</p>
+                <p class="text-4xl font-bold text-emerald-500"><?php echo e($availableDonors); ?></p>
                 <p class="mt-3 text-sm uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">Available Donors</p>
             </article>
 
             <article class="rounded-3xl border border-slate-200/80 bg-white p-8 shadow-lg shadow-slate-900/5 transition hover:-translate-y-2 dark:border-slate-700/80 dark:bg-slate-900 dark:text-slate-100">
-                <p class="text-4xl font-bold text-rose-500">{{ $emergencyRequests }}</p>
+                <p class="text-4xl font-bold text-rose-500"><?php echo e($emergencyRequests); ?></p>
                 <p class="mt-3 text-sm uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">Emergency Requests</p>
             </article>
 
             <article class="rounded-3xl border border-slate-200/80 bg-white p-8 shadow-lg shadow-slate-900/5 transition hover:-translate-y-2 dark:border-slate-700/80 dark:bg-slate-900 dark:text-slate-100">
-                <p class="text-4xl font-bold text-sky-500">{{ $citiesCovered }}</p>
+                <p class="text-4xl font-bold text-sky-500"><?php echo e($citiesCovered); ?></p>
                 <p class="mt-3 text-sm uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">Cities Covered</p>
             </article>
         </div>
@@ -176,13 +176,13 @@
         </div>
 
         <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            @foreach(['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'] as $group)
+            <?php $__currentLoopData = ['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $group): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                 <div class="rounded-3xl border border-slate-200/80 bg-slate-50 p-6 text-center shadow-lg shadow-slate-900/5 transition hover:-translate-y-2 hover:border-red-300 dark:border-slate-700/80 dark:bg-slate-900 dark:text-slate-100">
-                    <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-600 text-2xl font-bold text-white shadow-lg">{{ $group }}</div>
-                    <p class="text-lg font-semibold">Blood Group {{ $group }}</p>
+                    <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-600 text-2xl font-bold text-white shadow-lg"><?php echo e($group); ?></div>
+                    <p class="text-lg font-semibold">Blood Group <?php echo e($group); ?></p>
                     <p class="mt-3 text-sm text-slate-500 dark:text-slate-400">Search and match donors fast.</p>
                 </div>
-            @endforeach
+            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
         </div>
     </div>
 </section>
@@ -195,27 +195,30 @@
                 <p class="mt-4 text-slate-600 dark:text-slate-300">Browse the latest donor profiles verified for availability and city.</p>
 
                 <div class="mt-8 space-y-5">
-                    @foreach($recentDonors as $donor)
+                    <?php $__currentLoopData = $recentDonors; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $donor): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                         <div class="flex items-center gap-4 rounded-3xl border border-slate-200/80 bg-slate-50 p-4 shadow-sm dark:border-slate-700/80 dark:bg-slate-900">
                             <div class="flex h-16 w-16 items-center justify-center rounded-3xl bg-red-600 text-xl font-bold text-white">
-                                @if($donor->profile_image)
-                                    <img src="{{ asset('storage/profile_images/' . $donor->profile_image) }}" alt="{{ $donor->name }}" class="h-16 w-16 rounded-3xl object-cover" />
-                                @else
-                                    {{ strtoupper(substr($donor->name, 0, 1)) }}
-                                @endif
+                                <?php if($donor->profile_image): ?>
+                                    <img src="<?php echo e(asset('storage/profile_images/' . $donor->profile_image)); ?>" alt="<?php echo e($donor->name); ?>" class="h-16 w-16 rounded-3xl object-cover" />
+                                <?php else: ?>
+                                    <?php echo e(strtoupper(substr($donor->name, 0, 1))); ?>
+
+                                <?php endif; ?>
                             </div>
                             <div class="min-w-0 flex-1">
-                                <p class="font-semibold text-slate-900 dark:text-white">{{ $donor->name }}</p>
-                                <p class="text-sm text-slate-500 dark:text-slate-400">{{ $donor->city ?? 'Unknown city' }}</p>
+                                <p class="font-semibold text-slate-900 dark:text-white"><?php echo e($donor->name); ?></p>
+                                <p class="text-sm text-slate-500 dark:text-slate-400"><?php echo e($donor->city ?? 'Unknown city'); ?></p>
                             </div>
                             <div class="rounded-3xl bg-slate-100 px-4 py-2 text-sm font-semibold text-slate-900 dark:bg-slate-800 dark:text-slate-100">
-                                {{ $donor->blood_group ?? 'N/A' }}
+                                <?php echo e($donor->blood_group ?? 'N/A'); ?>
+
                             </div>
-                            <span class="inline-flex items-center rounded-full px-3 py-2 text-xs font-semibold {{ $donor->available === 'yes' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-200' : 'bg-slate-200 text-slate-700 dark:bg-slate-700/70 dark:text-slate-300' }}">
-                                {{ $donor->available === 'yes' ? 'Available' : 'Unavailable' }}
+                            <span class="inline-flex items-center rounded-full px-3 py-2 text-xs font-semibold <?php echo e($donor->available === 'yes' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-200' : 'bg-slate-200 text-slate-700 dark:bg-slate-700/70 dark:text-slate-300'); ?>">
+                                <?php echo e($donor->available === 'yes' ? 'Available' : 'Unavailable'); ?>
+
                             </span>
                         </div>
-                    @endforeach
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 </div>
             </div>
 
@@ -280,8 +283,10 @@
             </div>
         </div>
 
-        <div class="mt-10 border-t border-white/10 pt-8 text-center text-sm text-slate-500">© {{ date('Y') }} E-Blood Donation Platform. Donate blood, be someone’s hero.</div>
+        <div class="mt-10 border-t border-white/10 pt-8 text-center text-sm text-slate-500">© <?php echo e(date('Y')); ?> E-Blood Donation Platform. Donate blood, be someone’s hero.</div>
     </div>
 </section>
 
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\xampp\htdocs\MyProject\eblood\resources\views/home.blade.php ENDPATH**/ ?>

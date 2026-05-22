@@ -16,11 +16,7 @@ class UsersExport implements FromCollection, WithHeadings, WithMapping, ShouldAu
 {
     public function collection()
     {
-        return User::where(
-                'is_admin',
-                '!=',
-                true
-            )
+        return User::donors()
             ->select(
                 'name',
                 'email',

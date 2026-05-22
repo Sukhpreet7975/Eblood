@@ -32,18 +32,11 @@
                     @endif
                 </div>
 
-                @if(auth()->check() && auth()->user()->is_admin)
-                    <div class="mt-4">
-                        <form method="POST" action="{{ route('admin.request-status', $req->_id) }}">
-                            @csrf
-                            <select name="status" class="border p-2 rounded-lg">
-                                <option value="Pending" {{ $status == 'Pending' ? 'selected' : '' }}>Pending</option>
-                                <option value="Approved" {{ $status == 'Approved' ? 'selected' : '' }}>Approved</option>
-                                <option value="Completed" {{ $status == 'Completed' ? 'selected' : '' }}>Completed</option>
-                                <option value="Rejected" {{ $status == 'Rejected' ? 'selected' : '' }}>Rejected</option>
-                            </select>
-                            <button class="ml-2 bg-blue-600 text-white px-3 py-2 rounded-lg">Update</button>
-                        </form>
+                @if($req->admin_message)
+                    <div class="mt-6 rounded-3xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-700 dark:bg-slate-950">
+                        <p class="font-semibold text-slate-900 dark:text-slate-100">Admin Response</p>
+                        <p class="mt-3 text-slate-700 dark:text-slate-200 whitespace-pre-line">{{ $req->admin_message }}</p>
+                        <p class="mt-3 text-xs text-slate-500 dark:text-slate-400">Status updated {{ optional($req->status_updated_at)->format('Y-m-d H:i') }}</p>
                     </div>
                 @endif
 
