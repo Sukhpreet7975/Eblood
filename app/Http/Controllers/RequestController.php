@@ -71,7 +71,10 @@ class RequestController extends Controller
                 ->with('error', 'Only requesters can view their requests.');
         }
 
-        $requests = BloodRequest::where('user_id', Auth::id())->latest()->paginate(10);
+        $requests = BloodRequest::where('user_id', Auth::id())
+            ->select(['_id', 'patient_name', 'blood_group', 'hospital', 'city', 'status', 'message', 'admin_message', 'created_at', 'status_updated_at'])
+            ->latest()
+            ->paginate(10);
 
         return view('my-requests', compact('requests'));
     }
@@ -91,12 +94,17 @@ class RequestController extends Controller
         }
 
         $user = Auth::user();
-        $totalRequests = BloodRequest::where('user_id', $user->id)->count();
-        $pendingRequests = BloodRequest::where('user_id', $user->id)->where('status', 'Pending')->count();
-        $approvedRequests = BloodRequest::where('user_id', $user->id)->where('status', 'Approved')->count();
-        $completedRequests = BloodRequest::where('user_id', $user->id)->where('status', 'Completed')->count();
-        $rejectedRequests = BloodRequest::where('user_id', $user->id)->where('status', 'Rejected')->count();
-        $recentRequests = BloodRequest::where('user_id', $user->id)->latest()->take(5)->get();
+        $requests = BloodRequest::where('user_id', $user->id)
+            ->select(['_id', 'patient_name', 'blood_group', 'hospital', 'city', 'status', 'admin_message', 'created_at'])
+            ->latest()
+            ->get();
+
+        $totalRequests = $requests->count();
+        $pendingRequests = $requests->where('status', 'Pending')->count();
+        $approvedRequests = $requests->where('status', 'Approved')->count();
+        $completedRequests = $requests->where('status', 'Completed')->count();
+        $rejectedRequests = $requests->where('status', 'Rejected')->count();
+        $recentRequests = $requests->take(5);
 
         return view('requester.home', compact(
             'user',

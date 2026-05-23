@@ -21,7 +21,7 @@
                     <h2 class="mt-4 text-2xl font-bold">{{ $user->name }}</h2>
                     <p class="text-sm text-gray-500 mt-1">Member since {{ optional($user->created_at)->format('M Y') }}</p>
 
-                    <div class="mt-4 flex items-center gap-2">
+                    <div id="availability" class="mt-4 flex items-center gap-2">
                         <span class="inline-flex items-center px-3 py-1 rounded-full bg-red-50 text-red-700 font-semibold">{{ $user->blood_group ?? 'N/A' }}</span>
                         @if($user->available == 'yes')
                             <span id="profile-availability" class="inline-flex items-center px-3 py-1 rounded-full bg-green-100 text-green-800">Available</span>

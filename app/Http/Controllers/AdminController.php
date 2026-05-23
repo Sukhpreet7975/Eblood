@@ -147,14 +147,16 @@ class AdminController extends Controller
             $query->where('patient_name', 'regex', $regex);
         }
 
-        if ($request->filled('donor_email')) {
-            $regex = new \MongoDB\BSON\Regex(preg_quote($request->donor_email), 'i');
-            $donorIds = User::where('email', 'regex', $regex)
+        $requesterEmail = $request->input('requester_email', $request->input('donor_email'));
+
+        if (!empty($requesterEmail)) {
+            $regex = new \MongoDB\BSON\Regex(preg_quote($requesterEmail), 'i');
+            $requesterIds = User::where('email', 'regex', $regex)
                 ->pluck('_id')
                 ->toArray();
 
-            if (!empty($donorIds)) {
-                $query->whereIn('user_id', $donorIds);
+            if (!empty($requesterIds)) {
+                $query->whereIn('user_id', $requesterIds);
             } else {
                 $query->where('user_id', null);
             }

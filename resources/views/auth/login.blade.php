@@ -68,11 +68,13 @@
                                 Email address
                             </label>
                             <input
+                                id="login-email"
                                 type="email"
                                 name="email"
                                 value="{{ old('email') }}"
                                 class="form-field dark:form-field-dark"
                                 placeholder="name@example.com">
+                            <p id="email-field-error" class="mt-2 hidden text-xs text-red-500"></p>
                             @error('email')
                             <p class="mt-2 text-xs text-red-500">{{ $message }}</p>
                             @enderror
@@ -84,9 +86,9 @@
                             </label>
                             <div class="relative">
                                 <input
+                                    id="login-password"
                                     type="password"
                                     name="password"
-                                    id="password"
                                     class="form-field dark:form-field-dark"
                                     placeholder="Enter password">
                                 <button
@@ -105,6 +107,7 @@
                                     </svg>
                                 </button>
                             </div>
+                            <p id="password-field-error" class="mt-2 hidden text-xs text-red-500"></p>
                             @error('password')
                             <p class="mt-2 text-xs text-red-500">{{ $message }}</p>
                             @enderror
@@ -132,6 +135,7 @@
                                     </label>
                                 </div>
                             </div>
+                            <p id="role-field-error" class="mt-2 hidden text-xs text-red-500"></p>
                             @error('role')
                             <p class="mt-2 text-xs text-red-500">{{ $message }}</p>
                             @enderror
@@ -281,6 +285,9 @@
     const loginError = document.getElementById('login-error');
     const loginForm = document.getElementById('login-form');
     const loginButton = document.getElementById('login-btn');
+    const emailFieldError = document.getElementById('email-field-error');
+    const passwordFieldError = document.getElementById('password-field-error');
+    const roleFieldError = document.getElementById('role-field-error');
     let failedAttempts = 0;
 
     function openModal(modalId) {
@@ -438,9 +445,28 @@
         }
     });
 
+    function clearFieldErrors() {
+        emailFieldError.classList.add('hidden');
+        emailFieldError.textContent = '';
+        passwordFieldError.classList.add('hidden');
+        passwordFieldError.textContent = '';
+        roleFieldError.classList.add('hidden');
+        roleFieldError.textContent = '';
+    }
+
+    function setFieldError(element, message) {
+        if (!element) {
+            return;
+        }
+
+        element.textContent = message;
+        element.classList.remove('hidden');
+    }
+
     loginForm.addEventListener('submit', async (event) => {
         event.preventDefault();
 
+        clearFieldErrors();
         loginError.classList.add('hidden');
         loginError.textContent = '';
         loginButton.innerHTML = 'Logging in...';
@@ -452,7 +478,7 @@
             email: formData.get('email'),
             password: formData.get('password'),
             remember: formData.get('remember') ? true : false,
-            role: formData.get('role') || 'donor',
+            role: formData.get('role') || '',
         };
 
         const response = await fetch(loginForm.action, {
@@ -474,15 +500,33 @@
         }
 
         failedAttempts += 1;
-        loginError.textContent = data?.message || 'Invalid credentials. Please try again.';
-        loginError.classList.remove('hidden');
+
+        const errors = data?.errors ?? {};
+
+        if (errors.email?.[0]) {
+            setFieldError(emailFieldError, errors.email[0]);
+        }
+
+        if (errors.password?.[0]) {
+            setFieldError(passwordFieldError, errors.password[0]);
+        }
+
+        if (errors.role?.[0]) {
+            setFieldError(roleFieldError, errors.role[0]);
+        }
+
+        if (!errors.email?.[0] && !errors.password?.[0] && !errors.role?.[0]) {
+            loginError.textContent = data?.message || 'Invalid credentials. Please try again.';
+            loginError.classList.remove('hidden');
+        }
+
         loginButton.innerHTML = 'Login';
         loginButton.disabled = false;
         loginButton.classList.remove('opacity-50');
     });
 
     function togglePassword() {
-        const password = document.getElementById('password');
+        const password = document.getElementById('login-password');
         const eyeIcon = document.getElementById('eyeIcon');
 
         if (password.type === 'password') {

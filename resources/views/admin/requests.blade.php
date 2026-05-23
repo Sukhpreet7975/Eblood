@@ -2,35 +2,86 @@
 
 @section('content')
 <div class="container mx-auto px-4 py-8">
-    <div class="flex items-start justify-between gap-4 mb-6">
-        <div>
-            <h1 class="text-3xl sm:text-4xl font-semibold text-slate-900 dark:text-slate-100">Emergency Requests</h1>
-            <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Manage incoming blood requests — filter, review, and act quickly.</p>
-        </div>
-        <div class="flex items-center gap-3">
-            <a href="/admin/home" class="inline-flex items-center gap-2 rounded-full bg-slate-100 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-200">Back to Admin Home</a>
-            <a href="{{ route('admin.requests.index') }}" class="inline-flex items-center gap-2 rounded-full bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700">Refresh</a>
+    @php
+        $collection = $requests->getCollection();
+        $pendingCount = $collection->where('status', 'Pending')->count();
+        $approvedCount = $collection->where('status', 'Approved')->count();
+        $completedCount = $collection->where('status', 'Completed')->count();
+        $rejectedCount = $collection->where('status', 'Rejected')->count();
+    @endphp
+
+    <div class="hero-panel mb-8">
+        <div class="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+            <div class="max-w-2xl">
+                <div class="inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold uppercase tracking-[0.24em] text-white/90">
+                    <span class="h-2 w-2 rounded-full bg-white"></span>
+                    Emergency operations
+                </div>
+                <h1 class="mt-4 text-3xl font-bold tracking-tight sm:text-4xl">Emergency Requests</h1>
+                <p class="mt-3 text-sm leading-7 text-white/90 sm:text-base">
+                    Review every requester submission, validate the details, and respond with a professional approval or rejection workflow.
+                </p>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-3">
+                <a href="/admin/home" class="inline-flex items-center gap-2 rounded-full bg-white/15 px-4 py-2 text-sm font-semibold text-white ring-1 ring-white/20 backdrop-blur-sm hover:bg-white/25">
+                    Back to Admin Home
+                </a>
+                <a href="{{ route('admin.requests.index') }}" class="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-semibold text-red-700 shadow-lg shadow-red-950/20 hover:bg-slate-100">
+                    Refresh
+                </a>
+            </div>
         </div>
     </div>
 
-    <div class="grid gap-6 lg:grid-cols-12">
-        <aside class="lg:col-span-3">
+    <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4 mb-8">
+        <div class="card-panel dark:card-panel-dark">
+            <p class="text-sm font-medium text-slate-500 dark:text-slate-400">Total Requests</p>
+            <p class="mt-3 text-3xl font-bold text-slate-900 dark:text-slate-100">{{ $requests->total() }}</p>
+            <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">All emergency requests currently in the queue.</p>
+        </div>
+        <div class="card-panel dark:card-panel-dark">
+            <p class="text-sm font-medium text-amber-600">Pending</p>
+            <p class="mt-3 text-3xl font-bold text-slate-900 dark:text-slate-100">{{ $pendingCount }}</p>
+            <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">Requests awaiting review and action.</p>
+        </div>
+        <div class="card-panel dark:card-panel-dark">
+            <p class="text-sm font-medium text-blue-600">Approved</p>
+            <p class="mt-3 text-3xl font-bold text-slate-900 dark:text-slate-100">{{ $approvedCount }}</p>
+            <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">Requests approved and ready for follow-up.</p>
+        </div>
+        <div class="card-panel dark:card-panel-dark">
+            <p class="text-sm font-medium text-emerald-600">Completed</p>
+            <p class="mt-3 text-3xl font-bold text-slate-900 dark:text-slate-100">{{ $completedCount }}</p>
+            <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">Requests successfully closed after action.</p>
+        </div>
+    </div>
+
+    <div class="grid gap-6 xl:grid-cols-12">
+        <aside class="xl:col-span-4">
             <div class="card-panel dark:card-panel-dark sticky top-24">
-                <h3 class="text-sm font-semibold text-slate-900 dark:text-slate-100">Filters</h3>
-                <form method="GET" action="{{ route('admin.requests.index') }}" class="mt-4 space-y-4">
+                <div class="flex items-center justify-between gap-3">
                     <div>
-                        <label class="block text-xs font-medium text-slate-600 dark:text-slate-400">Patient Name</label>
-                        <input type="text" name="patient_name" value="{{ request('patient_name') }}" placeholder="e.g. John Doe" class="form-field dark:form-field-dark mt-1" />
+                        <p class="text-sm font-semibold text-slate-900 dark:text-slate-100">Filters</p>
+                        <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Narrow requests by patient, requester, blood group, or status.</p>
+                    </div>
+                    <span class="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600 dark:bg-slate-800 dark:text-slate-200">Live</span>
+                </div>
+
+                <form method="GET" action="{{ route('admin.requests.index') }}" class="mt-5 space-y-4">
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">Patient Name</label>
+                        <input type="text" name="patient_name" value="{{ request('patient_name') }}" placeholder="e.g. John Doe" class="form-field dark:form-field-dark mt-2" />
                     </div>
 
                     <div>
-                        <label class="block text-xs font-medium text-slate-600 dark:text-slate-400">Donor Email</label>
-                        <input type="text" name="donor_email" value="{{ request('donor_email') }}" placeholder="donor@example.com" class="form-field dark:form-field-dark mt-1" />
+                        <label class="block text-xs font-semibold uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">Requester Email</label>
+                        <input type="text" name="requester_email" value="{{ request('requester_email') ?? request('donor_email') }}" placeholder="requester@example.com" class="form-field dark:form-field-dark mt-2" />
                     </div>
 
                     <div>
-                        <label class="block text-xs font-medium text-slate-600 dark:text-slate-400">Blood Group</label>
-                        <select name="blood_group" class="form-field dark:form-field-dark mt-1">
+                        <label class="block text-xs font-semibold uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">Blood Group</label>
+                        <select name="blood_group" class="form-field dark:form-field-dark mt-2">
                             <option value="">All Groups</option>
                             @foreach($bloodGroups as $group)
                                 <option value="{{ $group }}" {{ request('blood_group') === $group ? 'selected' : '' }}>{{ $group }}</option>
@@ -39,8 +90,8 @@
                     </div>
 
                     <div>
-                        <label class="block text-xs font-medium text-slate-600 dark:text-slate-400">Status</label>
-                        <select name="status" class="form-field dark:form-field-dark mt-1">
+                        <label class="block text-xs font-semibold uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">Status</label>
+                        <select name="status" class="form-field dark:form-field-dark mt-2">
                             <option value="">All Statuses</option>
                             @foreach($statusOptions as $status)
                                 <option value="{{ $status }}" {{ request('status') === $status ? 'selected' : '' }}>{{ $status }}</option>
@@ -48,96 +99,116 @@
                         </select>
                     </div>
 
-                    <div class="flex items-center gap-3">
-                        <button type="submit" class="inline-flex items-center justify-center rounded-2xl bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-700">Apply</button>
-                        <a href="{{ route('admin.requests.index') }}" class="inline-flex items-center justify-center rounded-2xl bg-slate-100 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-200">Reset</a>
+                    <div class="flex items-center gap-3 pt-1">
+                        <button type="submit" class="btn-primary">Apply Filters</button>
+                        <a href="{{ route('admin.requests.index') }}" class="btn-secondary">Reset</a>
                     </div>
                 </form>
             </div>
 
-            <div class="mt-4 hidden sm:block">
-                <div class="card-panel dark:card-panel-dark">
-                    <h4 class="text-sm font-semibold text-slate-900 dark:text-slate-100">Quick Stats</h4>
-                    <div class="mt-3 space-y-2 text-sm text-slate-600 dark:text-slate-400">
-                        <div class="flex items-center justify-between"><span>Total</span><span class="font-semibold text-slate-900 dark:text-slate-100">{{ $requests->total() }}</span></div>
-                        <div class="flex items-center justify-between"><span>Pending</span><span class="font-semibold text-amber-600">{{ $pendingRequests ?? 0 }}</span></div>
-                        <div class="flex items-center justify-between"><span>Approved</span><span class="font-semibold text-blue-600">{{ $approvedRequests ?? 0 }}</span></div>
-                    </div>
-                </div>
+            <div class="mt-4 card-panel dark:card-panel-dark">
+                <p class="text-sm font-semibold text-slate-900 dark:text-slate-100">Workflow Notes</p>
+                <ul class="mt-3 space-y-2 text-sm text-slate-500 dark:text-slate-400">
+                    <li>• Review each request carefully before approving or rejecting.</li>
+                    <li>• The request message stays hidden until you open the details page.</li>
+                    <li>• Rejections require a clear reason before the save action is allowed.</li>
+                </ul>
             </div>
         </aside>
 
-        <main class="lg:col-span-9">
+        <main class="xl:col-span-8">
             @if($requests->isEmpty())
-                <div class="card-panel dark:card-panel-dark border-dashed border-slate-300 dark:border-slate-700">
-                    <p class="text-lg font-semibold text-slate-900 dark:text-slate-100">No requests found</p>
-                    <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">Adjust your filters or come back later.</p>
+                <div class="card-panel dark:card-panel-dark border border-dashed border-slate-300 dark:border-slate-700">
+                    <p class="text-xl font-semibold text-slate-900 dark:text-slate-100">No requests found</p>
+                    <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">Adjust your filters or return later when new emergency requests arrive.</p>
                 </div>
             @else
                 <div class="card-panel dark:card-panel-dark overflow-hidden">
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full w-full table-auto">
-                            <thead class="bg-slate-50 dark:bg-slate-800">
-                                <tr class="text-sm text-slate-600 dark:text-slate-400">
-                                    <th class="px-4 py-3 text-left">Patient</th>
-                                    <th class="px-4 py-3 text-left hidden md:table-cell">Donor</th>
-                                    <th class="px-4 py-3 text-left">Blood</th>
-                                    <th class="px-4 py-3 text-left hidden lg:table-cell">Hospital</th>
-                                    <th class="px-4 py-3 text-left hidden lg:table-cell">City</th>
-                                    <th class="px-4 py-3 text-left hidden md:table-cell">Phone</th>
-                                    <th class="px-4 py-3 text-left">Status</th>
-                                    <th class="px-4 py-3 text-left hidden lg:table-cell">Created</th>
-                                    <th class="px-4 py-3 text-left">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y dark:divide-slate-700">
-                                @foreach($requests as $request)
-                                    <tr class="hover:bg-slate-50 dark:hover:bg-slate-800 transition">
-                                        <td class="px-4 py-4">
-                                            <div class="font-semibold text-slate-900 dark:text-slate-100">{{ $request->patient_name }}</div>
-                                            <div class="text-xs text-slate-500 dark:text-slate-400 mt-1 hidden sm:block">{{ Str::limit($request->message ?? '-', 60) }}</div>
-                                        </td>
-                                        <td class="px-4 py-4 hidden md:table-cell text-slate-600 dark:text-slate-300">{{ optional($request->user)->email ?? 'Unknown' }}</td>
-                                        <td class="px-4 py-4 text-slate-700 dark:text-slate-200">{{ $request->blood_group }}</td>
-                                        <td class="px-4 py-4 hidden lg:table-cell text-slate-600 dark:text-slate-300">{{ $request->hospital }}</td>
-                                        <td class="px-4 py-4 hidden lg:table-cell text-slate-600 dark:text-slate-300">{{ $request->city }}</td>
-                                        <td class="px-4 py-4 hidden md:table-cell text-slate-600 dark:text-slate-300">{{ $request->phone }}</td>
-                                        <td class="px-4 py-4">
-                                            @php
-                                                $statusClass = match($request->status) {
-                                                    'Pending' => 'bg-amber-100 text-amber-700',
-                                                    'Approved' => 'bg-blue-100 text-blue-700',
-                                                    'Completed' => 'bg-emerald-100 text-emerald-700',
-                                                    'Rejected' => 'bg-red-100 text-red-700',
-                                                    default => 'bg-slate-100 text-slate-700',
-                                                };
-                                            @endphp
-                                            <span class="inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold uppercase {{ $statusClass }}">
-                                                <span class="w-2 h-2 rounded-full" style="background: currentColor; opacity: .7"></span>
-                                                {{ $request->status }}
-                                            </span>
-                                        </td>
-                                        <td class="px-4 py-4 hidden lg:table-cell text-slate-600 dark:text-slate-300">{{ optional($request->created_at)->format('Y-m-d') }}</td>
-                                        <td class="px-4 py-4">
-                                            <div class="flex items-center gap-2">
-                                                <a href="{{ route('admin.requests.show', $request->_id) }}" class="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 hover:shadow-sm">View</a>
-                                                <button type="button" data-request-id="{{ $request->_id }}" data-status="Approved" data-title="Approve Request" data-required-message="false" class="js-open-status-modal inline-flex items-center gap-2 rounded-full bg-blue-600 px-3 py-2 text-sm font-medium text-white hover:bg-blue-700">Approve</button>
-                                                <button type="button" data-request-id="{{ $request->_id }}" data-status="Rejected" data-title="Reject Request" data-required-message="true" class="js-open-status-modal inline-flex items-center gap-2 rounded-full bg-red-600 px-3 py-2 text-sm font-medium text-white hover:bg-red-700">Reject</button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
+                    <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4 dark:border-slate-700">
+                        <div>
+                            <p class="text-sm font-semibold text-slate-900 dark:text-slate-100">Recent emergency requests</p>
+                            <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">A clean list of all active and closed requests, with actions available in one place.</p>
+                        </div>
+                        <div class="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600 dark:bg-slate-800 dark:text-slate-200">
+                            {{ $requests->total() }} total
+                        </div>
                     </div>
 
-                    <div class="px-4 py-4 border-t border-slate-100 dark:border-slate-700 flex items-center justify-between">
-                        <div class="text-sm text-slate-500">Showing <span class="font-medium text-slate-700">{{ $requests->firstItem() }}</span> to <span class="font-medium text-slate-700">{{ $requests->lastItem() }}</span> of <span class="font-medium text-slate-700">{{ $requests->total() }}</span> requests</div>
+                    <div class="space-y-3">
+                        @foreach($requests as $request)
+                            @php
+                                $statusClass = match($request->status) {
+                                    'Pending' => 'bg-amber-100 text-amber-700 ring-amber-200',
+                                    'Approved' => 'bg-blue-100 text-blue-700 ring-blue-200',
+                                    'Completed' => 'bg-emerald-100 text-emerald-700 ring-emerald-200',
+                                    'Rejected' => 'bg-red-100 text-red-700 ring-red-200',
+                                    default => 'bg-slate-100 text-slate-700 ring-slate-200',
+                                };
+                            @endphp
+
+                            <article class="rounded-[1.5rem] border border-slate-200 bg-white p-4 shadow-sm transition hover:border-slate-300 hover:shadow-md dark:border-slate-700 dark:bg-slate-900">
+                                <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+                                    <div class="flex-1">
+                                        <div class="flex flex-wrap items-start gap-3">
+                                            <div>
+                                                <p class="text-base font-semibold text-slate-900 dark:text-slate-100">{{ $request->patient_name }}</p>
+                                                <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Requester: {{ optional($request->user)->email ?? 'Unknown' }}</p>
+                                            </div>
+                                            <span class="inline-flex items-center gap-2 rounded-full px-3 py-1 text-[11px] font-semibold uppercase ring-1 {{ $statusClass }}">
+                                                <span class="h-2 w-2 rounded-full" style="background: currentColor; opacity: .75"></span>
+                                                {{ $request->status }}
+                                            </span>
+                                        </div>
+
+                                        <div class="mt-4 grid gap-3 text-sm text-slate-600 dark:text-slate-300 sm:grid-cols-2 xl:grid-cols-4">
+                                            <div>
+                                                <p class="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">Blood group</p>
+                                                <p class="mt-1 font-medium text-slate-900 dark:text-slate-100">{{ $request->blood_group }}</p>
+                                            </div>
+                                            <div>
+                                                <p class="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">Hospital</p>
+                                                <p class="mt-1 font-medium text-slate-900 dark:text-slate-100">{{ $request->hospital }}</p>
+                                            </div>
+                                            <div>
+                                                <p class="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">City</p>
+                                                <p class="mt-1 font-medium text-slate-900 dark:text-slate-100">{{ $request->city }}</p>
+                                            </div>
+                                            <div>
+                                                <p class="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">Phone</p>
+                                                <p class="mt-1 font-medium text-slate-900 dark:text-slate-100">{{ $request->phone }}</p>
+                                            </div>
+                                        </div>
+
+                                        <div class="mt-4 flex flex-wrap items-center gap-3 text-sm text-slate-500 dark:text-slate-400">
+                                            <span class="rounded-full bg-slate-100 px-3 py-1 dark:bg-slate-800">Created {{ optional($request->created_at)->format('M d, Y') }}</span>
+                                            <span class="rounded-full bg-slate-100 px-3 py-1 dark:bg-slate-800">Message available on View</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="flex flex-wrap items-center gap-2 lg:flex-col lg:items-stretch lg:min-w-[180px]">
+                                        <a href="{{ route('admin.requests.show', $request->_id) }}" class="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:border-slate-300 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 dark:hover:bg-slate-700">
+                                            View details
+                                        </a>
+                                        <button type="button" data-request-id="{{ $request->_id }}" data-status="Approved" data-title="Approve Request" data-required-message="false" class="js-open-status-modal inline-flex items-center justify-center rounded-full bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-700">
+                                            Approve
+                                        </button>
+                                        <button type="button" data-request-id="{{ $request->_id }}" data-status="Rejected" data-title="Reject Request" data-required-message="true" class="js-open-status-modal inline-flex items-center justify-center rounded-full bg-red-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-red-700">
+                                            Reject
+                                        </button>
+                                    </div>
+                                </div>
+                            </article>
+                        @endforeach
+                    </div>
+
+                    <div class="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 px-1 pt-4 dark:border-slate-700">
+                        <div class="text-sm text-slate-500 dark:text-slate-400">
+                            Showing <span class="font-semibold text-slate-700 dark:text-slate-200">{{ $requests->firstItem() }}</span> to <span class="font-semibold text-slate-700 dark:text-slate-200">{{ $requests->lastItem() }}</span> of <span class="font-semibold text-slate-700 dark:text-slate-200">{{ $requests->total() }}</span> requests
+                        </div>
                         <div>
                             {{ $requests->links() }}
                         </div>
                     </div>
-
                 </div>
             @endif
         </main>

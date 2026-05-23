@@ -53,6 +53,18 @@
         </div>
     </div>
 
+    <div id="priority-insight" class="card-panel dark:card-panel-dark"></div>
+    <div id="requester-priority-data" class="hidden">
+        @json($recentRequests->map(function ($request) {
+            return [
+                'blood_group' => $request->blood_group,
+                'status' => $request->status ?? 'Pending',
+                'created_at' => optional($request->created_at)->toISOString(),
+                'city' => $request->city,
+            ];
+        }))
+    </div>
+
     <div class="card-panel dark:card-panel-dark">
         <div class="flex items-center justify-between mb-4">
             <h3 class="text-lg font-semibold">Recent Requests</h3>

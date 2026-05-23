@@ -36,14 +36,13 @@ class AuthenticatedSessionController extends Controller
         LoginRequest $request
     ): RedirectResponse|JsonResponse
     {
-        // Use LoginRequest authenticate flow (includes role checks)
-        $request->authenticate();
+        $user = $request->authenticate();
 
         $request->session()->regenerate();
 
-        $redirectPath = auth()->user()->isAdmin()
+        $redirectPath = $user->isAdmin()
             ? route('admin.home')
-            : (auth()->user()->isRequester() ? route('requester.home') : route('donor.home'));
+            : ($user->isRequester() ? route('requester.home') : route('donor.home'));
 
         if ($request->expectsJson()) {
             return response()->json([

@@ -13,8 +13,6 @@ use App\Http\Controllers\HomeController;
 */
 
 Route::get('/', [HomeController::class, 'index']);
-Route::get('/search', [DonorController::class, 'search']);
-Route::get('/live-search', [DonorController::class, 'liveSearch']);
 
 /*
 |--------------------------------------------------------------------------
@@ -23,6 +21,11 @@ Route::get('/live-search', [DonorController::class, 'liveSearch']);
 */
 
 Route::middleware(['auth', 'requester'])->group(function () {
+
+    Route::get('/search', [DonorController::class, 'search'])
+        ->name('requester.search.index');
+    Route::get('/live-search', [DonorController::class, 'liveSearch'])
+        ->name('requester.search.live');
 
     Route::get('/requester/home', [RequestController::class, 'requesterHome'])
         ->name('requester.home');

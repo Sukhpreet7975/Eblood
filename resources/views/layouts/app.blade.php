@@ -37,53 +37,52 @@
                 </div>
             </a>
 
-            @php
-                $defaultDashboard = auth()->check()
-                        ? (auth()->user()->isAdmin()
-                            ? url('/admin')
-                            : (auth()->user()->isRequester() ? route('requester.home') : route('donor.home')))
-                        : url('/');
-            @endphp
-
             <div class="hidden md:flex items-center gap-3 text-sm">
-                @auth
-                    @if(auth()->user()->isAdmin())
-                        <a href="{{ route('admin.home') }}" class="rounded-full px-4 py-2 text-slate-700 hover:bg-red-50 hover:text-red-600 dark:text-slate-200 dark:hover:bg-slate-800">Home</a>
-                    @else
-                        <a href="/" class="rounded-full px-4 py-2 text-slate-700 hover:bg-red-50 hover:text-red-600 dark:text-slate-200 dark:hover:bg-slate-800">Home</a>
-                    @endif
-                @else
-                    <a href="/" class="rounded-full px-4 py-2 text-slate-700 hover:bg-red-50 hover:text-red-600 dark:text-slate-200 dark:hover:bg-slate-800">Home</a>
-                @endauth
-                @unless(auth()->check() && auth()->user()->isRequester())
-                    <a href="/search" class="rounded-full px-4 py-2 text-slate-700 hover:bg-red-50 hover:text-red-600 dark:text-slate-200 dark:hover:bg-slate-800">Search Donors</a>
-                @endunless
-
                 @guest
+                    <a href="/" class="rounded-full px-4 py-2 text-slate-700 hover:bg-red-50 hover:text-red-600 dark:text-slate-200 dark:hover:bg-slate-800">Home</a>
                     <a href="/login" class="rounded-full px-4 py-2 bg-red-600 text-white hover:bg-red-700">Login</a>
                     <a href="/register" class="rounded-full px-4 py-2 border border-slate-300 text-slate-700 hover:border-red-500 hover:text-red-600 dark:border-slate-700 dark:text-slate-200">Register</a>
-                @endguest
-
-                @auth
-                    @unless(auth()->user()->isRequester())
-                        <a href="{{ $defaultDashboard }}" class="rounded-full px-4 py-2 text-slate-700 hover:bg-red-50 hover:text-red-600 dark:text-slate-200 dark:hover:bg-slate-800">Dashboard</a>
-                    @endunless
+                @else
                     @if(auth()->user()->isAdmin())
+                        <a href="{{ route('admin.home') }}" class="rounded-full px-4 py-2 text-slate-700 hover:bg-red-50 hover:text-red-600 dark:text-slate-200 dark:hover:bg-slate-800">Home</a>
                         <a href="/admin/requests" class="rounded-full px-4 py-2 text-slate-700 hover:bg-red-50 hover:text-red-600 dark:text-slate-200 dark:hover:bg-slate-800">Requests</a>
                     @elseif(auth()->user()->isRequester())
+                        <a href="{{ route('requester.home') }}" class="rounded-full px-4 py-2 text-slate-700 hover:bg-red-50 hover:text-red-600 dark:text-slate-200 dark:hover:bg-slate-800">Home</a>
+                        <a href="{{ route('requester.search.index') }}" class="rounded-full px-4 py-2 text-slate-700 hover:bg-red-50 hover:text-red-600 dark:text-slate-200 dark:hover:bg-slate-800">Search Donors</a>
                         <a href="{{ route('requester.requests.create') }}" class="rounded-full px-4 py-2 text-slate-700 hover:bg-red-50 hover:text-red-600 dark:text-slate-200 dark:hover:bg-slate-800">Emergency Request</a>
                         <a href="{{ route('requester.requests.index') }}" class="rounded-full px-4 py-2 text-slate-700 hover:bg-red-50 hover:text-red-600 dark:text-slate-200 dark:hover:bg-slate-800">My Requests</a>
-                    @elseif(auth()->user()->isDonor())
                         <a href="/profile" class="rounded-full px-4 py-2 text-slate-700 hover:bg-red-50 hover:text-red-600 dark:text-slate-200 dark:hover:bg-slate-800">Profile</a>
+                    @elseif(auth()->user()->isDonor())
+                        <a href="{{ route('donor.home') }}" class="rounded-full px-4 py-2 text-slate-700 hover:bg-red-50 hover:text-red-600 dark:text-slate-200 dark:hover:bg-slate-800">Home</a>
+                        <a href="/profile" class="rounded-full px-4 py-2 text-slate-700 hover:bg-red-50 hover:text-red-600 dark:text-slate-200 dark:hover:bg-slate-800">Profile</a>
+                        <a href="/profile#availability" class="rounded-full px-4 py-2 text-slate-700 hover:bg-red-50 hover:text-red-600 dark:text-slate-200 dark:hover:bg-slate-800">Availability</a>
                     @endif
+
                     <form method="POST" action="{{ route('logout') }}" class="inline">
                         @csrf
                         <button class="rounded-full px-4 py-2 bg-red-600 text-white hover:bg-red-700">Logout</button>
                     </form>
-                @endauth
+                @endguest
             </div>
 
             <div class="flex items-center gap-3">
+                <div class="relative">
+                    <button id="notification-toggle" type="button" class="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-red-300 hover:text-red-600 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:hover:border-red-500/60">
+                        <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 17h5l-1.4-1.4A2 2 0 0 1 18 14.2V11a6 6 0 1 0-12 0v3.2a2 2 0 0 1-.6 1.4L4 17h5"/><path d="M10 19a2 2 0 0 0 4 0"/></svg>
+                        <span>Alerts</span>
+                        <span id="notification-badge" class="hidden rounded-full bg-red-600 px-2 py-0.5 text-[11px] font-bold text-white">0</span>
+                    </button>
+                    <div id="notification-dropdown" class="hidden absolute right-0 top-[calc(100%+0.75rem)] z-[60] flex max-h-[24rem] w-[22rem] max-w-[calc(100vw-2rem)] flex-col overflow-hidden rounded-[1.75rem] border border-slate-200 bg-white/95 p-4 shadow-[0_30px_80px_-40px_rgba(15,23,42,0.4)] backdrop-blur-xl dark:border-slate-700 dark:bg-slate-950/95">
+                        <div class="flex items-center justify-between gap-4">
+                            <div>
+                                <p class="text-sm font-semibold text-slate-900 dark:text-white">Notification center</p>
+                                <p class="text-xs text-slate-500 dark:text-slate-300">Unread updates stay visible until marked read.</p>
+                            </div>
+                            <button id="mark-all-read" type="button" class="text-xs font-semibold text-red-600 hover:text-red-700">Mark all read</button>
+                        </div>
+                        <div id="notification-list" class="mt-4 flex-1 space-y-3 overflow-y-auto pr-1"></div>
+                    </div>
+                </div>
                 <button type="button" class="js-dark-mode-toggle inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-slate-300 bg-white text-slate-700 shadow transition duration-300 hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700" aria-label="Toggle dark mode" title="Toggle dark mode">
                     <svg class="dark-mode-icon w-5 h-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"></svg>
                 </button>
@@ -93,40 +92,31 @@
         </div>
 
         <div id="mobile-menu" class="hidden flex-col gap-3 px-4 pb-4 md:hidden">
-            @auth
-                @if(auth()->user()->isAdmin())
-                    <a href="{{ route('admin.home') }}" class="block rounded-2xl px-4 py-3 text-slate-900 hover:bg-red-100 hover:text-red-700 dark:text-slate-100 dark:hover:bg-slate-800">Home</a>
-                @else
-                    <a href="/" class="block rounded-2xl px-4 py-3 text-slate-900 hover:bg-red-100 hover:text-red-700 dark:text-slate-100 dark:hover:bg-slate-800">Home</a>
-                @endif
-            @else
-                <a href="/" class="block rounded-2xl px-4 py-3 text-slate-900 hover:bg-red-100 hover:text-red-700 dark:text-slate-100 dark:hover:bg-slate-800">Home</a>
-            @endauth
-            @unless(auth()->check() && auth()->user()->isRequester())
-                <a href="/search" class="block rounded-2xl px-4 py-3 text-slate-900 hover:bg-red-100 hover:text-red-700 dark:text-slate-100 dark:hover:bg-slate-800">Search Donors</a>
-            @endunless
             @guest
+                <a href="/" class="block rounded-2xl px-4 py-3 text-slate-900 hover:bg-red-100 hover:text-red-700 dark:text-slate-100 dark:hover:bg-slate-800">Home</a>
                 <a href="/login" class="block rounded-2xl px-4 py-3 text-slate-900 hover:bg-red-100 hover:text-red-700 dark:text-slate-100 dark:hover:bg-slate-800">Login</a>
                 <a href="/register" class="block rounded-2xl bg-white px-4 py-3 text-center text-red-600 font-semibold hover:bg-slate-100 dark:bg-slate-900 dark:text-white">Register</a>
-            @endguest
-            @auth
-                @unless(auth()->user()->isRequester())
-                    <a href="{{ $defaultDashboard }}" class="block rounded-2xl px-4 py-3 text-slate-900 hover:bg-red-100 hover:text-red-700 dark:text-slate-100 dark:hover:bg-slate-800">Dashboard</a>
-                @endunless
+            @else
                 @if(auth()->user()->isAdmin())
+                    <a href="{{ route('admin.home') }}" class="block rounded-2xl px-4 py-3 text-slate-900 hover:bg-red-100 hover:text-red-700 dark:text-slate-100 dark:hover:bg-slate-800">Home</a>
                     <a href="/admin/requests" class="block rounded-2xl px-4 py-3 text-slate-900 hover:bg-red-100 hover:text-red-700 dark:text-slate-100 dark:hover:bg-slate-800">Requests</a>
                 @elseif(auth()->user()->isRequester())
+                    <a href="{{ route('requester.home') }}" class="block rounded-2xl px-4 py-3 text-slate-900 hover:bg-red-100 hover:text-red-700 dark:text-slate-100 dark:hover:bg-slate-800">Home</a>
+                    <a href="{{ route('requester.search.index') }}" class="block rounded-2xl px-4 py-3 text-slate-900 hover:bg-red-100 hover:text-red-700 dark:text-slate-100 dark:hover:bg-slate-800">Search Donors</a>
                     <a href="{{ route('requester.requests.create') }}" class="block rounded-2xl px-4 py-3 text-slate-900 hover:bg-red-100 hover:text-red-700 dark:text-slate-100 dark:hover:bg-slate-800">Emergency Request</a>
                     <a href="{{ route('requester.requests.index') }}" class="block rounded-2xl px-4 py-3 text-slate-900 hover:bg-red-100 hover:text-red-700 dark:text-slate-100 dark:hover:bg-slate-800">My Requests</a>
-                @elseif(auth()->user()->isDonor())
                     <a href="/profile" class="block rounded-2xl px-4 py-3 text-slate-900 hover:bg-red-100 hover:text-red-700 dark:text-slate-100 dark:hover:bg-slate-800">Profile</a>
+                @elseif(auth()->user()->isDonor())
+                    <a href="{{ route('donor.home') }}" class="block rounded-2xl px-4 py-3 text-slate-900 hover:bg-red-100 hover:text-red-700 dark:text-slate-100 dark:hover:bg-slate-800">Home</a>
+                    <a href="/profile" class="block rounded-2xl px-4 py-3 text-slate-900 hover:bg-red-100 hover:text-red-700 dark:text-slate-100 dark:hover:bg-slate-800">Profile</a>
+                    <a href="/profile#availability" class="block rounded-2xl px-4 py-3 text-slate-900 hover:bg-red-100 hover:text-red-700 dark:text-slate-100 dark:hover:bg-slate-800">Availability</a>
                 @endif
                 <form method="POST" action="{{ route('logout') }}" class="w-full">
                     @csrf
                     <button type="submit" class="w-full rounded-2xl bg-red-600 px-4 py-3 text-sm font-semibold text-white hover:bg-red-700">Logout</button>
                 </form>
                 <button type="button" class="js-dark-mode-toggle w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-left text-slate-900 hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:hover:bg-slate-800">Toggle theme</button>
-            @endauth
+            @endguest
         </div>
     </nav>
 
@@ -172,9 +162,13 @@
                     <h4 class="font-semibold text-white">Quick Links</h4>
                     <ul class="space-y-2 text-slate-300 text-sm">
                         <li><a href="/" class="hover:text-red-400">Home</a></li>
-                        <li><a href="/search" class="hover:text-red-400">Search Donors</a></li>
-                        <li><a href="{{ route('requester.requests.create') }}" class="hover:text-red-400">Emergency Request</a></li>
+                        @if(auth()->check() && auth()->user()->isRequester())
+                            <li><a href="{{ route('requester.search.index') }}" class="hover:text-red-400">Search Donors</a></li>
+                        @endif
                         @auth
+                            @if(auth()->user()->isRequester())
+                                <li><a href="{{ route('requester.requests.create') }}" class="hover:text-red-400">Emergency Request</a></li>
+                            @endif
                             @unless(auth()->user()->isAdmin())
                                 <li><a href="/profile" class="hover:text-red-400">Profile</a></li>
                             @endunless

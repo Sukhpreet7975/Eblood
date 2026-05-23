@@ -2,10 +2,11 @@
 
 namespace App\Http\Requests\Auth;
 
+use App\Models\User;
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Foundation\Http\FormRequest;
-use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
@@ -23,7 +24,7 @@ class LoginRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, ValidationRule|array<mixed>|string>
+     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
     public function rules(): array
     {
@@ -39,46 +40,18 @@ class LoginRequest extends FormRequest
      *
      * @throws ValidationException
      */
-    public function authenticate(): void
+    public function authenticate(): User
     {
         $this->ensureIsNotRateLimited();
-        // Verify role selection matches stored user role (if user exists)
-        $role = $this->string('role') ?? 'donor';
-        $user = User::where('email', $this->string('email'))->first();
 
-        if ($user) {
-            if ($role === 'admin' && ! $user->isAdmin()) {
-                RateLimiter::hit($this->throttleKey());
+        $email = strtolower(trim((string) $this->input('email')));
+        $password = (string) $this->input('password');
+        $selectedRole = (string) $this->input('role');
+        $remember = $this->boolean('remember');
 
-                throw ValidationException::withMessages([
-                    'role' => 'The selected role does not match this account.',
-                ]);
-            }
+        $user = User::where('email', $email)->first();
 
-            if ($role === 'donor' && $user->isAdmin()) {
-                RateLimiter::hit($this->throttleKey());
-
-                throw ValidationException::withMessages([
-                    'role' => 'The selected role does not match this account.',
-                ]);
-            }
-            if ($role === 'requester' && ! $user->isRequester()) {
-                RateLimiter::hit($this->throttleKey());
-
-                throw ValidationException::withMessages([
-                    'role' => 'The selected role does not match this account.',
-                ]);
-            }
-            if ($role !== 'requester' && $user->isRequester()) {
-                RateLimiter::hit($this->throttleKey());
-
-                throw ValidationException::withMessages([
-                    'role' => 'The selected role does not match this account.',
-                ]);
-            }
-        }
-
-        if (! Auth::attempt($this->only('email', 'password'), $this->boolean('remember'))) {
+        if (! $user) {
             RateLimiter::hit($this->throttleKey());
 
             throw ValidationException::withMessages([
@@ -86,7 +59,36 @@ class LoginRequest extends FormRequest
             ]);
         }
 
+        if (! Hash::check($password, $user->password)) {
+            RateLimiter::hit($this->throttleKey());
+
+            throw ValidationException::withMessages([
+                'password' => trans('auth.failed'),
+            ]);
+        }
+
+        if (! $this->roleMatches($user, $selectedRole)) {
+            RateLimiter::hit($this->throttleKey());
+
+            throw ValidationException::withMessages([
+                'role' => 'The selected role does not match this account.',
+            ]);
+        }
+
+        Auth::login($user, $remember);
         RateLimiter::clear($this->throttleKey());
+
+        return $user;
+    }
+
+    protected function roleMatches(User $user, string $selectedRole): bool
+    {
+        return match ($selectedRole) {
+            'admin' => $user->isAdmin(),
+            'donor' => $user->isDonor(),
+            'requester' => $user->isRequester(),
+            default => false,
+        };
     }
 
     /**
@@ -117,6 +119,6 @@ class LoginRequest extends FormRequest
      */
     public function throttleKey(): string
     {
-        return Str::transliterate(Str::lower($this->string('email')).'|'.$this->ip());
+        return Str::transliterate(Str::lower((string) $this->input('email')).'|'.$this->ip());
     }
 }

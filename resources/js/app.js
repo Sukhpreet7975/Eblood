@@ -1,5 +1,7 @@
 import './bootstrap';
 import './dark-mode';
+import { initNotificationCenter } from './notifications';
+import { initSmartFeatures } from './ai-features';
 
 import Alpine from 'alpinejs';
 
@@ -27,6 +29,9 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     }
+
+    initNotificationCenter();
+    initSmartFeatures();
 });
 
 window.addEventListener('load', function() {
