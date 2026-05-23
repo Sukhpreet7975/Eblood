@@ -1,6 +1,16 @@
 const STORAGE_KEY = 'eblood-notifications-v1';
 
-const getCurrentRole = () => window.__ebloodCurrentRole || 'guest';
+const VALID_ROLES = ['admin', 'donor', 'requester'];
+
+const getCurrentRole = () => {
+    const role = window.__ebloodCurrentRole;
+
+    if (VALID_ROLES.includes(role)) {
+        return role;
+    }
+
+    return 'guest';
+};
 
 const getDefaultNotificationsForRole = (role) => {
     if (role === 'admin') {
@@ -87,7 +97,34 @@ const getSeedNotifications = () => Array.isArray(window.__ebloodNotificationsSee
 const normalizeNotification = (notification) => ({
     ...notification,
     role: notification?.role || 'all',
+    read: Boolean(notification?.read),
 });
+
+const getAllNotifications = () => {
+    const seed = getSeedNotifications().map(normalizeNotification);
+    const stored = getStoredNotifications().map(normalizeNotification);
+
+    return [...seed, ...stored].reduce((items, notification) => {
+        if (!notification?.id) {
+            return items;
+        }
+
+        const existingIndex = items.findIndex((item) => item.id === notification.id);
+
+        if (existingIndex === -1) {
+            items.push(notification);
+            return items;
+        }
+
+        items[existingIndex] = {
+            ...items[existingIndex],
+            ...notification,
+            read: Boolean(notification.read),
+        };
+
+        return items;
+    }, []);
+};
 
 const isNotificationVisible = (notification, role) => {
     if (!notification) {
@@ -103,21 +140,7 @@ const isNotificationVisible = (notification, role) => {
 
 const resolveNotifications = () => {
     const role = getCurrentRole();
-    const seed = getSeedNotifications().map(normalizeNotification);
-    const stored = getStoredNotifications().map(normalizeNotification);
-
-    const merged = [...seed, ...stored].reduce((items, notification) => {
-        if (!notification?.id) {
-            return items;
-        }
-
-        if (!items.some((item) => item.id === notification.id)) {
-            items.push(notification);
-        }
-
-        return items;
-    }, []);
-
+    const merged = getAllNotifications();
     const visibleNotifications = merged.filter((notification) => isNotificationVisible(notification, role));
 
     if (visibleNotifications.length) {
@@ -142,6 +165,18 @@ const buildBadge = (count) => {
     badge.classList.toggle('hidden', count === 0);
 };
 
+const getTypeStyles = (type) => {
+    const styles = {
+        announcement: 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-100',
+        reminder: 'bg-amber-100 text-amber-700 dark:bg-amber-950/40 dark:text-amber-200',
+        approved: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-200',
+        rejected: 'bg-rose-100 text-rose-700 dark:bg-rose-950/40 dark:text-rose-200',
+        critical: 'bg-red-100 text-red-700 dark:bg-red-950/40 dark:text-red-200',
+    };
+
+    return styles[type] || styles.reminder;
+};
+
 const renderNotifications = () => {
     const notifications = resolveNotifications();
     const container = document.getElementById('notification-list');
@@ -156,42 +191,30 @@ const renderNotifications = () => {
     if (!notifications.length) {
         container.innerHTML = `
             <div class="rounded-[1.5rem] border border-dashed border-slate-200 bg-slate-50 px-4 py-6 text-left dark:border-slate-700 dark:bg-slate-900/80">
-                <p class="text-sm font-semibold text-slate-900 dark:text-white">No notifications yet</p>
-                <p class="mt-2 text-sm text-slate-500 dark:text-slate-300">You are all caught up. New alerts will appear here automatically.</p>
+                <p class="text-sm font-semibold text-slate-900 dark:text-white">No alerts yet</p>
+                <p class="mt-2 text-sm leading-6 text-slate-500 dark:text-slate-300">You're all caught up. New updates will appear here when your role needs attention.</p>
             </div>
         `;
         return;
     }
 
-    container.innerHTML = notifications.map((notification) => {
-        const typeStyles = {
-            announcement: 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-100',
-            reminder: 'bg-amber-100 text-amber-700 dark:bg-amber-950/40 dark:text-amber-200',
-            approved: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-200',
-            rejected: 'bg-rose-100 text-rose-700 dark:bg-rose-950/40 dark:text-rose-200',
-            critical: 'bg-red-100 text-red-700 dark:bg-red-950/40 dark:text-red-200',
-        };
-
-        const typeClass = typeStyles[notification.type] || typeStyles.reminder;
-
-        return `
-            <div class="rounded-[1.5rem] border border-slate-200/80 bg-white/95 px-4 py-4 shadow-sm dark:border-slate-700/80 dark:bg-slate-950/90">
-                <div class="flex items-start justify-between gap-4">
-                    <div>
-                        <div class="flex items-center gap-2">
-                            <span class="inline-flex rounded-full px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] ${typeClass}">${notification.type || 'update'}</span>
-                            <span class="text-xs text-slate-500 dark:text-slate-300">${notification.read ? 'Read' : 'Unread'}</span>
-                        </div>
-                        <p class="mt-3 text-sm font-semibold text-slate-900 dark:text-white">${notification.title}</p>
-                        <p class="mt-2 text-sm leading-6 text-slate-500 dark:text-slate-300">${notification.message}</p>
+    container.innerHTML = notifications.map((notification) => `
+        <div class="rounded-[1.5rem] border border-slate-200/80 bg-white/95 px-4 py-4 shadow-sm transition-all duration-200 hover:border-red-200 hover:shadow-[0_16px_40px_-28px_rgba(239,68,68,0.75)] dark:border-slate-700/80 dark:bg-slate-950/90">
+            <div class="flex items-start justify-between gap-4">
+                <div>
+                    <div class="flex flex-wrap items-center gap-2">
+                        <span class="inline-flex rounded-full px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] ${getTypeStyles(notification.type)}">${notification.type || 'update'}</span>
+                        <span class="text-xs text-slate-500 dark:text-slate-300">${notification.read ? 'Read' : 'Unread'}</span>
                     </div>
-                    <button type="button" data-notification-id="${notification.id}" class="js-mark-read rounded-full px-3 py-1 text-xs font-semibold text-slate-600 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800">
-                        ${notification.read ? 'Seen' : 'Mark read'}
-                    </button>
+                    <p class="mt-3 text-sm font-semibold text-slate-900 dark:text-white">${notification.title}</p>
+                    <p class="mt-2 text-sm leading-6 text-slate-500 dark:text-slate-300">${notification.message}</p>
                 </div>
+                <button type="button" data-notification-id="${notification.id}" class="js-mark-read shrink-0 rounded-full px-3 py-1 text-xs font-semibold text-slate-600 transition hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800">
+                    ${notification.read ? 'Seen' : 'Mark read'}
+                </button>
             </div>
-        `;
-    }).join('');
+        </div>
+    `).join('');
 
     container.querySelectorAll('.js-mark-read').forEach((button) => {
         button.addEventListener('click', () => {
@@ -200,18 +223,23 @@ const renderNotifications = () => {
     });
 };
 
-const markNotificationAsRead = (id) => {
-    const notifications = getStoredNotifications().map((notification) => (
-        notification.id === id ? { ...notification, read: true } : notification
-    ));
-
+const updateNotifications = (updater) => {
+    const notifications = getAllNotifications().map(updater);
     saveNotifications(notifications);
     renderNotifications();
 };
 
+const markNotificationAsRead = (id) => {
+    updateNotifications((notification) => (
+        notification.id === id ? { ...notification, read: true } : notification
+    ));
+};
+
 const markAllRead = () => {
-    const notifications = getStoredNotifications().map((notification) => ({ ...notification, read: true }));
-    saveNotifications(notifications);
+    updateNotifications((notification) => ({ ...notification, read: true }));
+};
+
+const refreshNotifications = () => {
     renderNotifications();
 };
 
@@ -223,15 +251,22 @@ const setupDropdown = () => {
         return;
     }
 
+    button.setAttribute('aria-haspopup', 'true');
+    button.setAttribute('aria-expanded', 'false');
+
     const openDropdown = () => {
         dropdown.style.display = 'flex';
+        button.setAttribute('aria-expanded', 'true');
     };
 
     const closeDropdown = () => {
         dropdown.style.display = 'none';
+        button.setAttribute('aria-expanded', 'false');
     };
 
-    button.addEventListener('click', () => {
+    button.addEventListener('click', (event) => {
+        event.stopPropagation();
+
         if (dropdown.style.display === 'flex') {
             closeDropdown();
             return;
@@ -248,17 +283,30 @@ const setupDropdown = () => {
         closeDropdown();
     });
 
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') {
+            closeDropdown();
+        }
+    });
+
     const markAll = document.getElementById('mark-all-read');
     if (markAll) {
         markAll.addEventListener('click', markAllRead);
     }
+
+    window.addEventListener('storage', refreshNotifications);
+    window.addEventListener('eblood:notifications:refresh', refreshNotifications);
 };
 
 export const initNotificationCenter = () => {
-    if (getCurrentRole() === 'guest') {
+    const role = getCurrentRole();
+
+    if (role === 'guest') {
         return;
     }
 
     renderNotifications();
     setupDropdown();
+
+    window.setInterval(refreshNotifications, 30000);
 };

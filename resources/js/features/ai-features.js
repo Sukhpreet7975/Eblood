@@ -198,49 +198,136 @@ function initHealthcareChatbot() {
         return;
     }
 
+    const launcher = document.createElement('button');
+    launcher.id = 'eblood-chat-launcher';
+    launcher.type = 'button';
+    launcher.setAttribute('aria-controls', 'eblood-chatbot');
+    launcher.setAttribute('aria-expanded', 'false');
+    launcher.className = 'fixed z-[60] inline-flex items-center gap-3 rounded-full bg-gradient-to-r from-red-600 to-rose-500 px-4 py-2.5 text-sm font-semibold text-white shadow-[0_26px_80px_-32px_rgba(239,68,68,0.9)] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_30px_90px_-30px_rgba(239,68,68,0.95)]';
+    launcher.style.position = 'fixed';
+    launcher.style.bottom = '1rem';
+    launcher.style.right = '1rem';
+    launcher.style.left = 'auto';
+    launcher.style.top = 'auto';
+    launcher.innerHTML = `
+        <span class="inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/15">
+            <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M12 2v20"/>
+                <path d="M2 12h20"/>
+            </svg>
+        </span>
+        <span class="flex flex-col items-start leading-none">
+            <span>Care assistant</span>
+            <span class="text-[11px] font-medium text-white/80">Live healthcare support</span>
+        </span>
+    `;
+
     const wrapper = document.createElement('div');
     wrapper.id = 'eblood-chatbot';
-    wrapper.className = 'fixed bottom-4 right-4 z-[55] w-80 max-w-[calc(100vw-2rem)] rounded-2xl border border-slate-200 bg-white/95 p-3 shadow-2xl backdrop-blur';
+    wrapper.className = 'fixed z-[55] hidden flex flex-col overflow-hidden rounded-[1.75rem] border border-slate-200/80 bg-white/95 p-4 shadow-[0_24px_80px_-30px_rgba(15,23,42,0.45)] backdrop-blur-xl dark:border-slate-700/80 dark:bg-slate-950/95';
+    wrapper.style.position = 'fixed';
+    wrapper.style.bottom = '1rem';
+    wrapper.style.right = '1rem';
+    wrapper.style.left = 'auto';
+    wrapper.style.top = 'auto';
+    wrapper.style.height = '32rem';
+    wrapper.style.maxHeight = 'calc(100vh - 5rem)';
+    wrapper.style.width = 'min(24rem, calc(100vw - 1rem))';
+    wrapper.style.maxWidth = 'calc(100vw - 1rem)';
     wrapper.innerHTML = `
-        <div class="flex items-center justify-between gap-3">
+        <div class="flex items-center justify-between gap-3 border-b border-slate-200/70 pb-3 dark:border-slate-700/70">
             <div>
-                <p class="text-sm font-semibold text-slate-900">Care assistant</p>
-                <p class="text-xs text-slate-500">Local guidance, compatibility checks, and alerts</p>
+                <p class="text-sm font-semibold text-slate-900 dark:text-white">Care assistant</p>
+                <p class="mt-1 text-xs text-slate-500 dark:text-slate-300">Guidance, compatibility checks, and urgent alerts</p>
             </div>
-            <button id="eblood-chat-toggle" type="button" class="rounded-full bg-red-600 px-3 py-1 text-xs font-semibold text-white">Hide</button>
+            <div class="flex items-center gap-2">
+                <span class="rounded-full bg-emerald-100 px-2.5 py-1 text-[11px] font-semibold text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-200">Live</span>
+                <button id="eblood-chat-toggle" type="button" class="rounded-full bg-slate-100 px-3 py-1 text-[11px] font-semibold text-slate-700 dark:bg-slate-800 dark:text-slate-100">Close</button>
+            </div>
         </div>
-        <div id="eblood-chat-body" class="mt-3 hidden space-y-3">
-            <div id="eblood-chat-log" class="max-h-52 space-y-2 overflow-y-auto rounded-xl bg-slate-50 p-3 text-sm text-slate-700"></div>
-            <div class="flex flex-wrap gap-2">
-                <button type="button" class="quick-chat-btn rounded-full bg-red-50 px-3 py-1 text-xs font-semibold text-red-700" data-message="How do I donate?">Donate tips</button>
-                <button type="button" class="quick-chat-btn rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700" data-message="Check compatibility">Compatibility</button>
-                <button type="button" class="quick-chat-btn rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700" data-message="Show smart recommendations">Recommendations</button>
-                <button type="button" class="quick-chat-btn rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700" data-message="Notify me">Alerts</button>
+
+        <div class="mt-3 rounded-[1.4rem] bg-gradient-to-r from-red-50 to-rose-50 px-4 py-3 dark:from-red-950/30 dark:to-rose-950/20">
+            <p class="text-[11px] uppercase tracking-[0.2em] text-red-500">Care note</p>
+            <p class="mt-2 text-sm leading-6 text-slate-700 dark:text-slate-100">Ask about donation guidance, compatibility, or emergency support and keep local notifications enabled for urgent updates.</p>
+        </div>
+
+        <div id="eblood-chat-body" class="mt-3 flex min-h-0 flex-1 flex-col gap-3">
+            <div id="eblood-chat-log" class="flex-1 min-h-0 space-y-3 overflow-y-auto rounded-[1.35rem] bg-slate-50 p-3 dark:bg-slate-900/80"></div>
+
+            <div class="grid grid-cols-2 gap-2">
+                <button type="button" class="quick-chat-btn rounded-full bg-red-50 px-3 py-2 text-[11px] font-semibold text-red-700 dark:bg-red-950/40 dark:text-red-100" data-message="How do I donate?">Donate tips</button>
+                <button type="button" class="quick-chat-btn rounded-full bg-slate-100 px-3 py-2 text-[11px] font-semibold text-slate-700 dark:bg-slate-800 dark:text-slate-100" data-message="Check compatibility">Compatibility</button>
+                <button type="button" class="quick-chat-btn rounded-full bg-slate-100 px-3 py-2 text-[11px] font-semibold text-slate-700 dark:bg-slate-800 dark:text-slate-100" data-message="Show smart recommendations">Recommendations</button>
+                <button type="button" class="quick-chat-btn rounded-full bg-slate-100 px-3 py-2 text-[11px] font-semibold text-slate-700 dark:bg-slate-800 dark:text-slate-100" data-message="Notify me">Alerts</button>
             </div>
-            <div class="flex gap-2">
-                <input id="eblood-chat-input" type="text" placeholder="Ask about blood safety" class="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm focus:border-red-400 focus:outline-none" />
-                <button id="eblood-chat-send" type="button" class="rounded-xl bg-red-600 px-3 py-2 text-sm font-semibold text-white">Send</button>
+
+            <div class="rounded-[1.25rem] border border-slate-200/80 bg-white px-2 py-2 dark:border-slate-700/80 dark:bg-slate-950">
+                <div class="flex gap-2">
+                    <input id="eblood-chat-input" type="text" placeholder="Ask about blood safety" class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 focus:border-red-400 focus:outline-none dark:border-slate-700 dark:bg-slate-900 dark:text-white" />
+                    <button id="eblood-chat-send" type="button" class="rounded-2xl bg-red-600 px-4 py-2 text-sm font-semibold text-white">Send</button>
+                </div>
             </div>
-            <button id="enable-alerts-btn" type="button" class="w-full rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm font-semibold text-red-700">Enable local alerts</button>
+
+            <button id="enable-alerts-btn" type="button" class="w-full rounded-2xl border border-red-200 bg-red-50 px-3 py-2 text-sm font-semibold text-red-700 dark:border-red-900/60 dark:bg-red-950/30 dark:text-red-100">Enable local alerts</button>
         </div>
     `;
 
+    document.body.appendChild(launcher);
     document.body.appendChild(wrapper);
 
     const toggle = document.getElementById('eblood-chat-toggle');
-    const body = document.getElementById('eblood-chat-body');
     const log = document.getElementById('eblood-chat-log');
     const input = document.getElementById('eblood-chat-input');
     const send = document.getElementById('eblood-chat-send');
 
+    const openChat = () => {
+        wrapper.classList.remove('hidden');
+        launcher.classList.add('hidden');
+        launcher.setAttribute('aria-expanded', 'true');
+    };
+
+    const closeChat = () => {
+        wrapper.classList.add('hidden');
+        launcher.classList.remove('hidden');
+        launcher.setAttribute('aria-expanded', 'false');
+    };
+
     const appendMessage = (role, message) => {
         const bubble = document.createElement('div');
         bubble.className = role === 'assistant'
-            ? 'rounded-xl bg-white px-3 py-2 text-slate-700 shadow-sm'
-            : 'rounded-xl bg-red-600 px-3 py-2 text-white';
+            ? 'rounded-[1.5rem] rounded-bl-md border border-slate-200 bg-white px-4 py-3 text-sm leading-6 text-slate-700 shadow-sm dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100'
+            : 'rounded-[1.5rem] rounded-br-md bg-red-600 px-4 py-3 text-sm leading-6 text-white shadow-sm';
         bubble.textContent = message;
         log.appendChild(bubble);
         log.scrollTop = log.scrollHeight;
+    };
+
+    const streamAssistantReply = (message) => {
+        const bubble = document.createElement('div');
+        bubble.className = 'rounded-[1.5rem] rounded-bl-md border border-slate-200 bg-white px-4 py-3 text-sm leading-6 text-slate-700 shadow-sm dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100';
+        bubble.innerHTML = `
+            <div class="flex items-center gap-2 text-[11px] uppercase tracking-[0.2em] text-slate-400 dark:text-slate-300">
+                <span class="h-2 w-2 rounded-full bg-red-500 animate-bounce"></span>
+                <span class="h-2 w-2 rounded-full bg-rose-400 animate-bounce [animation-delay:120ms]"></span>
+                <span class="h-2 w-2 rounded-full bg-amber-400 animate-bounce [animation-delay:240ms]"></span>
+                <span>typing</span>
+            </div>
+        `;
+        log.appendChild(bubble);
+        log.scrollTop = log.scrollHeight;
+
+        const characters = message.split('');
+        let rendered = '';
+
+        const timer = window.setInterval(() => {
+            rendered += characters.shift();
+            bubble.innerHTML = `<p class="text-sm leading-6 text-slate-700 dark:text-slate-100">${rendered}</p>`;
+            log.scrollTop = log.scrollHeight;
+
+            if (!characters.length) {
+                window.clearInterval(timer);
+            }
+        }, 18);
     };
 
     const answerFor = (question) => {
@@ -264,17 +351,23 @@ function initHealthcareChatbot() {
 
         appendMessage('user', text);
         input.value = '';
-        appendMessage('assistant', answerFor(text));
+        streamAssistantReply(answerFor(text));
 
         if (text.toLowerCase().includes('notify') || text.toLowerCase().includes('alert')) {
             requestNotificationPermission();
         }
     };
 
-    toggle.addEventListener('click', () => {
-        body.classList.toggle('hidden');
-        toggle.textContent = body.classList.contains('hidden') ? 'Show' : 'Hide';
+    launcher.addEventListener('click', () => {
+        if (wrapper.classList.contains('hidden')) {
+            openChat();
+            return;
+        }
+
+        closeChat();
     });
+
+    toggle.addEventListener('click', closeChat);
 
     send.addEventListener('click', sendMessage);
     input.addEventListener('keydown', (event) => {
@@ -291,7 +384,17 @@ function initHealthcareChatbot() {
         });
     });
 
-    appendMessage('assistant', 'Hi! I am your local care assistant. Ask me about donations, compatibility, or current emergency priority.');
+    document.addEventListener('click', (event) => {
+        if (wrapper.classList.contains('hidden')) {
+            return;
+        }
+
+        if (!wrapper.contains(event.target) && !launcher.contains(event.target)) {
+            closeChat();
+        }
+    });
+
+    streamAssistantReply('Hi! I am your local care assistant. Ask me about donations, compatibility, or current emergency priority.');
 }
 
 function updateSearchSummary(donors, requestGroup) {

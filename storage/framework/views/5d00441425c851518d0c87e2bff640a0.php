@@ -8,17 +8,17 @@
     <meta name="viewport"
           content="width=device-width, initial-scale=1.0">
 
-    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="csrf-token" content="<?php echo e(csrf_token()); ?>">
 
-    <title>@yield('title', 'E-Blood Donation')</title>
+    <title><?php echo $__env->yieldContent('title', 'E-Blood Donation'); ?></title>
 
-    @vite([
+    <?php echo app('Illuminate\Foundation\Vite')([
         'resources/css/app.css',
         'resources/js/app.js'
-    ])
+    ]); ?>
 
     <script>
-        window.__ebloodCurrentRole = @json(auth()->check() ? auth()->user()->role : 'guest');
+        window.__ebloodCurrentRole = <?php echo json_encode(auth()->check() ? auth()->user()->role : 'guest', 15, 512) ?>;
     </script>
 
 </head>
@@ -42,45 +42,45 @@
             </a>
 
             <div class="hidden md:flex items-center gap-3 text-sm">
-                @guest
+                <?php if(auth()->guard()->guest()): ?>
                     <a href="/" class="rounded-full px-4 py-2 text-slate-700 hover:bg-red-50 hover:text-red-600 dark:text-slate-200 dark:hover:bg-slate-800">Home</a>
                     <a href="/login" class="rounded-full px-4 py-2 bg-red-600 text-white hover:bg-red-700">Login</a>
                     <a href="/register" class="rounded-full px-4 py-2 border border-slate-300 text-slate-700 hover:border-red-500 hover:text-red-600 dark:border-slate-700 dark:text-slate-200">Register</a>
-                @else
-                    @if(auth()->user()->isAdmin())
-                        @php
+                <?php else: ?>
+                    <?php if(auth()->user()->isAdmin()): ?>
+                        <?php
                             $adminLinkClasses = 'rounded-full px-4 py-2 transition';
                             $adminActiveClasses = 'bg-red-100 text-red-700 dark:bg-red-950/60 dark:text-red-200';
                             $adminInactiveClasses = 'text-slate-700 hover:bg-red-50 hover:text-red-600 dark:text-slate-200 dark:hover:bg-slate-800';
-                        @endphp
+                        ?>
 
-                        <a href="{{ route('admin.home') }}" class="{{ $adminLinkClasses }} {{ request()->routeIs('admin.home') ? $adminActiveClasses : $adminInactiveClasses }}">Home</a>
-                        <a href="{{ route('admin.dashboard') }}" class="{{ $adminLinkClasses }} {{ request()->routeIs('admin.dashboard') ? $adminActiveClasses : $adminInactiveClasses }}">Dashboard</a>
-                        <a href="{{ route('admin.donors.index') }}" class="{{ $adminLinkClasses }} {{ request()->routeIs('admin.donors.*') ? $adminActiveClasses : $adminInactiveClasses }}">Manage Donors</a>
-                        <a href="{{ route('admin.requesters.index') }}" class="{{ $adminLinkClasses }} {{ request()->routeIs('admin.requesters.*') ? $adminActiveClasses : $adminInactiveClasses }}">Manage Requesters</a>
-                        <a href="{{ route('admin.requests.index') }}" class="{{ $adminLinkClasses }} {{ request()->routeIs('admin.requests.*') ? $adminActiveClasses : $adminInactiveClasses }}">Emergency Requests</a>
-                    @elseif(auth()->user()->isRequester())
-                        <a href="{{ route('requester.home') }}" class="rounded-full px-4 py-2 text-slate-700 hover:bg-red-50 hover:text-red-600 dark:text-slate-200 dark:hover:bg-slate-800">Home</a>
-                        <a href="{{ route('requester.search.index') }}" class="rounded-full px-4 py-2 text-slate-700 hover:bg-red-50 hover:text-red-600 dark:text-slate-200 dark:hover:bg-slate-800">Search Donors</a>
-                        <a href="{{ route('requester.requests.create') }}" class="rounded-full px-4 py-2 text-slate-700 hover:bg-red-50 hover:text-red-600 dark:text-slate-200 dark:hover:bg-slate-800">Create Request</a>
-                        <a href="{{ route('requester.requests.index') }}" class="rounded-full px-4 py-2 text-slate-700 hover:bg-red-50 hover:text-red-600 dark:text-slate-200 dark:hover:bg-slate-800">My Requests</a>
+                        <a href="<?php echo e(route('admin.home')); ?>" class="<?php echo e($adminLinkClasses); ?> <?php echo e(request()->routeIs('admin.home') ? $adminActiveClasses : $adminInactiveClasses); ?>">Home</a>
+                        <a href="<?php echo e(route('admin.dashboard')); ?>" class="<?php echo e($adminLinkClasses); ?> <?php echo e(request()->routeIs('admin.dashboard') ? $adminActiveClasses : $adminInactiveClasses); ?>">Dashboard</a>
+                        <a href="<?php echo e(route('admin.donors.index')); ?>" class="<?php echo e($adminLinkClasses); ?> <?php echo e(request()->routeIs('admin.donors.*') ? $adminActiveClasses : $adminInactiveClasses); ?>">Manage Donors</a>
+                        <a href="<?php echo e(route('admin.requesters.index')); ?>" class="<?php echo e($adminLinkClasses); ?> <?php echo e(request()->routeIs('admin.requesters.*') ? $adminActiveClasses : $adminInactiveClasses); ?>">Manage Requesters</a>
+                        <a href="<?php echo e(route('admin.requests.index')); ?>" class="<?php echo e($adminLinkClasses); ?> <?php echo e(request()->routeIs('admin.requests.*') ? $adminActiveClasses : $adminInactiveClasses); ?>">Emergency Requests</a>
+                    <?php elseif(auth()->user()->isRequester()): ?>
+                        <a href="<?php echo e(route('requester.home')); ?>" class="rounded-full px-4 py-2 text-slate-700 hover:bg-red-50 hover:text-red-600 dark:text-slate-200 dark:hover:bg-slate-800">Home</a>
+                        <a href="<?php echo e(route('requester.search.index')); ?>" class="rounded-full px-4 py-2 text-slate-700 hover:bg-red-50 hover:text-red-600 dark:text-slate-200 dark:hover:bg-slate-800">Search Donors</a>
+                        <a href="<?php echo e(route('requester.requests.create')); ?>" class="rounded-full px-4 py-2 text-slate-700 hover:bg-red-50 hover:text-red-600 dark:text-slate-200 dark:hover:bg-slate-800">Create Request</a>
+                        <a href="<?php echo e(route('requester.requests.index')); ?>" class="rounded-full px-4 py-2 text-slate-700 hover:bg-red-50 hover:text-red-600 dark:text-slate-200 dark:hover:bg-slate-800">My Requests</a>
                         <a href="/profile" class="rounded-full px-4 py-2 text-slate-700 hover:bg-red-50 hover:text-red-600 dark:text-slate-200 dark:hover:bg-slate-800">Profile</a>
-                    @elseif(auth()->user()->isDonor())
-                        <a href="{{ route('donor.home') }}" class="rounded-full px-4 py-2 text-slate-700 hover:bg-red-50 hover:text-red-600 dark:text-slate-200 dark:hover:bg-slate-800">Home</a>
+                    <?php elseif(auth()->user()->isDonor()): ?>
+                        <a href="<?php echo e(route('donor.home')); ?>" class="rounded-full px-4 py-2 text-slate-700 hover:bg-red-50 hover:text-red-600 dark:text-slate-200 dark:hover:bg-slate-800">Home</a>
                         <a href="/profile" class="rounded-full px-4 py-2 text-slate-700 hover:bg-red-50 hover:text-red-600 dark:text-slate-200 dark:hover:bg-slate-800">Profile</a>
                         <a href="/profile#availability" class="rounded-full px-4 py-2 text-slate-700 hover:bg-red-50 hover:text-red-600 dark:text-slate-200 dark:hover:bg-slate-800">Availability</a>
-                        <a href="{{ route('donor.home') }}#achievements" class="rounded-full px-4 py-2 text-slate-700 hover:bg-red-50 hover:text-red-600 dark:text-slate-200 dark:hover:bg-slate-800">Achievements</a>
-                    @endif
+                        <a href="<?php echo e(route('donor.home')); ?>#achievements" class="rounded-full px-4 py-2 text-slate-700 hover:bg-red-50 hover:text-red-600 dark:text-slate-200 dark:hover:bg-slate-800">Achievements</a>
+                    <?php endif; ?>
 
-                    <form method="POST" action="{{ route('logout') }}" class="inline">
-                        @csrf
+                    <form method="POST" action="<?php echo e(route('logout')); ?>" class="inline">
+                        <?php echo csrf_field(); ?>
                         <button class="rounded-full px-4 py-2 bg-red-600 text-white hover:bg-red-700">Logout</button>
                     </form>
-                @endguest
+                <?php endif; ?>
             </div>
 
             <div class="flex items-center gap-3">
-                @auth
+                <?php if(auth()->guard()->check()): ?>
                     <div class="relative">
                         <button id="notification-toggle" type="button" class="inline-flex items-center gap-2 rounded-[1.5rem] border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-[0_18px_60px_-32px_rgba(15,23,42,0.35)] transition-all duration-200 hover:-translate-y-0.5 hover:border-red-300 hover:text-red-600 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:hover:border-red-500/60" aria-haspopup="true" aria-expanded="false">
                             <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 17h5l-1.4-1.4A2 2 0 0 1 18 14.2V11a6 6 0 1 0-12 0v3.2a2 2 0 0 1-.6 1.4L4 17h5"/><path d="M10 19a2 2 0 0 0 4 0"/></svg>
@@ -98,7 +98,7 @@
                             <div id="notification-list" class="mt-4 flex-1 space-y-3 overflow-y-auto pr-1"></div>
                         </div>
                     </div>
-                @endauth
+                <?php endif; ?>
 
                 <button type="button" class="js-dark-mode-toggle inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-slate-300 bg-white text-slate-700 shadow transition duration-300 hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700" aria-label="Toggle dark mode" title="Toggle dark mode">
                     <svg class="dark-mode-icon w-5 h-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"></svg>
@@ -109,70 +109,72 @@
         </div>
 
         <div id="mobile-menu" class="hidden flex-col gap-3 px-4 pb-4 md:hidden">
-            @guest
+            <?php if(auth()->guard()->guest()): ?>
                 <a href="/" class="block rounded-2xl px-4 py-3 text-slate-900 hover:bg-red-100 hover:text-red-700 dark:text-slate-100 dark:hover:bg-slate-800">Home</a>
                 <a href="/login" class="block rounded-2xl px-4 py-3 text-slate-900 hover:bg-red-100 hover:text-red-700 dark:text-slate-100 dark:hover:bg-slate-800">Login</a>
                 <a href="/register" class="block rounded-2xl bg-white px-4 py-3 text-center text-red-600 font-semibold hover:bg-slate-100 dark:bg-slate-900 dark:text-white">Register</a>
-            @else
-                @if(auth()->user()->isAdmin())
-                    @php
+            <?php else: ?>
+                <?php if(auth()->user()->isAdmin()): ?>
+                    <?php
                         $mobileAdminLinkClasses = 'block rounded-2xl px-4 py-3 transition';
                         $mobileAdminActiveClasses = 'bg-red-100 text-red-700 dark:bg-red-950/60 dark:text-red-200';
                         $mobileAdminInactiveClasses = 'text-slate-900 hover:bg-red-100 hover:text-red-700 dark:text-slate-100 dark:hover:bg-slate-800';
-                    @endphp
-                    <a href="{{ route('admin.home') }}" class="{{ $mobileAdminLinkClasses }} {{ request()->routeIs('admin.home') ? $mobileAdminActiveClasses : $mobileAdminInactiveClasses }}">Home</a>
-                    <a href="{{ route('admin.dashboard') }}" class="{{ $mobileAdminLinkClasses }} {{ request()->routeIs('admin.dashboard') ? $mobileAdminActiveClasses : $mobileAdminInactiveClasses }}">Dashboard</a>
-                    <a href="{{ route('admin.donors.index') }}" class="{{ $mobileAdminLinkClasses }} {{ request()->routeIs('admin.donors.*') ? $mobileAdminActiveClasses : $mobileAdminInactiveClasses }}">Manage Donors</a>
-                    <a href="{{ route('admin.requesters.index') }}" class="{{ $mobileAdminLinkClasses }} {{ request()->routeIs('admin.requesters.*') ? $mobileAdminActiveClasses : $mobileAdminInactiveClasses }}">Manage Requesters</a>
-                    <a href="{{ route('admin.requests.index') }}" class="{{ $mobileAdminLinkClasses }} {{ request()->routeIs('admin.requests.*') ? $mobileAdminActiveClasses : $mobileAdminInactiveClasses }}">Emergency Requests</a>
-                @elseif(auth()->user()->isRequester())
-                    <a href="{{ route('requester.home') }}" class="block rounded-2xl px-4 py-3 text-slate-900 hover:bg-red-100 hover:text-red-700 dark:text-slate-100 dark:hover:bg-slate-800">Home</a>
-                    <a href="{{ route('requester.search.index') }}" class="block rounded-2xl px-4 py-3 text-slate-900 hover:bg-red-100 hover:text-red-700 dark:text-slate-100 dark:hover:bg-slate-800">Search Donors</a>
-                    <a href="{{ route('requester.requests.create') }}" class="block rounded-2xl px-4 py-3 text-slate-900 hover:bg-red-100 hover:text-red-700 dark:text-slate-100 dark:hover:bg-slate-800">Create Request</a>
-                    <a href="{{ route('requester.requests.index') }}" class="block rounded-2xl px-4 py-3 text-slate-900 hover:bg-red-100 hover:text-red-700 dark:text-slate-100 dark:hover:bg-slate-800">My Requests</a>
+                    ?>
+                    <a href="<?php echo e(route('admin.home')); ?>" class="<?php echo e($mobileAdminLinkClasses); ?> <?php echo e(request()->routeIs('admin.home') ? $mobileAdminActiveClasses : $mobileAdminInactiveClasses); ?>">Home</a>
+                    <a href="<?php echo e(route('admin.dashboard')); ?>" class="<?php echo e($mobileAdminLinkClasses); ?> <?php echo e(request()->routeIs('admin.dashboard') ? $mobileAdminActiveClasses : $mobileAdminInactiveClasses); ?>">Dashboard</a>
+                    <a href="<?php echo e(route('admin.donors.index')); ?>" class="<?php echo e($mobileAdminLinkClasses); ?> <?php echo e(request()->routeIs('admin.donors.*') ? $mobileAdminActiveClasses : $mobileAdminInactiveClasses); ?>">Manage Donors</a>
+                    <a href="<?php echo e(route('admin.requesters.index')); ?>" class="<?php echo e($mobileAdminLinkClasses); ?> <?php echo e(request()->routeIs('admin.requesters.*') ? $mobileAdminActiveClasses : $mobileAdminInactiveClasses); ?>">Manage Requesters</a>
+                    <a href="<?php echo e(route('admin.requests.index')); ?>" class="<?php echo e($mobileAdminLinkClasses); ?> <?php echo e(request()->routeIs('admin.requests.*') ? $mobileAdminActiveClasses : $mobileAdminInactiveClasses); ?>">Emergency Requests</a>
+                <?php elseif(auth()->user()->isRequester()): ?>
+                    <a href="<?php echo e(route('requester.home')); ?>" class="block rounded-2xl px-4 py-3 text-slate-900 hover:bg-red-100 hover:text-red-700 dark:text-slate-100 dark:hover:bg-slate-800">Home</a>
+                    <a href="<?php echo e(route('requester.search.index')); ?>" class="block rounded-2xl px-4 py-3 text-slate-900 hover:bg-red-100 hover:text-red-700 dark:text-slate-100 dark:hover:bg-slate-800">Search Donors</a>
+                    <a href="<?php echo e(route('requester.requests.create')); ?>" class="block rounded-2xl px-4 py-3 text-slate-900 hover:bg-red-100 hover:text-red-700 dark:text-slate-100 dark:hover:bg-slate-800">Create Request</a>
+                    <a href="<?php echo e(route('requester.requests.index')); ?>" class="block rounded-2xl px-4 py-3 text-slate-900 hover:bg-red-100 hover:text-red-700 dark:text-slate-100 dark:hover:bg-slate-800">My Requests</a>
                     <a href="/profile" class="block rounded-2xl px-4 py-3 text-slate-900 hover:bg-red-100 hover:text-red-700 dark:text-slate-100 dark:hover:bg-slate-800">Profile</a>
-                @elseif(auth()->user()->isDonor())
-                    <a href="{{ route('donor.home') }}" class="block rounded-2xl px-4 py-3 text-slate-900 hover:bg-red-100 hover:text-red-700 dark:text-slate-100 dark:hover:bg-slate-800">Home</a>
+                <?php elseif(auth()->user()->isDonor()): ?>
+                    <a href="<?php echo e(route('donor.home')); ?>" class="block rounded-2xl px-4 py-3 text-slate-900 hover:bg-red-100 hover:text-red-700 dark:text-slate-100 dark:hover:bg-slate-800">Home</a>
                     <a href="/profile" class="block rounded-2xl px-4 py-3 text-slate-900 hover:bg-red-100 hover:text-red-700 dark:text-slate-100 dark:hover:bg-slate-800">Profile</a>
                     <a href="/profile#availability" class="block rounded-2xl px-4 py-3 text-slate-900 hover:bg-red-100 hover:text-red-700 dark:text-slate-100 dark:hover:bg-slate-800">Availability</a>
-                    <a href="{{ route('donor.home') }}#achievements" class="block rounded-2xl px-4 py-3 text-slate-900 hover:bg-red-100 hover:text-red-700 dark:text-slate-100 dark:hover:bg-slate-800">Achievements</a>
-                @endif
-                <form method="POST" action="{{ route('logout') }}" class="w-full">
-                    @csrf
+                    <a href="<?php echo e(route('donor.home')); ?>#achievements" class="block rounded-2xl px-4 py-3 text-slate-900 hover:bg-red-100 hover:text-red-700 dark:text-slate-100 dark:hover:bg-slate-800">Achievements</a>
+                <?php endif; ?>
+                <form method="POST" action="<?php echo e(route('logout')); ?>" class="w-full">
+                    <?php echo csrf_field(); ?>
                     <button type="submit" class="w-full rounded-2xl bg-red-600 px-4 py-3 text-sm font-semibold text-white hover:bg-red-700">Logout</button>
                 </form>
                 <button type="button" class="js-dark-mode-toggle w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-left text-slate-900 hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:hover:bg-slate-800">Toggle theme</button>
-            @endguest
+            <?php endif; ?>
         </div>
     </nav>
 
-    @hasSection('hero')
+    <?php if (! empty(trim($__env->yieldContent('hero')))): ?>
         <section class="relative overflow-hidden px-4 py-8 sm:py-10">
             <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(239,68,68,0.16),transparent_30%),radial-gradient(circle_at_bottom_right,_rgba(59,130,246,0.14),transparent_28%)]"></div>
             <div class="relative container mx-auto px-4">
-                @yield('hero')
+                <?php echo $__env->yieldContent('hero'); ?>
             </div>
         </section>
-    @endif
+    <?php endif; ?>
 
-    @if(session('success') || session('error'))
+    <?php if(session('success') || session('error')): ?>
         <div class="container mx-auto px-4 mt-6">
-            @if(session('success'))
+            <?php if(session('success')): ?>
                 <div id="success-alert" class="glass-card border-green-400/40 bg-green-50/80 text-green-800 px-5 py-4">
-                    {{ session('success') }}
+                    <?php echo e(session('success')); ?>
+
                 </div>
-            @endif
-            @if(session('error'))
+            <?php endif; ?>
+            <?php if(session('error')): ?>
                 <div id="error-alert" class="glass-card border-red-400/40 bg-red-50/80 text-red-800 px-5 py-4">
-                    {{ session('error') }}
+                    <?php echo e(session('error')); ?>
+
                 </div>
-            @endif
+            <?php endif; ?>
         </div>
-    @endif
+    <?php endif; ?>
 
     <main class="container mx-auto flex-1 px-4 pb-6">
         <div class="fade-in-up">
-            @yield('content')
+            <?php echo $__env->yieldContent('content'); ?>
         </div>
     </main>
 
@@ -188,17 +190,17 @@
                     <h4 class="font-semibold text-white">Quick Links</h4>
                     <ul class="space-y-2 text-slate-300 text-sm">
                         <li><a href="/" class="hover:text-red-400">Home</a></li>
-                        @if(auth()->check() && auth()->user()->isRequester())
-                            <li><a href="{{ route('requester.search.index') }}" class="hover:text-red-400">Search Donors</a></li>
-                        @endif
-                        @auth
-                            @if(auth()->user()->isRequester())
-                                <li><a href="{{ route('requester.requests.create') }}" class="hover:text-red-400">Emergency Request</a></li>
-                            @endif
-                            @unless(auth()->user()->isAdmin())
+                        <?php if(auth()->check() && auth()->user()->isRequester()): ?>
+                            <li><a href="<?php echo e(route('requester.search.index')); ?>" class="hover:text-red-400">Search Donors</a></li>
+                        <?php endif; ?>
+                        <?php if(auth()->guard()->check()): ?>
+                            <?php if(auth()->user()->isRequester()): ?>
+                                <li><a href="<?php echo e(route('requester.requests.create')); ?>" class="hover:text-red-400">Emergency Request</a></li>
+                            <?php endif; ?>
+                            <?php if (! (auth()->user()->isAdmin())): ?>
                                 <li><a href="/profile" class="hover:text-red-400">Profile</a></li>
-                            @endunless
-                        @endauth
+                            <?php endif; ?>
+                        <?php endif; ?>
                     </ul>
                 </div>
                 <div class="space-y-3">
@@ -219,7 +221,7 @@
             </div>
             <div class="border-t border-gray-800 mt-8 pt-6 text-center text-gray-400">
                 <div class="md:flex md:justify-between md:items-center">
-                    <div>© {{ date('Y') }} E-Blood Donation Platform. All rights reserved.</div>
+                    <div>© <?php echo e(date('Y')); ?> E-Blood Donation Platform. All rights reserved.</div>
                     <div class="mt-3 md:mt-0">Made with ❤️ to save lives.</div>
                 </div>
             </div>
@@ -239,6 +241,6 @@
         }, 3000);
     </script>
 
-    @stack('scripts')
+    <?php echo $__env->yieldPushContent('scripts'); ?>
 </body>
-</html>
+</html><?php /**PATH C:\xampp\htdocs\MyProject\eblood\resources\views/layouts/app.blade.php ENDPATH**/ ?>
