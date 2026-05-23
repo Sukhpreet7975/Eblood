@@ -10,12 +10,16 @@
 
     <meta name="csrf-token" content="<?php echo e(csrf_token()); ?>">
 
-    <title>E-Blood Donation</title>
+    <title><?php echo $__env->yieldContent('title', 'E-Blood Donation'); ?></title>
 
     <?php echo app('Illuminate\Foundation\Vite')([
         'resources/css/app.css',
         'resources/js/app.js'
     ]); ?>
+
+    <script>
+        window.__ebloodCurrentRole = <?php echo json_encode(auth()->check() ? auth()->user()->role : 'guest', 15, 512) ?>;
+    </script>
 
 </head>
 
@@ -44,18 +48,28 @@
                     <a href="/register" class="rounded-full px-4 py-2 border border-slate-300 text-slate-700 hover:border-red-500 hover:text-red-600 dark:border-slate-700 dark:text-slate-200">Register</a>
                 <?php else: ?>
                     <?php if(auth()->user()->isAdmin()): ?>
-                        <a href="<?php echo e(route('admin.home')); ?>" class="rounded-full px-4 py-2 text-slate-700 hover:bg-red-50 hover:text-red-600 dark:text-slate-200 dark:hover:bg-slate-800">Home</a>
-                        <a href="/admin/requests" class="rounded-full px-4 py-2 text-slate-700 hover:bg-red-50 hover:text-red-600 dark:text-slate-200 dark:hover:bg-slate-800">Requests</a>
+                        <?php
+                            $adminLinkClasses = 'rounded-full px-4 py-2 transition';
+                            $adminActiveClasses = 'bg-red-100 text-red-700 dark:bg-red-950/60 dark:text-red-200';
+                            $adminInactiveClasses = 'text-slate-700 hover:bg-red-50 hover:text-red-600 dark:text-slate-200 dark:hover:bg-slate-800';
+                        ?>
+
+                        <a href="<?php echo e(route('admin.home')); ?>" class="<?php echo e($adminLinkClasses); ?> <?php echo e(request()->routeIs('admin.home') ? $adminActiveClasses : $adminInactiveClasses); ?>">Home</a>
+                        <a href="<?php echo e(route('admin.dashboard')); ?>" class="<?php echo e($adminLinkClasses); ?> <?php echo e(request()->routeIs('admin.dashboard') ? $adminActiveClasses : $adminInactiveClasses); ?>">Dashboard</a>
+                        <a href="<?php echo e(route('admin.donors.index')); ?>" class="<?php echo e($adminLinkClasses); ?> <?php echo e(request()->routeIs('admin.donors.*') ? $adminActiveClasses : $adminInactiveClasses); ?>">Manage Donors</a>
+                        <a href="<?php echo e(route('admin.requesters.index')); ?>" class="<?php echo e($adminLinkClasses); ?> <?php echo e(request()->routeIs('admin.requesters.*') ? $adminActiveClasses : $adminInactiveClasses); ?>">Manage Requesters</a>
+                        <a href="<?php echo e(route('admin.requests.index')); ?>" class="<?php echo e($adminLinkClasses); ?> <?php echo e(request()->routeIs('admin.requests.*') ? $adminActiveClasses : $adminInactiveClasses); ?>">Emergency Requests</a>
                     <?php elseif(auth()->user()->isRequester()): ?>
                         <a href="<?php echo e(route('requester.home')); ?>" class="rounded-full px-4 py-2 text-slate-700 hover:bg-red-50 hover:text-red-600 dark:text-slate-200 dark:hover:bg-slate-800">Home</a>
                         <a href="<?php echo e(route('requester.search.index')); ?>" class="rounded-full px-4 py-2 text-slate-700 hover:bg-red-50 hover:text-red-600 dark:text-slate-200 dark:hover:bg-slate-800">Search Donors</a>
-                        <a href="<?php echo e(route('requester.requests.create')); ?>" class="rounded-full px-4 py-2 text-slate-700 hover:bg-red-50 hover:text-red-600 dark:text-slate-200 dark:hover:bg-slate-800">Emergency Request</a>
+                        <a href="<?php echo e(route('requester.requests.create')); ?>" class="rounded-full px-4 py-2 text-slate-700 hover:bg-red-50 hover:text-red-600 dark:text-slate-200 dark:hover:bg-slate-800">Create Request</a>
                         <a href="<?php echo e(route('requester.requests.index')); ?>" class="rounded-full px-4 py-2 text-slate-700 hover:bg-red-50 hover:text-red-600 dark:text-slate-200 dark:hover:bg-slate-800">My Requests</a>
                         <a href="/profile" class="rounded-full px-4 py-2 text-slate-700 hover:bg-red-50 hover:text-red-600 dark:text-slate-200 dark:hover:bg-slate-800">Profile</a>
                     <?php elseif(auth()->user()->isDonor()): ?>
                         <a href="<?php echo e(route('donor.home')); ?>" class="rounded-full px-4 py-2 text-slate-700 hover:bg-red-50 hover:text-red-600 dark:text-slate-200 dark:hover:bg-slate-800">Home</a>
                         <a href="/profile" class="rounded-full px-4 py-2 text-slate-700 hover:bg-red-50 hover:text-red-600 dark:text-slate-200 dark:hover:bg-slate-800">Profile</a>
                         <a href="/profile#availability" class="rounded-full px-4 py-2 text-slate-700 hover:bg-red-50 hover:text-red-600 dark:text-slate-200 dark:hover:bg-slate-800">Availability</a>
+                        <a href="<?php echo e(route('donor.home')); ?>#achievements" class="rounded-full px-4 py-2 text-slate-700 hover:bg-red-50 hover:text-red-600 dark:text-slate-200 dark:hover:bg-slate-800">Achievements</a>
                     <?php endif; ?>
 
                     <form method="POST" action="<?php echo e(route('logout')); ?>" class="inline">
@@ -66,23 +80,26 @@
             </div>
 
             <div class="flex items-center gap-3">
-                <div class="relative">
-                    <button id="notification-toggle" type="button" class="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-red-300 hover:text-red-600 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:hover:border-red-500/60">
-                        <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 17h5l-1.4-1.4A2 2 0 0 1 18 14.2V11a6 6 0 1 0-12 0v3.2a2 2 0 0 1-.6 1.4L4 17h5"/><path d="M10 19a2 2 0 0 0 4 0"/></svg>
-                        <span>Alerts</span>
-                        <span id="notification-badge" class="hidden rounded-full bg-red-600 px-2 py-0.5 text-[11px] font-bold text-white">0</span>
-                    </button>
-                    <div id="notification-dropdown" class="hidden absolute right-0 top-[calc(100%+0.75rem)] z-[60] flex max-h-[24rem] w-[22rem] max-w-[calc(100vw-2rem)] flex-col overflow-hidden rounded-[1.75rem] border border-slate-200 bg-white/95 p-4 shadow-[0_30px_80px_-40px_rgba(15,23,42,0.4)] backdrop-blur-xl dark:border-slate-700 dark:bg-slate-950/95">
-                        <div class="flex items-center justify-between gap-4">
-                            <div>
-                                <p class="text-sm font-semibold text-slate-900 dark:text-white">Notification center</p>
-                                <p class="text-xs text-slate-500 dark:text-slate-300">Unread updates stay visible until marked read.</p>
+                <?php if(auth()->guard()->check()): ?>
+                    <div class="relative">
+                        <button id="notification-toggle" type="button" class="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-red-300 hover:text-red-600 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:hover:border-red-500/60">
+                            <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 17h5l-1.4-1.4A2 2 0 0 1 18 14.2V11a6 6 0 1 0-12 0v3.2a2 2 0 0 1-.6 1.4L4 17h5"/><path d="M10 19a2 2 0 0 0 4 0"/></svg>
+                            <span>Alerts</span>
+                            <span id="notification-badge" class="hidden rounded-full bg-red-600 px-2 py-0.5 text-[11px] font-bold text-white">0</span>
+                        </button>
+                        <div id="notification-dropdown" style="display:none; flex-direction:column;" class="absolute right-0 top-[calc(100%+0.75rem)] z-[60] max-h-[24rem] w-[22rem] max-w-[calc(100vw-2rem)] overflow-hidden rounded-[1.75rem] border border-slate-200 bg-white/95 p-4 shadow-[0_30px_80px_-40px_rgba(15,23,42,0.4)] backdrop-blur-xl dark:border-slate-700 dark:bg-slate-950/95">
+                            <div class="flex items-center justify-between gap-4">
+                                <div>
+                                    <p class="text-sm font-semibold text-slate-900 dark:text-white">Notification center</p>
+                                    <p class="text-xs text-slate-500 dark:text-slate-300">Unread updates stay visible until marked read.</p>
+                                </div>
+                                <button id="mark-all-read" type="button" class="text-xs font-semibold text-red-600 hover:text-red-700">Mark all read</button>
                             </div>
-                            <button id="mark-all-read" type="button" class="text-xs font-semibold text-red-600 hover:text-red-700">Mark all read</button>
+                            <div id="notification-list" class="mt-4 flex-1 space-y-3 overflow-y-auto pr-1"></div>
                         </div>
-                        <div id="notification-list" class="mt-4 flex-1 space-y-3 overflow-y-auto pr-1"></div>
                     </div>
-                </div>
+                <?php endif; ?>
+
                 <button type="button" class="js-dark-mode-toggle inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-slate-300 bg-white text-slate-700 shadow transition duration-300 hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700" aria-label="Toggle dark mode" title="Toggle dark mode">
                     <svg class="dark-mode-icon w-5 h-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"></svg>
                 </button>
@@ -98,18 +115,27 @@
                 <a href="/register" class="block rounded-2xl bg-white px-4 py-3 text-center text-red-600 font-semibold hover:bg-slate-100 dark:bg-slate-900 dark:text-white">Register</a>
             <?php else: ?>
                 <?php if(auth()->user()->isAdmin()): ?>
-                    <a href="<?php echo e(route('admin.home')); ?>" class="block rounded-2xl px-4 py-3 text-slate-900 hover:bg-red-100 hover:text-red-700 dark:text-slate-100 dark:hover:bg-slate-800">Home</a>
-                    <a href="/admin/requests" class="block rounded-2xl px-4 py-3 text-slate-900 hover:bg-red-100 hover:text-red-700 dark:text-slate-100 dark:hover:bg-slate-800">Requests</a>
+                    <?php
+                        $mobileAdminLinkClasses = 'block rounded-2xl px-4 py-3 transition';
+                        $mobileAdminActiveClasses = 'bg-red-100 text-red-700 dark:bg-red-950/60 dark:text-red-200';
+                        $mobileAdminInactiveClasses = 'text-slate-900 hover:bg-red-100 hover:text-red-700 dark:text-slate-100 dark:hover:bg-slate-800';
+                    ?>
+                    <a href="<?php echo e(route('admin.home')); ?>" class="<?php echo e($mobileAdminLinkClasses); ?> <?php echo e(request()->routeIs('admin.home') ? $mobileAdminActiveClasses : $mobileAdminInactiveClasses); ?>">Home</a>
+                    <a href="<?php echo e(route('admin.dashboard')); ?>" class="<?php echo e($mobileAdminLinkClasses); ?> <?php echo e(request()->routeIs('admin.dashboard') ? $mobileAdminActiveClasses : $mobileAdminInactiveClasses); ?>">Dashboard</a>
+                    <a href="<?php echo e(route('admin.donors.index')); ?>" class="<?php echo e($mobileAdminLinkClasses); ?> <?php echo e(request()->routeIs('admin.donors.*') ? $mobileAdminActiveClasses : $mobileAdminInactiveClasses); ?>">Manage Donors</a>
+                    <a href="<?php echo e(route('admin.requesters.index')); ?>" class="<?php echo e($mobileAdminLinkClasses); ?> <?php echo e(request()->routeIs('admin.requesters.*') ? $mobileAdminActiveClasses : $mobileAdminInactiveClasses); ?>">Manage Requesters</a>
+                    <a href="<?php echo e(route('admin.requests.index')); ?>" class="<?php echo e($mobileAdminLinkClasses); ?> <?php echo e(request()->routeIs('admin.requests.*') ? $mobileAdminActiveClasses : $mobileAdminInactiveClasses); ?>">Emergency Requests</a>
                 <?php elseif(auth()->user()->isRequester()): ?>
                     <a href="<?php echo e(route('requester.home')); ?>" class="block rounded-2xl px-4 py-3 text-slate-900 hover:bg-red-100 hover:text-red-700 dark:text-slate-100 dark:hover:bg-slate-800">Home</a>
                     <a href="<?php echo e(route('requester.search.index')); ?>" class="block rounded-2xl px-4 py-3 text-slate-900 hover:bg-red-100 hover:text-red-700 dark:text-slate-100 dark:hover:bg-slate-800">Search Donors</a>
-                    <a href="<?php echo e(route('requester.requests.create')); ?>" class="block rounded-2xl px-4 py-3 text-slate-900 hover:bg-red-100 hover:text-red-700 dark:text-slate-100 dark:hover:bg-slate-800">Emergency Request</a>
+                    <a href="<?php echo e(route('requester.requests.create')); ?>" class="block rounded-2xl px-4 py-3 text-slate-900 hover:bg-red-100 hover:text-red-700 dark:text-slate-100 dark:hover:bg-slate-800">Create Request</a>
                     <a href="<?php echo e(route('requester.requests.index')); ?>" class="block rounded-2xl px-4 py-3 text-slate-900 hover:bg-red-100 hover:text-red-700 dark:text-slate-100 dark:hover:bg-slate-800">My Requests</a>
                     <a href="/profile" class="block rounded-2xl px-4 py-3 text-slate-900 hover:bg-red-100 hover:text-red-700 dark:text-slate-100 dark:hover:bg-slate-800">Profile</a>
                 <?php elseif(auth()->user()->isDonor()): ?>
                     <a href="<?php echo e(route('donor.home')); ?>" class="block rounded-2xl px-4 py-3 text-slate-900 hover:bg-red-100 hover:text-red-700 dark:text-slate-100 dark:hover:bg-slate-800">Home</a>
                     <a href="/profile" class="block rounded-2xl px-4 py-3 text-slate-900 hover:bg-red-100 hover:text-red-700 dark:text-slate-100 dark:hover:bg-slate-800">Profile</a>
                     <a href="/profile#availability" class="block rounded-2xl px-4 py-3 text-slate-900 hover:bg-red-100 hover:text-red-700 dark:text-slate-100 dark:hover:bg-slate-800">Availability</a>
+                    <a href="<?php echo e(route('donor.home')); ?>#achievements" class="block rounded-2xl px-4 py-3 text-slate-900 hover:bg-red-100 hover:text-red-700 dark:text-slate-100 dark:hover:bg-slate-800">Achievements</a>
                 <?php endif; ?>
                 <form method="POST" action="<?php echo e(route('logout')); ?>" class="w-full">
                     <?php echo csrf_field(); ?>

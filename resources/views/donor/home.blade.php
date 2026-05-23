@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.donor')
 
 @section('content')
 
@@ -106,7 +106,7 @@
         </div>
 
         <div class="space-y-6">
-            <div class="card-panel dark:card-panel-dark">
+            <div id="achievements" class="card-panel dark:card-panel-dark">
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-sm font-semibold uppercase tracking-[0.2em] text-red-600">Achievements</p>
@@ -176,6 +176,7 @@
             message: 'Keep your donor status updated so patients in your city can contact you quickly.',
             type: 'reminder',
             read: false,
+            role: 'donor',
         },
         {
             id: 'critical-request',
@@ -183,13 +184,15 @@
             message: '{{ $nearbyRequests > 0 ? "There are " . $nearbyRequests . " urgent request(s) in your city right now." : "No active urgent requests are visible in your current city." }}',
             type: '{{ $nearbyRequests > 0 ? "critical" : "announcement" }}',
             read: false,
+            role: 'donor',
         },
         {
-            id: 'admin-announcement',
-            title: 'Admin announcement',
+            id: 'donor-profile-check',
+            title: 'Profile check',
             message: 'Use the dashboard insights to stay prepared and keep your profile current for the next emergency match.',
             type: 'announcement',
             read: false,
+            role: 'donor',
         }
     ];
 </script>

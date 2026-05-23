@@ -161,7 +161,7 @@
         </div>
 
         <div class="space-y-6">
-            <div class="card-panel dark:card-panel-dark">
+            <div id="achievements" class="card-panel dark:card-panel-dark">
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-sm font-semibold uppercase tracking-[0.2em] text-red-600">Achievements</p>
@@ -262,6 +262,7 @@
             message: 'Keep your donor status updated so patients in your city can contact you quickly.',
             type: 'reminder',
             read: false,
+            role: 'donor',
         },
         {
             id: 'critical-request',
@@ -269,13 +270,15 @@
             message: '<?php echo e($nearbyRequests > 0 ? "There are " . $nearbyRequests . " urgent request(s) in your city right now." : "No active urgent requests are visible in your current city."); ?>',
             type: '<?php echo e($nearbyRequests > 0 ? "critical" : "announcement"); ?>',
             read: false,
+            role: 'donor',
         },
         {
-            id: 'admin-announcement',
-            title: 'Admin announcement',
+            id: 'donor-profile-check',
+            title: 'Profile check',
             message: 'Use the dashboard insights to stay prepared and keep your profile current for the next emergency match.',
             type: 'announcement',
             read: false,
+            role: 'donor',
         }
     ];
 </script>
@@ -283,4 +286,4 @@
 
 <?php $__env->stopSection(); ?>
 
-<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\xampp\htdocs\MyProject\eblood\resources\views\donor\home.blade.php ENDPATH**/ ?>
+<?php echo $__env->make('layouts.donor', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\xampp\htdocs\MyProject\eblood\resources\views\donor\home.blade.php ENDPATH**/ ?>

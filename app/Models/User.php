@@ -68,4 +68,9 @@ class User extends Authenticatable
     {
         return $query->where('role', 'requester');
     }
+
+    public function requests()
+    {
+        return $this->hasMany(BloodRequest::class, 'user_id');
+    }
 }

@@ -2,29 +2,20 @@
 
 namespace App\Http\Middleware;
 
-use Closure;
-use Illuminate\Http\Request;
-use Symfony\Component\HttpFoundation\Response;
-
-class RequesterMiddleware
+class RequesterMiddleware extends RoleMiddleware
 {
-    /**
-     * Handle an incoming request.
-     */
-    public function handle(Request $request, Closure $next): Response
+    protected function requiredRole(): string
     {
-        if (! auth()->check()) {
-            return redirect('/login')->with('error', 'Please login as a requester to access this page.');
-        }
+        return 'requester';
+    }
 
-        if (auth()->user()->isAdmin()) {
-            return redirect('/admin')->with('error', 'Admins cannot access requester pages.');
-        }
+    protected function guestMessage(): string
+    {
+        return 'Please login as a requester to access this page.';
+    }
 
-        if (auth()->user()->role !== 'requester') {
-            return redirect('/donor/home')->with('error', 'Only requesters can access this section.');
-        }
-
-        return $next($request);
+    protected function unauthorizedMessage(): string
+    {
+        return 'Only requesters can access this section.';
     }
 }

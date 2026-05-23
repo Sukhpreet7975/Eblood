@@ -1,45 +1,20 @@
 import './bootstrap';
-import './dark-mode';
-import { initNotificationCenter } from './notifications';
-import { initSmartFeatures } from './ai-features';
-
 import Alpine from 'alpinejs';
+import { initNotificationCenter } from './shared/notifications';
+import { initSmartFeatures } from './features/ai-features';
+import { initTheme } from './shared/theme';
+import { initMobileMenu, initPageLoader } from './shared/ui';
 
 window.Alpine = Alpine;
-
 Alpine.start();
 
-// Mobile menu toggle
-document.addEventListener('DOMContentLoaded', function() {
-    const menuBtn = document.getElementById('menu-btn');
-    const mobileMenu = document.getElementById('mobile-menu');
+initTheme();
 
-    if (menuBtn && mobileMenu) {
-        menuBtn.addEventListener('click', function() {
-            mobileMenu.classList.toggle('hidden');
-            mobileMenu.classList.toggle('flex');
-        });
-
-        // Close menu when a link is clicked
-        const menuLinks = mobileMenu.querySelectorAll('a, button');
-        menuLinks.forEach(link => {
-            link.addEventListener('click', function() {
-                mobileMenu.classList.add('hidden');
-                mobileMenu.classList.remove('flex');
-            });
-        });
-    }
-
+document.addEventListener('DOMContentLoaded', () => {
+    initMobileMenu();
     initNotificationCenter();
     initSmartFeatures();
 });
 
-window.addEventListener('load', function() {
-    const pageLoader = document.getElementById('page-loader');
-    if (pageLoader) {
-        pageLoader.classList.add('opacity-0');
-        pageLoader.classList.remove('pointer-events-auto');
-        setTimeout(() => pageLoader.remove(), 300);
-    }
-});
+window.addEventListener('load', initPageLoader);
 

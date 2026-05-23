@@ -2,26 +2,20 @@
 
 namespace App\Http\Middleware;
 
-use Closure;
-use Illuminate\Http\Request;
-use Symfony\Component\HttpFoundation\Response;
-
-class AdminMiddleware
+class AdminMiddleware extends RoleMiddleware
 {
-    /**
-     * Handle an incoming request.
-     */
-    public function handle(Request $request, Closure $next): Response
+    protected function requiredRole(): string
     {
-        if(auth()->check() && auth()->user()->isAdmin())
-        {
-            return $next($request);
-        }
+        return 'admin';
+    }
 
-        if(!auth()->check()){
-            return redirect('/login')->with('error', 'Please login as admin to access this page.');
-        }
+    protected function guestMessage(): string
+    {
+        return 'Please login as an admin to access this page.';
+    }
 
-        return redirect('/')->with('error', 'Unauthorized admin access.');
+    protected function unauthorizedMessage(): string
+    {
+        return 'Only admins can access this section.';
     }
 }
