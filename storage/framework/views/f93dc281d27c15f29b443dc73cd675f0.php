@@ -7,6 +7,17 @@
         Emergency Blood Request
     </h1>
 
+    <?php if($errors->any()): ?>
+        <div class="mb-6 rounded-[1.5rem] border border-red-200 bg-red-50 px-5 py-4 text-sm text-red-800 dark:border-red-900 dark:bg-red-950 dark:text-red-100">
+            <p class="font-semibold">Please fix the highlighted fields.</p>
+            <ul class="mt-2 list-disc space-y-1 pl-5">
+                <?php $__currentLoopData = $errors->all(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $error): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    <li><?php echo e($error); ?></li>
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+            </ul>
+        </div>
+    <?php endif; ?>
+
     <form method="POST" action="<?php echo e(route('requester.requests.store')); ?>" class="space-y-5">
         <?php echo csrf_field(); ?>
         <div>
@@ -17,7 +28,28 @@
             <input
                 type="text"
                 name="patient_name"
-                class="form-field dark:form-field-dark">
+                value="<?php echo e(old('patient_name')); ?>"
+                required
+                autocomplete="name"
+                class="form-field dark:form-field-dark <?php $__errorArgs = ['patient_name'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> border-red-500 ring-2 ring-red-100 <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>">
+
+            <?php $__errorArgs = ['patient_name'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                <p class="mt-2 text-sm text-red-600"><?php echo e($message); ?></p>
+            <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
         </div>
 
         <div class="space-y-2">
@@ -25,16 +57,35 @@
                 Blood Group
             </label>
 
-            <select name="blood_group" class="form-field dark:form-field-dark">
-                <option>A+</option>
-                <option>A-</option>
-                <option>B+</option>
-                <option>B-</option>
-                <option>O+</option>
-                <option>O-</option>
-                <option>AB+</option>
-                <option>AB-</option>
+            <select name="blood_group" required class="form-field dark:form-field-dark <?php $__errorArgs = ['blood_group'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> border-red-500 ring-2 ring-red-100 <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>">
+                <option value="" <?php echo e(old('blood_group') === null ? 'selected' : ''); ?>>Select a blood group</option>
+                <option value="A+" <?php echo e(old('blood_group') === 'A+' ? 'selected' : ''); ?>>A+</option>
+                <option value="A-" <?php echo e(old('blood_group') === 'A-' ? 'selected' : ''); ?>>A-</option>
+                <option value="B+" <?php echo e(old('blood_group') === 'B+' ? 'selected' : ''); ?>>B+</option>
+                <option value="B-" <?php echo e(old('blood_group') === 'B-' ? 'selected' : ''); ?>>B-</option>
+                <option value="O+" <?php echo e(old('blood_group') === 'O+' ? 'selected' : ''); ?>>O+</option>
+                <option value="O-" <?php echo e(old('blood_group') === 'O-' ? 'selected' : ''); ?>>O-</option>
+                <option value="AB+" <?php echo e(old('blood_group') === 'AB+' ? 'selected' : ''); ?>>AB+</option>
+                <option value="AB-" <?php echo e(old('blood_group') === 'AB-' ? 'selected' : ''); ?>>AB-</option>
             </select>
+
+            <?php $__errorArgs = ['blood_group'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                <p class="mt-2 text-sm text-red-600"><?php echo e($message); ?></p>
+            <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
         </div>
 
         <div class="space-y-2">
@@ -45,7 +96,28 @@
             <input
                 type="text"
                 name="hospital"
-                class="form-field dark:form-field-dark">
+                value="<?php echo e(old('hospital')); ?>"
+                required
+                autocomplete="organization"
+                class="form-field dark:form-field-dark <?php $__errorArgs = ['hospital'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> border-red-500 ring-2 ring-red-100 <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>">
+
+            <?php $__errorArgs = ['hospital'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                <p class="mt-2 text-sm text-red-600"><?php echo e($message); ?></p>
+            <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
         </div>
 
         <div class="space-y-2">
@@ -56,7 +128,28 @@
             <input
                 type="text"
                 name="city"
-                class="form-field dark:form-field-dark">
+                value="<?php echo e(old('city')); ?>"
+                required
+                autocomplete="address-level2"
+                class="form-field dark:form-field-dark <?php $__errorArgs = ['city'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> border-red-500 ring-2 ring-red-100 <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>">
+
+            <?php $__errorArgs = ['city'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                <p class="mt-2 text-sm text-red-600"><?php echo e($message); ?></p>
+            <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
         </div>
 
         <div class="space-y-2">
@@ -65,9 +158,31 @@
             </label>
 
             <input
-                type="text"
+                type="tel"
                 name="phone"
-                class="form-field dark:form-field-dark">
+                value="<?php echo e(old('phone')); ?>"
+                required
+                inputmode="tel"
+                autocomplete="tel"
+                class="form-field dark:form-field-dark <?php $__errorArgs = ['phone'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> border-red-500 ring-2 ring-red-100 <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>">
+
+            <?php $__errorArgs = ['phone'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                <p class="mt-2 text-sm text-red-600"><?php echo e($message); ?></p>
+            <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
         </div>
 
         <div class="space-y-2">
@@ -78,7 +193,25 @@
             <textarea
                 name="message"
                 rows="4"
-                class="form-field dark:form-field-dark"></textarea>
+                class="form-field dark:form-field-dark <?php $__errorArgs = ['message'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> border-red-500 ring-2 ring-red-100 <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>"><?php echo e(old('message')); ?></textarea>
+
+            <?php $__errorArgs = ['message'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                <p class="mt-2 text-sm text-red-600"><?php echo e($message); ?></p>
+            <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
         </div>
 
         <button id="submit-btn" class="bg-red-600 text-white px-8 py-3 rounded-xl hover:bg-red-700 transition-all duration-300">

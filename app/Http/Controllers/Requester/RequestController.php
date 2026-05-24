@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Requester;
 
 use App\Http\Controllers\Controller;
-use App\Models\BloodRequest;
 use App\Services\RequestService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -55,7 +54,7 @@ class RequestController extends Controller
         return redirect('/my-requests')->with('success', 'Emergency blood request submitted!');
     }
 
-    public function myRequests()
+    public function myRequests(Request $request)
     {
         if (! Auth::check()) {
             return redirect('/login');
@@ -66,7 +65,7 @@ class RequestController extends Controller
                 ->with('error', 'Only requesters can view their requests.');
         }
 
-        $requests = $this->requestService->getRequesterRequests(Auth::user());
+        $requests = $this->requestService->getRequesterRequests(Auth::user(), $request);
 
         return view('my-requests', compact('requests'));
     }

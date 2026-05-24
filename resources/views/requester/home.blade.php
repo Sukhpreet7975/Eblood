@@ -34,7 +34,7 @@
         </div>
     </section>
 
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+    <div class="grid grid-cols-2 gap-4 sm:grid-cols-4">
         <div class="card-panel dark:card-panel-dark">
             <p class="text-sm text-slate-500 dark:text-slate-400">Total Requests</p>
             <p class="text-2xl font-bold text-red-600">{{ $totalRequests }}</p>
@@ -53,34 +53,428 @@
         </div>
     </div>
 
+    @php
+        $approvalRate = $totalRequests > 0 ? round(($approvedRequests / $totalRequests) * 100) : 0;
+        $completionRate = $totalRequests > 0 ? round(($completedRequests / $totalRequests) * 100) : 0;
+        $activeRequests = $pendingRequests + $approvedRequests;
+        $trendRequests = $recentRequests->sortBy(function ($request) {
+            return optional($request->created_at)->timestamp ?? 0;
+        })->values();
+        $trendPoints = $trendRequests->map(function ($request, $index) use ($trendRequests) {
+            $status = $request->status ?? 'Pending';
+            $score = match ($status) {
+                'Completed' => 3,
+                'Approved' => 2,
+                'Rejected' => 0,
+                default => 1,
+            };
+
+            $count = max($trendRequests->count(), 1);
+            $x = $count === 1 ? 50 : round((100 / max($count - 1, 1)) * $index, 2);
+            $y = round(83 - ($score * 24), 2);
+
+            return [
+                'label' => optional($request->created_at)->format('M d') ?? 'Recent',
+                'status' => $status,
+                'score' => $score,
+                'x' => $x,
+                'y' => $y,
+            ];
+        })->values();
+        $trendBaselineY = 83;
+        $trendPath = $trendPoints->map(function ($point) {
+            return $point['x'] . ',' . $point['y'];
+        })->implode(' ');
+        $trendAreaPath = $trendPoints->isEmpty()
+            ? ''
+            : 'M ' . $trendPoints->first()['x'] . ',' . $trendBaselineY
+                . ' L ' . $trendPoints->map(fn ($point) => $point['x'] . ',' . $point['y'])->implode(' L ')
+                . ' L ' . $trendPoints->last()['x'] . ',' . $trendBaselineY
+                . ' Z';
+        $latestRequest = $trendRequests->last();
+        $latestUpdateLabel = $latestRequest ? (optional($latestRequest->created_at)->format('M d, Y') ?? 'Recent') : 'No recent activity';
+        $latestStatusLabel = $latestRequest?->status ?? 'No update';
+        $focusCopy = $pendingRequests > 0
+            ? $pendingRequests . ' pending request' . ($pendingRequests === 1 ? '' : 's') . ' still need attention.'
+            : 'All active requests are currently on track.';
+        $oldestPendingRequest = $recentRequests
+            ->where('status', 'Pending')
+            ->sortBy(fn ($request) => optional($request->created_at)->timestamp ?? PHP_INT_MAX)
+            ->first();
+        $oldestPendingLabel = $oldestPendingRequest?->patient_name ?? 'No pending requests';
+        $oldestPendingDate = $oldestPendingRequest
+            ? optional($oldestPendingRequest->created_at)->format('M d, Y')
+            : null;
+        $oldestPendingDays = $oldestPendingRequest
+            ? optional($oldestPendingRequest->created_at)->diffInDays(now())
+            : 0;
+        $pendingWaitDays = $recentRequests
+            ->where('status', 'Pending')
+            ->map(fn ($request) => optional($request->created_at)->diffInDays(now()) ?? 0)
+            ->values();
+        $averagePendingWait = $pendingWaitDays->isEmpty()
+            ? 0
+            : round($pendingWaitDays->avg(), 1);
+        $queueHealthLabel = 'Healthy';
+        $queueHealthCopy = 'Your pending queue is in good shape.';
+        $queueHealthTone = 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-200';
+        $queueHealthBorder = 'border-emerald-200 dark:border-emerald-800/60';
+
+        if ($averagePendingWait >= 5) {
+            $queueHealthLabel = 'Critical';
+            $queueHealthCopy = 'Several pending requests are waiting too long and need attention.';
+            $queueHealthTone = 'bg-rose-50 text-rose-700 dark:bg-rose-950/30 dark:text-rose-200';
+            $queueHealthBorder = 'border-rose-200 dark:border-rose-800/60';
+        } elseif ($averagePendingWait >= 2) {
+            $queueHealthLabel = 'Watch';
+            $queueHealthCopy = 'Pending requests are aging and should be reviewed soon.';
+            $queueHealthTone = 'bg-amber-50 text-amber-700 dark:bg-amber-950/30 dark:text-amber-200';
+            $queueHealthBorder = 'border-amber-200 dark:border-amber-800/60';
+        }
+
+        $oldestPendingId = $oldestPendingRequest
+            ? optional($oldestPendingRequest)->_id ?? optional($oldestPendingRequest)->id
+            : null;
+        $oldestPendingUrl = $oldestPendingId
+            ? route('requester.requests.show', ['id' => $oldestPendingId])
+            : null;
+        $priorityLabel = 'Low priority';
+        $priorityCopy = 'No urgent follow-up needed yet.';
+
+        if ($oldestPendingDays >= 5) {
+            $priorityLabel = 'High priority';
+            $priorityCopy = 'This request has been waiting a while and should be reviewed soon.';
+            $actionLabel = 'Review now';
+            $actionCopy = 'Open this request and follow up before it waits longer.';
+        } elseif ($oldestPendingDays >= 2) {
+            $priorityLabel = 'Medium priority';
+            $priorityCopy = 'This request needs attention within the next day.';
+            $actionLabel = 'Schedule review';
+            $actionCopy = 'Check this request soon and confirm the next step.';
+        } else {
+            $actionLabel = 'Monitor';
+            $actionCopy = 'Keep an eye on the request and revisit if it changes.';
+        }
+
+        $momentumLabel = 'Stable';
+        $momentumCopy = 'Activity is steady right now.';
+        $suggestedNextStep = 'Create a new request when you need urgent help.';
+        $statusBreakdown = [
+            'Pending' => [
+                'count' => $pendingRequests,
+                'percent' => $totalRequests > 0 ? round(($pendingRequests / $totalRequests) * 100) : 0,
+                'tone' => 'bg-amber-400',
+            ],
+            'Approved' => [
+                'count' => $approvedRequests,
+                'percent' => $totalRequests > 0 ? round(($approvedRequests / $totalRequests) * 100) : 0,
+                'tone' => 'bg-sky-500',
+            ],
+            'Completed' => [
+                'count' => $completedRequests,
+                'percent' => $totalRequests > 0 ? round(($completedRequests / $totalRequests) * 100) : 0,
+                'tone' => 'bg-emerald-500',
+            ],
+            'Rejected' => [
+                'count' => $rejectedRequests,
+                'percent' => $totalRequests > 0 ? round(($rejectedRequests / $totalRequests) * 100) : 0,
+                'tone' => 'bg-rose-500',
+            ],
+        ];
+
+        if ($pendingRequests > 0) {
+            $suggestedNextStep = 'Review pending requests';
+        } elseif ($approvedRequests > 0) {
+            $suggestedNextStep = 'Monitor approved requests for updates';
+        }
+
+        if ($trendPoints->count() >= 2) {
+            $firstScore = $trendPoints->first()['score'];
+            $lastScore = $trendPoints->last()['score'];
+            $trendDelta = $lastScore - $firstScore;
+
+            if ($lastScore > $firstScore) {
+                $momentumLabel = 'Improving';
+                $momentumCopy = 'Your latest activity is moving toward completion.';
+                $trendSummaryCopy = 'Improving by ' . $trendDelta . ' milestone' . ($trendDelta === 1 ? '' : 's');
+            } elseif ($lastScore < $firstScore) {
+                $momentumLabel = 'Needs attention';
+                $momentumCopy = 'Recent updates are slowing down.';
+                $trendSummaryCopy = 'Slowing by ' . abs($trendDelta) . ' milestone' . (abs($trendDelta) === 1 ? '' : 's');
+            } else {
+                $trendSummaryCopy = 'Stable across the latest records.';
+            }
+
+            $trendSummaryDetail = 'Latest activity moved from ' . $trendPoints->first()['status'] . ' to ' . $trendPoints->last()['status'] . '.';
+        } else {
+            $trendDelta = 0;
+            $trendSummaryCopy = 'Not enough data for a trend summary.';
+            $trendSummaryDetail = 'Add one more request update to compare progress.';
+        }
+    @endphp
+
+    <section class="dashboard-analytics card-panel dark:card-panel-dark">
+        <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+            <div>
+                <p class="text-sm font-semibold uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">Dashboard analytics</p>
+                <h2 class="mt-2 text-xl font-bold text-slate-900 dark:text-white">Request performance at a glance</h2>
+                <p class="mt-2 text-sm text-slate-500 dark:text-slate-300">Use these quick metrics to understand how your emergency requests are progressing.</p>
+            </div>
+            <div class="inline-flex items-center rounded-full bg-emerald-50 px-3 py-1 text-sm font-semibold text-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-200">
+                {{ $activeRequests }} active
+            </div>
+        </div>
+
+        <div class="activity-chart mt-6 rounded-[1.5rem] border border-slate-200 bg-slate-50 px-4 py-4 dark:border-slate-700 dark:bg-slate-900/70">
+            <div class="flex flex-col gap-3 xl:flex-row xl:items-end xl:justify-between">
+                <div>
+                    <p class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">Recent activity</p>
+                    <p class="mt-1 text-sm text-slate-500 dark:text-slate-300">A timeline of your latest request milestones, ordered by timestamp.</p>
+                </div>
+                <div class="text-sm font-semibold text-slate-900 dark:text-white">
+                    {{ $trendRequests->count() }} records
+                </div>
+            </div>
+
+            <div class="mt-4 grid gap-4 xl:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)] xl:items-start">
+                @if($trendPoints->isEmpty())
+                    <div class="rounded-[1rem] bg-white px-4 py-3 text-sm text-slate-500 dark:bg-slate-950/50 dark:text-slate-300">
+                        Recent activity will appear here as soon as your requests are created or updated.
+                    </div>
+                @else
+                    <div class="overflow-x-auto rounded-[1rem] bg-white px-3 py-2 dark:bg-slate-950/50">
+                        <svg class="trend-line h-48 w-full min-w-[24rem] overflow-visible" viewBox="0 0 100 100" preserveAspectRatio="none" role="img" aria-label="Requester activity trend">
+                            <defs>
+                                <linearGradient id="trendGlow" x1="0%" y1="0%" x2="100%" y2="0%">
+                                    <stop offset="0%" stop-color="#fb7185" stop-opacity="0.9" />
+                                    <stop offset="100%" stop-color="#f59e0b" stop-opacity="0.95" />
+                                </linearGradient>
+                                <linearGradient id="trendFill" x1="0%" y1="0%" x2="0%" y2="100%">
+                                    <stop offset="0%" stop-color="#fb7185" stop-opacity="0.18" />
+                                    <stop offset="100%" stop-color="#f59e0b" stop-opacity="0.02" />
+                                </linearGradient>
+                            </defs>
+                            <line class="trend-grid" x1="0" y1="83" x2="100" y2="83" stroke="#cbd5e1" stroke-width="0.8" stroke-dasharray="2 2" />
+                            @if($trendAreaPath)
+                                <path class="trend-area" d="{{ $trendAreaPath }}" fill="url(#trendFill)" />
+                            @endif
+                            <polyline class="trend-line" points="{{ $trendPath }}" fill="none" stroke="url(#trendGlow)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                            @foreach($trendPoints as $point)
+                                <circle class="trend-point" cx="{{ $point['x'] }}" cy="{{ $point['y'] }}" r="1.8" fill="#fff" stroke="{{ $point['status'] === 'Completed' ? '#10b981' : ($point['status'] === 'Approved' ? '#0ea5e9' : ($point['status'] === 'Rejected' ? '#f43f5e' : '#f59e0b')) }}" stroke-width="1" />
+                            @endforeach
+                            @foreach($trendPoints as $point)
+                                <text x="{{ $point['x'] }}" y="97" text-anchor="middle" font-size="3.2" fill="#64748b">{{ $point['label'] }}</text>
+                            @endforeach
+                        </svg>
+
+                        <div class="mt-3 rounded-[1rem] bg-slate-50 px-3 py-3 dark:bg-slate-900/40">
+                            <p class="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">Trend summary</p>
+                            <p class="mt-2 text-sm font-semibold text-slate-900 dark:text-white">{{ $trendSummaryCopy }}</p>
+                            <p class="mt-1 text-xs text-slate-500 dark:text-slate-300">{{ $trendSummaryDetail }}</p>
+                        </div>
+                    </div>
+                @endif
+
+                <div class="space-y-3">
+                    <div class="rounded-[1rem] bg-white px-4 py-3 shadow-sm dark:bg-slate-950/50">
+                        <p class="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">Newest update</p>
+                        <p class="mt-2 text-sm font-semibold text-slate-900 dark:text-white">{{ $latestStatusLabel }} • {{ $latestUpdateLabel }}</p>
+                    </div>
+                    <div class="rounded-[1rem] bg-white px-4 py-3 shadow-sm dark:bg-slate-950/50">
+                        <p class="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">Current focus</p>
+                        <p class="mt-2 text-sm font-semibold text-slate-900 dark:text-white">{{ $focusCopy }}</p>
+                    </div>
+                    <div class="rounded-[1rem] bg-white px-4 py-3 shadow-sm dark:bg-slate-950/50">
+                        <p class="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">Momentum</p>
+                        <p class="mt-2 text-sm font-semibold text-slate-900 dark:text-white">{{ $momentumLabel }}</p>
+                        <p class="mt-1 text-xs text-slate-500 dark:text-slate-300">{{ $momentumCopy }}</p>
+                    </div>
+                    <div class="rounded-[1rem] border {{ $queueHealthBorder }} bg-white px-4 py-3 shadow-sm dark:bg-slate-950/50">
+                        <div class="flex items-center justify-between gap-3">
+                            <div>
+                                <p class="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">Queue health</p>
+                                <p class="mt-2 text-sm font-semibold text-slate-900 dark:text-white">{{ $queueHealthCopy }}</p>
+                            </div>
+                            <span class="queue-health-pill inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-semibold {{ $queueHealthTone }}">{{ $queueHealthLabel }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-4 rounded-[1rem] bg-white px-4 py-3 shadow-sm dark:bg-slate-950/50">
+                <p class="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">Suggested next step</p>
+                <p class="mt-2 text-sm font-semibold text-slate-900 dark:text-white">{{ $suggestedNextStep }}</p>
+            </div>
+
+            <div class="mt-4 rounded-[1rem] bg-white px-4 py-3 shadow-sm dark:bg-slate-950/50">
+                <p class="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">Oldest pending</p>
+                <p class="mt-2 text-sm font-semibold text-slate-900 dark:text-white">{{ $oldestPendingLabel }}</p>
+                @if($oldestPendingDate)
+                    <div class="mt-2 space-y-1 text-xs text-slate-500 dark:text-slate-300">
+                        <p><span class="font-semibold text-slate-700 dark:text-slate-200">Blood group:</span> {{ optional($oldestPendingRequest)->blood_group ?? 'Unknown' }}</p>
+                        <p><span class="font-semibold text-slate-700 dark:text-slate-200">Hospital:</span> {{ optional($oldestPendingRequest)->hospital ?? 'Unknown' }}</p>
+                    </div>
+                    <p class="mt-1 text-xs text-slate-500 dark:text-slate-300">Since {{ $oldestPendingDate }}</p>
+                    <p class="mt-1 text-xs font-semibold text-amber-600 dark:text-amber-300">Days waiting: {{ $oldestPendingDays }} days</p>
+                    <p class="mt-1 text-xs font-semibold text-slate-700 dark:text-slate-200">Priority: {{ $priorityLabel }}</p>
+                    <p class="mt-1 text-xs text-slate-500 dark:text-slate-300">{{ $priorityCopy }}</p>
+                    <div class="mt-3 inline-flex items-center rounded-full bg-rose-50 px-3 py-1 text-xs font-semibold text-rose-700 dark:bg-rose-950/40 dark:text-rose-200">
+                        <span class="mr-1">Suggested action:</span>
+                        <span>{{ $actionLabel }}</span>
+                    </div>
+                    @if($oldestPendingUrl)
+                        <div class="mt-3">
+                            <a href="{{ $oldestPendingUrl }}" class="inline-flex items-center rounded-full bg-red-600 px-3 py-1.5 text-xs font-semibold text-white shadow-sm transition hover:bg-red-700">
+                                Open request
+                            </a>
+                        </div>
+                    @endif
+                    <p class="mt-2 text-xs text-slate-500 dark:text-slate-300">{{ $actionCopy }}</p>
+                @endif
+            </div>
+
+            <div class="mt-4 rounded-[1rem] bg-white px-4 py-3 shadow-sm dark:bg-slate-950/50">
+                <div class="flex items-center justify-between gap-3">
+                    <div>
+                        <p class="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">Status breakdown</p>
+                        <p class="mt-1 text-sm text-slate-500 dark:text-slate-300">A quick split of where your requests sit right now.</p>
+                    </div>
+                    <div class="text-sm font-semibold text-slate-900 dark:text-white">{{ $totalRequests }} total</div>
+                </div>
+
+                <div class="mt-4 space-y-3">
+                    @foreach($statusBreakdown as $label => $status)
+                        <div>
+                            <div class="flex items-center justify-between text-xs font-semibold text-slate-500 dark:text-slate-300">
+                                <span>{{ $label }}</span>
+                                <span>{{ $status['count'] }} • {{ $status['percent'] }}%</span>
+                            </div>
+                            <div class="mt-1 h-2 rounded-full bg-slate-200 dark:bg-slate-800">
+                                <div class="h-2 rounded-full {{ $status['tone'] }}" style="width: {{ max($status['percent'], 3) }}%"></div>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+
+            <div class="mt-4 flex flex-wrap gap-3 text-xs text-slate-500 dark:text-slate-300">
+                <span class="inline-flex items-center gap-2"><span class="h-2.5 w-2.5 rounded-full bg-amber-400"></span> Pending</span>
+                <span class="inline-flex items-center gap-2"><span class="h-2.5 w-2.5 rounded-full bg-sky-500"></span> Approved</span>
+                <span class="inline-flex items-center gap-2"><span class="h-2.5 w-2.5 rounded-full bg-emerald-500"></span> Completed</span>
+                <span class="inline-flex items-center gap-2"><span class="h-2.5 w-2.5 rounded-full bg-rose-500"></span> Rejected</span>
+            </div>
+        </div>
+
+        <div class="mt-6 grid gap-4 md:grid-cols-3">
+                <div class="rounded-[1rem] bg-white px-4 py-3 shadow-sm dark:bg-slate-950/50">
+                    <p class="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">Newest update</p>
+                    <p class="mt-2 text-sm font-semibold text-slate-900 dark:text-white">{{ $latestStatusLabel }} • {{ $latestUpdateLabel }}</p>
+                </div>
+                <div class="rounded-[1rem] bg-white px-4 py-3 shadow-sm dark:bg-slate-950/50">
+                    <p class="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">Current focus</p>
+                    <p class="mt-2 text-sm font-semibold text-slate-900 dark:text-white">{{ $focusCopy }}</p>
+                </div>
+                <div class="rounded-[1rem] bg-white px-4 py-3 shadow-sm dark:bg-slate-950/50">
+                    <p class="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">Momentum</p>
+                    <p class="mt-2 text-sm font-semibold text-slate-900 dark:text-white">{{ $momentumLabel }}</p>
+                    <p class="mt-1 text-xs text-slate-500 dark:text-slate-300">{{ $momentumCopy }}</p>
+                </div>
+            </div>
+
+            <div class="mt-4 rounded-[1rem] bg-white px-4 py-3 shadow-sm dark:bg-slate-950/50">
+                <p class="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">Suggested next step</p>
+                <p class="mt-2 text-sm font-semibold text-slate-900 dark:text-white">{{ $suggestedNextStep }}</p>
+            </div>
+
+            <div class="mt-4 rounded-[1rem] bg-white px-4 py-3 shadow-sm dark:bg-slate-950/50">
+                <div class="flex items-center justify-between gap-3">
+                    <div>
+                        <p class="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">Status breakdown</p>
+                        <p class="mt-1 text-sm text-slate-500 dark:text-slate-300">A quick split of where your requests sit right now.</p>
+                    </div>
+                    <div class="text-sm font-semibold text-slate-900 dark:text-white">{{ $totalRequests }} total</div>
+                </div>
+
+                <div class="mt-4 space-y-3">
+                    @foreach($statusBreakdown as $label => $status)
+                        <div>
+                            <div class="flex items-center justify-between text-xs font-semibold text-slate-500 dark:text-slate-300">
+                                <span>{{ $label }}</span>
+                                <span>{{ $status['count'] }} • {{ $status['percent'] }}%</span>
+                            </div>
+                            <div class="mt-1 h-2 rounded-full bg-slate-200 dark:bg-slate-800">
+                                <div class="h-2 rounded-full {{ $status['tone'] }}" style="width: {{ max($status['percent'], 3) }}%"></div>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+
+            <div class="mt-4 flex flex-wrap gap-3 text-xs text-slate-500 dark:text-slate-300">
+                <span class="inline-flex items-center gap-2"><span class="h-2.5 w-2.5 rounded-full bg-amber-400"></span> Pending</span>
+                <span class="inline-flex items-center gap-2"><span class="h-2.5 w-2.5 rounded-full bg-sky-500"></span> Approved</span>
+                <span class="inline-flex items-center gap-2"><span class="h-2.5 w-2.5 rounded-full bg-emerald-500"></span> Completed</span>
+                <span class="inline-flex items-center gap-2"><span class="h-2.5 w-2.5 rounded-full bg-rose-500"></span> Rejected</span>
+            </div>
+        </div>
+
+        <div class="mt-6 grid gap-4 grid-cols-1 sm:grid-cols-2 xl:grid-cols-4">
+            <div class="rounded-[1.5rem] bg-slate-50 px-4 py-4 dark:bg-slate-900/70">
+                <p class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">Approval rate</p>
+                <p class="mt-3 text-2xl font-bold text-slate-900 dark:text-white">{{ $approvalRate }}%</p>
+                <p class="mt-2 text-sm text-slate-500 dark:text-slate-300">{{ $approvedRequests }} approved out of {{ $totalRequests }} requests.</p>
+            </div>
+            <div class="rounded-[1.5rem] bg-slate-50 px-4 py-4 dark:bg-slate-900/70">
+                <p class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">Completion rate</p>
+                <p class="mt-3 text-2xl font-bold text-slate-900 dark:text-white">{{ $completionRate }}%</p>
+                <p class="mt-2 text-sm text-slate-500 dark:text-slate-300">{{ $completedRequests }} completed requests are fully closed.</p>
+            </div>
+            <div class="rounded-[1.5rem] bg-slate-50 px-4 py-4 dark:bg-slate-900/70">
+                <p class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">Average wait</p>
+                <p class="mt-3 text-2xl font-bold text-slate-900 dark:text-white">{{ $averagePendingWait }} days</p>
+                <p class="mt-2 text-sm text-slate-500 dark:text-slate-300">Average age of pending requests across your current queue.</p>
+            </div>
+            <div class="rounded-[1.5rem] bg-slate-50 px-4 py-4 dark:bg-slate-900/70">
+                <p class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">Current priorities</p>
+                <p class="mt-3 text-2xl font-bold text-slate-900 dark:text-white">{{ $pendingRequests }} pending</p>
+                <p class="mt-2 text-sm text-slate-500 dark:text-slate-300">{{ $approvedRequests }} approved and ready to monitor.</p>
+            </div>
+        </div>
+    </section>
+
     <div id="priority-insight" class="card-panel dark:card-panel-dark"></div>
     <div id="requester-priority-data" class="hidden">
         @json($requesterPriorityData ?? [])
     </div>
 
     <div class="card-panel dark:card-panel-dark">
-        <div class="flex items-center justify-between mb-4">
-            <h3 class="text-lg font-semibold">Recent Requests</h3>
-            <a href="{{ route('requester.requests.index') }}" class="text-sm text-blue-600 hover:underline">View all</a>
-            <div class="space-y-4">
-                @forelse($recentRequests as $request)
-                    <div class="card-panel dark:card-panel-dark">
-                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                            <div>
-                                <h4 class="text-lg font-semibold">{{ $request->patient_name }}</h4>
-                                <p class="text-sm text-slate-500 dark:text-slate-400">{{ $request->blood_group }} • {{ $request->hospital }}, {{ $request->city }}</p>
-                            </div>
-                            <span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold {{ $request->status === 'Approved' ? 'bg-blue-100 text-blue-800' : ($request->status === 'Completed' ? 'bg-green-100 text-green-800' : ($request->status === 'Rejected' ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800')) }}">{{ $request->status ?? 'Pending' }}</span>
-                        </div>
-                        @if($request->admin_message)
-                            <p class="mt-3 text-sm text-slate-500 dark:text-slate-400">Admin message: {{ $request->admin_message }}</p>
-                        @endif
-                        <p class="mt-3 text-xs text-slate-400">Submitted {{ optional($request->created_at)->diffForHumans() }}</p>
-                    </div>
-                @empty
-                    <p class="text-slate-500">No recent requests yet. Start by creating a new emergency request.</p>
-                @endforelse
+        <div class="recent-requests-header flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-4">
+            <div>
+                <h3 class="text-lg font-semibold">Recent Requests</h3>
+                <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">A quick snapshot of your latest emergency activity.</p>
             </div>
+            <a href="{{ route('requester.requests.index') }}" class="inline-flex w-full items-center justify-center rounded-full bg-red-50 px-4 py-2 text-sm font-semibold text-red-700 hover:bg-red-100 dark:bg-red-950/30 dark:text-red-200 sm:w-auto">View all</a>
+        </div>
+
+        <div class="recent-requests-list space-y-4">
+            @forelse($recentRequests as $request)
+                <div class="rounded-[1.5rem] border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-slate-900/70">
+                    <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                        <div class="min-w-0 flex-1">
+                            <h4 class="text-lg font-semibold">{{ $request->patient_name }}</h4>
+                            <p class="text-sm text-slate-500 dark:text-slate-400">{{ $request->blood_group }} • {{ $request->hospital }}, {{ $request->city }}</p>
+                        </div>
+                        <span class="inline-flex shrink-0 items-center justify-center rounded-full px-3 py-1 text-xs font-semibold {{ $request->status === 'Approved' ? 'bg-blue-100 text-blue-800' : ($request->status === 'Completed' ? 'bg-green-100 text-green-800' : ($request->status === 'Rejected' ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800')) }}">{{ $request->status ?? 'Pending' }}</span>
+                    </div>
+                    @if($request->admin_message)
+                        <p class="mt-3 text-sm text-slate-500 dark:text-slate-400">Admin message: {{ $request->admin_message }}</p>
+                    @endif
+                    <p class="mt-3 text-xs text-slate-400">Submitted {{ optional($request->created_at)->diffForHumans() }}</p>
+                </div>
+            @empty
+                <p class="text-slate-500">No recent requests yet. Start by creating a new emergency request.</p>
+            @endforelse
+        </div>
     </div>
 
 </div>

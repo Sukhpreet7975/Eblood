@@ -7,6 +7,17 @@
         Emergency Blood Request
     </h1>
 
+    @if($errors->any())
+        <div class="mb-6 rounded-[1.5rem] border border-red-200 bg-red-50 px-5 py-4 text-sm text-red-800 dark:border-red-900 dark:bg-red-950 dark:text-red-100">
+            <p class="font-semibold">Please fix the highlighted fields.</p>
+            <ul class="mt-2 list-disc space-y-1 pl-5">
+                @foreach($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
     <form method="POST" action="{{ route('requester.requests.store') }}" class="space-y-5">
         @csrf
         <div>
@@ -17,7 +28,14 @@
             <input
                 type="text"
                 name="patient_name"
-                class="form-field dark:form-field-dark">
+                value="{{ old('patient_name') }}"
+                required
+                autocomplete="name"
+                class="form-field dark:form-field-dark @error('patient_name') border-red-500 ring-2 ring-red-100 @enderror">
+
+            @error('patient_name')
+                <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+            @enderror
         </div>
 
         <div class="space-y-2">
@@ -25,16 +43,21 @@
                 Blood Group
             </label>
 
-            <select name="blood_group" class="form-field dark:form-field-dark">
-                <option>A+</option>
-                <option>A-</option>
-                <option>B+</option>
-                <option>B-</option>
-                <option>O+</option>
-                <option>O-</option>
-                <option>AB+</option>
-                <option>AB-</option>
+            <select name="blood_group" required class="form-field dark:form-field-dark @error('blood_group') border-red-500 ring-2 ring-red-100 @enderror">
+                <option value="" {{ old('blood_group') === null ? 'selected' : '' }}>Select a blood group</option>
+                <option value="A+" {{ old('blood_group') === 'A+' ? 'selected' : '' }}>A+</option>
+                <option value="A-" {{ old('blood_group') === 'A-' ? 'selected' : '' }}>A-</option>
+                <option value="B+" {{ old('blood_group') === 'B+' ? 'selected' : '' }}>B+</option>
+                <option value="B-" {{ old('blood_group') === 'B-' ? 'selected' : '' }}>B-</option>
+                <option value="O+" {{ old('blood_group') === 'O+' ? 'selected' : '' }}>O+</option>
+                <option value="O-" {{ old('blood_group') === 'O-' ? 'selected' : '' }}>O-</option>
+                <option value="AB+" {{ old('blood_group') === 'AB+' ? 'selected' : '' }}>AB+</option>
+                <option value="AB-" {{ old('blood_group') === 'AB-' ? 'selected' : '' }}>AB-</option>
             </select>
+
+            @error('blood_group')
+                <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+            @enderror
         </div>
 
         <div class="space-y-2">
@@ -45,7 +68,14 @@
             <input
                 type="text"
                 name="hospital"
-                class="form-field dark:form-field-dark">
+                value="{{ old('hospital') }}"
+                required
+                autocomplete="organization"
+                class="form-field dark:form-field-dark @error('hospital') border-red-500 ring-2 ring-red-100 @enderror">
+
+            @error('hospital')
+                <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+            @enderror
         </div>
 
         <div class="space-y-2">
@@ -56,7 +86,14 @@
             <input
                 type="text"
                 name="city"
-                class="form-field dark:form-field-dark">
+                value="{{ old('city') }}"
+                required
+                autocomplete="address-level2"
+                class="form-field dark:form-field-dark @error('city') border-red-500 ring-2 ring-red-100 @enderror">
+
+            @error('city')
+                <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+            @enderror
         </div>
 
         <div class="space-y-2">
@@ -65,9 +102,17 @@
             </label>
 
             <input
-                type="text"
+                type="tel"
                 name="phone"
-                class="form-field dark:form-field-dark">
+                value="{{ old('phone') }}"
+                required
+                inputmode="tel"
+                autocomplete="tel"
+                class="form-field dark:form-field-dark @error('phone') border-red-500 ring-2 ring-red-100 @enderror">
+
+            @error('phone')
+                <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+            @enderror
         </div>
 
         <div class="space-y-2">
@@ -78,7 +123,11 @@
             <textarea
                 name="message"
                 rows="4"
-                class="form-field dark:form-field-dark"></textarea>
+                class="form-field dark:form-field-dark @error('message') border-red-500 ring-2 ring-red-100 @enderror">{{ old('message') }}</textarea>
+
+            @error('message')
+                <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+            @enderror
         </div>
 
         <button id="submit-btn" class="bg-red-600 text-white px-8 py-3 rounded-xl hover:bg-red-700 transition-all duration-300">

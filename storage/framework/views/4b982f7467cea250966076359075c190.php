@@ -15,32 +15,55 @@
         <div class="rounded-[1.5rem] border border-emerald-200 bg-emerald-50 px-5 py-4 text-sm font-semibold text-emerald-800 dark:border-emerald-800 dark:bg-emerald-950 dark:text-emerald-100"><?php echo e(session('success')); ?></div>
     <?php endif; ?>
 
-    <?php if($requests->count() == 0): ?>
-        <?php if (isset($component)) { $__componentOriginal074a021b9d42f490272b5eefda63257c = $component; } ?>
-<?php if (isset($attributes)) { $__attributesOriginal074a021b9d42f490272b5eefda63257c = $attributes; } ?>
-<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.empty-state','data' => ['title' => 'No requests yet','description' => 'You have not submitted any emergency requests yet. Create one to start helping patients in your area.','buttonText' => 'Create emergency request','buttonHref' => ''.e(route('requester.requests.create')).'']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
-<?php $component->withName('empty-state'); ?>
-<?php if ($component->shouldRender()): ?>
-<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
-<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
-<?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
-<?php endif; ?>
-<?php $component->withAttributes(['title' => 'No requests yet','description' => 'You have not submitted any emergency requests yet. Create one to start helping patients in your area.','button-text' => 'Create emergency request','button-href' => ''.e(route('requester.requests.create')).'']); ?>
-            <svg viewBox="0 0 24 24" class="h-7 w-7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M12 8v8"/>
-                <path d="M8 12h8"/>
-                <path d="M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18Z"/>
-            </svg>
-         <?php echo $__env->renderComponent(); ?>
-<?php endif; ?>
-<?php if (isset($__attributesOriginal074a021b9d42f490272b5eefda63257c)): ?>
-<?php $attributes = $__attributesOriginal074a021b9d42f490272b5eefda63257c; ?>
-<?php unset($__attributesOriginal074a021b9d42f490272b5eefda63257c); ?>
-<?php endif; ?>
-<?php if (isset($__componentOriginal074a021b9d42f490272b5eefda63257c)): ?>
-<?php $component = $__componentOriginal074a021b9d42f490272b5eefda63257c; ?>
-<?php unset($__componentOriginal074a021b9d42f490272b5eefda63257c); ?>
-<?php endif; ?>
+    <div class="card-panel dark:card-panel-dark">
+        <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+            <div class="max-w-2xl">
+                <p class="text-sm font-semibold text-slate-900 dark:text-slate-100">Find the right request quickly</p>
+                <p class="mt-2 text-sm text-slate-500 dark:text-slate-300">Search by patient, hospital, city, or blood group, and narrow the list by status.</p>
+            </div>
+            <div class="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600 dark:bg-slate-800 dark:text-slate-200">
+                <?php echo e($requests->total()); ?> total
+            </div>
+        </div>
+
+        <form method="GET" action="<?php echo e(route('requester.requests.index')); ?>" class="mt-5 grid gap-4 lg:grid-cols-[1.4fr_1fr_1fr_auto]">
+            <div>
+                <label for="search" class="block text-xs font-semibold uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">Search</label>
+                <input id="search" type="text" name="search" value="<?php echo e(request('search')); ?>" placeholder="Patient, hospital, city, or blood group" class="form-field dark:form-field-dark mt-2" />
+            </div>
+
+            <div>
+                <label for="status" class="block text-xs font-semibold uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">Status</label>
+                <select id="status" name="status" class="form-field dark:form-field-dark mt-2">
+                    <option value="">All statuses</option>
+                    <?php $__currentLoopData = ['Pending', 'Approved', 'Completed', 'Rejected']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $statusOption): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                        <option value="<?php echo e($statusOption); ?>" <?php echo e(request('status') === $statusOption ? 'selected' : ''); ?>><?php echo e($statusOption); ?></option>
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                </select>
+            </div>
+
+            <div>
+                <label for="blood_group" class="block text-xs font-semibold uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">Blood group</label>
+                <select id="blood_group" name="blood_group" class="form-field dark:form-field-dark mt-2">
+                    <option value="">All groups</option>
+                    <?php $__currentLoopData = ['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $group): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                        <option value="<?php echo e($group); ?>" <?php echo e(request('blood_group') === $group ? 'selected' : ''); ?>><?php echo e($group); ?></option>
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                </select>
+            </div>
+
+            <div class="flex items-end gap-3">
+                <button type="submit" class="btn-primary">Apply filters</button>
+                <a href="<?php echo e(route('requester.requests.index')); ?>" class="btn-secondary">Reset</a>
+            </div>
+        </form>
+    </div>
+
+    <?php if($requests->isEmpty()): ?>
+        <div class="card-panel dark:card-panel-dark border border-dashed border-slate-300 dark:border-slate-700">
+            <p class="text-xl font-semibold text-slate-900 dark:text-slate-100">No requests found</p>
+            <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">Try a different search term or clear the filters to see your emergency requests again.</p>
+        </div>
     <?php else: ?>
         <div class="grid gap-4">
             <?php $__currentLoopData = $requests; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $request): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
@@ -155,6 +178,11 @@
 
 <?php $__env->startPush('scripts'); ?>
 <script>
+    const pendingCount = <?php echo e($requests->where('status', 'Pending')->count()); ?>;
+    const approvedCount = <?php echo e($requests->where('status', 'Approved')->count()); ?>;
+    const rejectedCount = <?php echo e($requests->where('status', 'Rejected')->count()); ?>;
+    const completedCount = <?php echo e($requests->where('status', 'Completed')->count()); ?>;
+
     window.__ebloodNotificationsSeed = [
         <?php if($requests->where('status', 'Approved')->count() > 0): ?>
             {
@@ -174,10 +202,28 @@
                 read: false,
             },
         <?php endif; ?>
+        <?php if($requests->where('status', 'Completed')->count() > 0): ?>
+            {
+                id: 'completed-request',
+                title: 'Request completed',
+                message: 'Your completed requests are now marked as fulfilled and ready for review.',
+                type: 'approved',
+                read: false,
+            },
+        <?php endif; ?>
         {
             id: 'pending-review',
             title: 'Request review',
-            message: 'Your requests are being tracked in the request timeline and can be reviewed anytime.',
+            message: pendingCount > 0
+                ? `You have ${pendingCount} pending request${pendingCount === 1 ? '' : 's'} that need attention.`
+                : 'Your requests are being tracked in the request timeline and can be reviewed anytime.',
+            type: pendingCount > 0 ? 'reminder' : 'announcement',
+            read: false,
+        },
+        {
+            id: 'status-summary',
+            title: 'Status snapshot',
+            message: `Approved: ${approvedCount} • Rejected: ${rejectedCount} • Completed: ${completedCount}`,
             type: 'announcement',
             read: false,
         },

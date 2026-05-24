@@ -56,12 +56,33 @@ class RequestService
         );
     }
 
-    public function getRequesterRequests(User $user)
+    public function getRequesterRequests(User $user, ?Request $request = null)
     {
-        return BloodRequest::where('user_id', $user->id)
+        $query = BloodRequest::where('user_id', $user->id)
             ->select(['_id', 'patient_name', 'blood_group', 'hospital', 'city', 'status', 'message', 'admin_message', 'created_at', 'status_updated_at'])
-            ->latest()
-            ->paginate(10);
+            ->latest();
+
+        if ($request?->filled('search')) {
+            $search = trim($request->search);
+            $regex = new Regex(preg_quote($search), 'i');
+
+            $query->where(function ($query) use ($regex) {
+                $query->where('patient_name', 'regex', $regex)
+                    ->orWhere('hospital', 'regex', $regex)
+                    ->orWhere('city', 'regex', $regex)
+                    ->orWhere('blood_group', 'regex', $regex);
+            });
+        }
+
+        if ($request?->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        if ($request?->filled('blood_group')) {
+            $query->where('blood_group', $request->blood_group);
+        }
+
+        return $query->paginate(10)->appends($request?->query() ?? []);
     }
 
     public function getRequestDetail(string $id): ?BloodRequest
