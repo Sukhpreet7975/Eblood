@@ -94,6 +94,110 @@ const saveNotifications = (notifications) => {
 
 const getSeedNotifications = () => Array.isArray(window.__ebloodNotificationsSeed) ? window.__ebloodNotificationsSeed : [];
 
+const getDynamicNotificationData = () => {
+    const data = window.__ebloodDynamicNotificationData;
+
+    if (!data || typeof data !== 'object') {
+        return null;
+    }
+
+    return data;
+};
+
+const buildDynamicNotifications = () => {
+    const dynamicData = getDynamicNotificationData();
+
+    if (!dynamicData || dynamicData.role !== 'donor') {
+        return [];
+    }
+
+    const city = dynamicData.city || 'your city';
+    const bloodGroup = dynamicData.bloodGroup || 'your blood group';
+    const recommendations = [];
+
+    if (dynamicData.available) {
+        recommendations.push({
+            id: 'dynamic-donor-availability',
+            title: 'Live availability status',
+            message: `You are currently marked available, so requesters in ${city} can see you as a quick match.`,
+            type: 'approved',
+            read: false,
+            role: 'donor',
+        });
+    } else {
+        recommendations.push({
+            id: 'dynamic-donor-availability',
+            title: 'Live availability status',
+            message: `Your status is currently unavailable. Update it when you are ready so donors and requesters can see your readiness.`,
+            type: 'reminder',
+            read: false,
+            role: 'donor',
+        });
+    }
+
+    if (dynamicData.nearbyRequests > 0) {
+        recommendations.push({
+            id: 'dynamic-donor-requests',
+            title: 'Live urgent request count',
+            message: `${dynamicData.nearbyRequests} urgent request${dynamicData.nearbyRequests === 1 ? '' : 's'} are active in ${city} right now.`,
+            type: 'critical',
+            read: false,
+            role: 'donor',
+        });
+    } else {
+        recommendations.push({
+            id: 'dynamic-donor-requests',
+            title: 'Live urgent request count',
+            message: `No urgent requests are currently visible in ${city}. Keep your profile current so you are ready when one appears.`,
+            type: 'announcement',
+            read: false,
+            role: 'donor',
+        });
+    }
+
+    if (dynamicData.cityDemand > 0) {
+        recommendations.push({
+            id: 'dynamic-donor-demand',
+            title: 'Live blood demand in your city',
+            message: `${bloodGroup} demand is active in ${city}. This is a good moment to stay ready for a fast response.`,
+            type: 'announcement',
+            read: false,
+            role: 'donor',
+        });
+    } else {
+        recommendations.push({
+            id: 'dynamic-donor-demand',
+            title: 'Live blood demand in your city',
+            message: `There is no active ${bloodGroup} demand in ${city} right now. Keep your profile complete and stay available for future matches.`,
+            type: 'reminder',
+            read: false,
+            role: 'donor',
+        });
+    }
+
+    if (dynamicData.profileCompletion < 80) {
+        recommendations.push({
+            id: 'dynamic-donor-profile',
+            title: 'Profile readiness update',
+            message: `Your profile is ${dynamicData.profileCompletion}% complete. Adding a phone number, city, and address helps requesters trust and contact you faster.`,
+            type: 'reminder',
+            read: false,
+            role: 'donor',
+        });
+    } else {
+        recommendations.push({
+            id: 'dynamic-donor-profile',
+            title: 'Profile readiness update',
+            message: `Your profile is ${dynamicData.profileCompletion}% complete and ready for fast matching. Keep your details current for the best response time.`,
+            type: 'approved',
+            read: false,
+            role: 'donor',
+        });
+    }
+
+    return recommendations;
+};
+
 const normalizeNotification = (notification) => ({
     ...notification,
     role: notification?.role || 'all',
@@ -102,9 +206,10 @@ const normalizeNotification = (notification) => ({
 
 const getAllNotifications = () => {
     const seed = getSeedNotifications().map(normalizeNotification);
+    const dynamic = buildDynamicNotifications().map(normalizeNotification);
     const stored = getStoredNotifications().map(normalizeNotification);
 
-    return [...seed, ...stored].reduce((items, notification) => {
+    return [...seed, ...dynamic, ...stored].reduce((items, notification) => {
         if (!notification?.id) {
             return items;
         }

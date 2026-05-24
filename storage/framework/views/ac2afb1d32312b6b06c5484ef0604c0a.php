@@ -23,7 +23,7 @@
 
 </head>
 
-<body class="min-h-screen bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 transition-all duration-300 antialiased">
+<body class="flex min-h-screen flex-col bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 transition-all duration-300 antialiased">
     <div id="page-loader" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/90 backdrop-blur-xl transition-all duration-300">
         <div class="flex flex-col items-center gap-3 text-center">
             <div class="h-16 w-16 rounded-full border-4 border-red-500 border-t-transparent animate-spin"></div>
@@ -82,18 +82,18 @@
             <div class="flex items-center gap-3">
                 <?php if(auth()->guard()->check()): ?>
                     <div class="relative">
-                        <button id="notification-toggle" type="button" class="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-red-300 hover:text-red-600 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:hover:border-red-500/60">
+                        <button id="notification-toggle" type="button" class="inline-flex items-center gap-2 rounded-[1.5rem] border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-[0_18px_60px_-32px_rgba(15,23,42,0.35)] transition-all duration-200 hover:-translate-y-0.5 hover:border-red-300 hover:text-red-600 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:hover:border-red-500/60" aria-haspopup="true" aria-expanded="false">
                             <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 17h5l-1.4-1.4A2 2 0 0 1 18 14.2V11a6 6 0 1 0-12 0v3.2a2 2 0 0 1-.6 1.4L4 17h5"/><path d="M10 19a2 2 0 0 0 4 0"/></svg>
                             <span>Alerts</span>
                             <span id="notification-badge" class="hidden rounded-full bg-red-600 px-2 py-0.5 text-[11px] font-bold text-white">0</span>
                         </button>
-                        <div id="notification-dropdown" style="display:none; flex-direction:column;" class="absolute right-0 top-[calc(100%+0.75rem)] z-[60] max-h-[24rem] w-[22rem] max-w-[calc(100vw-2rem)] overflow-hidden rounded-[1.75rem] border border-slate-200 bg-white/95 p-4 shadow-[0_30px_80px_-40px_rgba(15,23,42,0.4)] backdrop-blur-xl dark:border-slate-700 dark:bg-slate-950/95">
+                        <div id="notification-dropdown" style="display:none; flex-direction:column;" class="absolute right-0 top-[calc(100%+0.75rem)] z-[60] max-h-[24rem] w-[22rem] max-w-[calc(100vw-2rem)] overflow-hidden rounded-[1.75rem] border border-slate-200 bg-white/95 p-4 shadow-[0_30px_90px_-40px_rgba(15,23,42,0.45)] backdrop-blur-xl dark:border-slate-700 dark:bg-slate-950/95">
                             <div class="flex items-center justify-between gap-4">
                                 <div>
                                     <p class="text-sm font-semibold text-slate-900 dark:text-white">Notification center</p>
                                     <p class="text-xs text-slate-500 dark:text-slate-300">Unread updates stay visible until marked read.</p>
                                 </div>
-                                <button id="mark-all-read" type="button" class="text-xs font-semibold text-red-600 hover:text-red-700">Mark all read</button>
+                                <button id="mark-all-read" type="button" class="text-xs font-semibold text-red-600 transition hover:text-red-700">Mark all read</button>
                             </div>
                             <div id="notification-list" class="mt-4 flex-1 space-y-3 overflow-y-auto pr-1"></div>
                         </div>
@@ -172,7 +172,7 @@
         </div>
     <?php endif; ?>
 
-    <main class="container mx-auto px-4 pb-16">
+    <main class="container mx-auto flex-1 px-4 pb-6">
         <div class="fade-in-up">
             <?php echo $__env->yieldContent('content'); ?>
         </div>

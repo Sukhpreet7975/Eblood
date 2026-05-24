@@ -6,7 +6,6 @@ use App\Mail\EmergencyRequestMail;
 use App\Models\BloodRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Mail;
 use MongoDB\BSON\Regex;
 
@@ -36,6 +35,14 @@ class RequestService
         $completedRequests = $requests->where('status', 'Completed')->count();
         $rejectedRequests = $requests->where('status', 'Rejected')->count();
         $recentRequests = $requests->take(5);
+        $requesterPriorityData = $recentRequests->map(function ($request) {
+            return [
+                'blood_group' => $request->blood_group,
+                'status' => $request->status ?? 'Pending',
+                'created_at' => optional($request->created_at)->toJSON(),
+                'city' => $request->city,
+            ];
+        })->values()->all();
 
         return compact(
             'user',
@@ -44,7 +51,8 @@ class RequestService
             'approvedRequests',
             'completedRequests',
             'rejectedRequests',
-            'recentRequests'
+            'recentRequests',
+            'requesterPriorityData'
         );
     }
 

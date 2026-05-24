@@ -55,14 +55,7 @@
 
     <div id="priority-insight" class="card-panel dark:card-panel-dark"></div>
     <div id="requester-priority-data" class="hidden">
-        @json($recentRequests->map(function ($request) {
-            return [
-                'blood_group' => $request->blood_group,
-                'status' => $request->status ?? 'Pending',
-                'created_at' => optional($request->created_at)->toISOString(),
-                'city' => $request->city,
-            ];
-        }))
+        @json($requesterPriorityData ?? [])
     </div>
 
     <div class="card-panel dark:card-panel-dark">

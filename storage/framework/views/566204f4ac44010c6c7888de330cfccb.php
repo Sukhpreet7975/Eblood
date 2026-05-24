@@ -130,6 +130,113 @@
 <?php endif; ?>
     </div>
 
+    <div class="grid gap-6 xl:grid-cols-[1.05fr_0.95fr]">
+        <div class="card-panel dark:card-panel-dark">
+            <div class="flex flex-wrap items-start justify-between gap-4">
+                <div>
+                    <p class="text-sm font-semibold uppercase tracking-[0.2em] text-red-600">Free donor toolkit</p>
+                    <h2 class="mt-2 text-xl font-bold text-slate-900 dark:text-white">Emergency readiness checklist</h2>
+                    <p class="mt-2 text-sm leading-6 text-slate-500 dark:text-slate-300">Track the essentials you need before a request comes in and keep a ready-to-send response prepared.</p>
+                </div>
+                <span id="readiness-status" class="rounded-full bg-amber-100 px-3 py-1 text-sm font-semibold text-amber-700 dark:bg-amber-950/60 dark:text-amber-200">0 steps ready</span>
+            </div>
+
+            <div class="mt-5 h-2 overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
+                <div id="readiness-progress-fill" class="h-full rounded-full bg-gradient-to-r from-red-500 to-rose-400" style="width: 0%"></div>
+            </div>
+            <p id="readiness-progress" class="mt-2 text-sm text-slate-500 dark:text-slate-300">0% ready</p>
+
+            <div class="mt-5 space-y-3">
+                <label class="flex items-start gap-3 rounded-[1.25rem] border border-slate-200 bg-slate-50 px-4 py-3 dark:border-slate-700 dark:bg-slate-900/80">
+                    <input type="checkbox" class="mt-1 h-4 w-4 rounded border-slate-300 text-red-600 focus:ring-red-500" data-readiness-item="hydration">
+                    <span>
+                        <span class="block text-sm font-semibold text-slate-900 dark:text-white">Hydrated and fed</span>
+                        <span class="mt-1 block text-sm text-slate-500 dark:text-slate-300">Stay hydrated and have a light meal before responding to a donation request.</span>
+                    </span>
+                </label>
+
+                <label class="flex items-start gap-3 rounded-[1.25rem] border border-slate-200 bg-slate-50 px-4 py-3 dark:border-slate-700 dark:bg-slate-900/80">
+                    <input type="checkbox" class="mt-1 h-4 w-4 rounded border-slate-300 text-red-600 focus:ring-red-500" data-readiness-item="contact">
+                    <span>
+                        <span class="block text-sm font-semibold text-slate-900 dark:text-white">Phone and contact details are current</span>
+                        <span class="mt-1 block text-sm text-slate-500 dark:text-slate-300">Keep your phone number, city, and emergency contacts updated in your profile.</span>
+                    </span>
+                </label>
+
+                <label class="flex items-start gap-3 rounded-[1.25rem] border border-slate-200 bg-slate-50 px-4 py-3 dark:border-slate-700 dark:bg-slate-900/80">
+                    <input type="checkbox" class="mt-1 h-4 w-4 rounded border-slate-300 text-red-600 focus:ring-red-500" data-readiness-item="availability">
+                    <span>
+                        <span class="block text-sm font-semibold text-slate-900 dark:text-white">Availability is turned on</span>
+                        <span class="mt-1 block text-sm text-slate-500 dark:text-slate-300">Stay visible to patients by keeping your availability status active.</span>
+                    </span>
+                </label>
+
+                <label class="flex items-start gap-3 rounded-[1.25rem] border border-slate-200 bg-slate-50 px-4 py-3 dark:border-slate-700 dark:bg-slate-900/80">
+                    <input type="checkbox" class="mt-1 h-4 w-4 rounded border-slate-300 text-red-600 focus:ring-red-500" data-readiness-item="profile">
+                    <span>
+                        <span class="block text-sm font-semibold text-slate-900 dark:text-white">Profile is complete</span>
+                        <span class="mt-1 block text-sm text-slate-500 dark:text-slate-300">Add your city, blood group, and address so matches are more accurate and trustworthy.</span>
+                    </span>
+                </label>
+            </div>
+
+            <div class="mt-6 rounded-[1.5rem] border border-slate-200 bg-slate-50 px-4 py-4 dark:border-slate-700 dark:bg-slate-900/70">
+                <div class="flex flex-wrap items-center justify-between gap-3">
+                    <div>
+                        <p class="text-sm font-semibold text-slate-900 dark:text-white">Quick response template</p>
+                        <p class="mt-1 text-sm text-slate-500 dark:text-slate-300">Copy a short message you can send when a donation request needs urgent help.</p>
+                    </div>
+                    <button id="copy-ready-message" type="button" class="rounded-full bg-red-600 px-4 py-2 text-sm font-semibold text-white">Copy message</button>
+                </div>
+
+                <textarea id="ready-message-template" class="mt-4 min-h-[120px] w-full rounded-[1.25rem] border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-red-400 focus:outline-none dark:border-slate-700 dark:bg-slate-950 dark:text-white" spellcheck="false">I am available to donate in <?php echo e($user->city ?? 'my city'); ?>. Please contact me on <?php echo e($user->phone ?? 'my phone number'); ?> if a blood donation request needs urgent help.</textarea>
+
+                <div class="mt-3 flex flex-wrap gap-3">
+                    <button id="reset-ready-message" type="button" class="rounded-full border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 dark:border-slate-700 dark:text-slate-100">Reset</button>
+                    <button id="city-template-button" type="button" class="rounded-full border border-red-200 bg-red-50 px-4 py-2 text-sm font-semibold text-red-700 dark:border-red-900/70 dark:bg-red-950/40 dark:text-red-100">Use my city</button>
+                </div>
+
+                <p id="copy-status" class="mt-3 text-sm text-slate-500 dark:text-slate-300">Ready to copy when you need it.</p>
+            </div>
+        </div>
+
+        <div class="space-y-6">
+            <div class="card-panel dark:card-panel-dark">
+                <p class="text-sm font-semibold uppercase tracking-[0.2em] text-red-600">Browser alerts</p>
+                <h2 class="mt-2 text-xl font-bold text-slate-900 dark:text-white">Free local notifications</h2>
+                <p class="mt-2 text-sm leading-6 text-slate-500 dark:text-slate-300">Enable browser alerts to get quick reminders for new urgent requests and dashboard updates without any paid SMS service.</p>
+
+                <div class="mt-4 flex items-center justify-between gap-4 rounded-[1.25rem] bg-slate-50 px-4 py-3 dark:bg-slate-900/70">
+                    <div>
+                        <p class="text-sm font-semibold text-slate-900 dark:text-white">Local alerts</p>
+                        <p id="alerts-label" class="mt-1 text-sm text-slate-500 dark:text-slate-300">Currently disabled</p>
+                    </div>
+                    <button id="local-alert-toggle" type="button" class="rounded-full bg-slate-900 px-4 py-2 text-sm font-semibold text-white dark:bg-white dark:text-slate-900">Enable</button>
+                </div>
+
+                <div class="mt-4 rounded-[1.25rem] bg-gradient-to-r from-rose-50 to-red-50 px-4 py-3 dark:from-rose-950/40 dark:to-red-950/20">
+                    <p class="text-sm font-semibold text-slate-900 dark:text-white">What this helps with</p>
+                    <ul class="mt-3 space-y-2 text-sm text-slate-600 dark:text-slate-200">
+                        <li>• Notify you when a nearby urgent request appears.</li>
+                        <li>• Help you respond faster during peak demand hours.</li>
+                        <li>• Keep your process fully free of paid messaging tools.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card-panel dark:card-panel-dark">
+                <p class="text-sm font-semibold uppercase tracking-[0.2em] text-red-600">Fast next steps</p>
+                <h2 class="mt-2 text-xl font-bold text-slate-900 dark:text-white">Action checklist</h2>
+                <ul class="mt-4 space-y-3 text-sm text-slate-600 dark:text-slate-200">
+                    <li>• Update your availability status when you are ready to donate.</li>
+                    <li>• Keep your city and phone number current for faster matching.</li>
+                    <li>• Review your profile completion to build trust with requesters.</li>
+                    <li>• Use the quick response template when an urgent request lands.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
     <div class="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
         <div class="card-panel dark:card-panel-dark">
             <div class="flex flex-wrap items-center justify-between gap-3">
@@ -255,32 +362,129 @@
 
 <?php $__env->startPush('scripts'); ?>
 <script>
-    window.__ebloodNotificationsSeed = [
-        {
-            id: 'availability-reminder',
-            title: 'Availability reminder',
-            message: 'Keep your donor status updated so patients in your city can contact you quickly.',
-            type: 'reminder',
-            read: false,
-            role: 'donor',
-        },
-        {
-            id: 'critical-request',
-            title: 'New critical request',
-            message: '<?php echo e($nearbyRequests > 0 ? "There are " . $nearbyRequests . " urgent request(s) in your city right now." : "No active urgent requests are visible in your current city."); ?>',
-            type: '<?php echo e($nearbyRequests > 0 ? "critical" : "announcement"); ?>',
-            read: false,
-            role: 'donor',
-        },
-        {
-            id: 'donor-profile-check',
-            title: 'Profile check',
-            message: 'Use the dashboard insights to stay prepared and keep your profile current for the next emergency match.',
-            type: 'announcement',
-            read: false,
-            role: 'donor',
+    window.__ebloodDynamicNotificationData = {
+        role: 'donor',
+        available: <?php echo e($user->available === 'yes' ? 'true' : 'false'); ?>,
+        profileCompletion: <?php echo e($profileCompletion); ?>,
+        nearbyRequests: <?php echo e($nearbyRequests); ?>,
+        cityDemand: <?php echo e($cityDemand); ?>,
+        city: <?php echo json_encode($user->city ?? 'your city', 15, 512) ?>,
+        bloodGroup: <?php echo json_encode($user->blood_group ?? 'your blood group', 15, 512) ?>,
+    };
+
+    (() => {
+        const storageKey = 'eblood-readiness-toolkit';
+        const defaultTemplate = `I am available to donate in <?php echo e($user->city ?? 'my city'); ?>. Please contact me on <?php echo e($user->phone ?? 'my phone number'); ?> if a blood donation request needs urgent help.`;
+        const progressFill = document.getElementById('readiness-progress-fill');
+        const progressText = document.getElementById('readiness-progress');
+        const statusBadge = document.getElementById('readiness-status');
+        const boxes = Array.from(document.querySelectorAll('[data-readiness-item]'));
+        const templateInput = document.getElementById('ready-message-template');
+        const copyButton = document.getElementById('copy-ready-message');
+        const resetButton = document.getElementById('reset-ready-message');
+        const cityTemplateButton = document.getElementById('city-template-button');
+        const copyStatus = document.getElementById('copy-status');
+        const alertToggle = document.getElementById('local-alert-toggle');
+        const alertsLabel = document.getElementById('alerts-label');
+
+        const loadState = () => {
+            try {
+                return JSON.parse(localStorage.getItem(storageKey) || '{}');
+            } catch (error) {
+                return {};
+            }
+        };
+
+        const saveState = (state) => {
+            localStorage.setItem(storageKey, JSON.stringify(state));
+        };
+
+        const updateReadiness = () => {
+            const state = loadState();
+            let checked = 0;
+
+            boxes.forEach((box) => {
+                box.checked = Boolean(state[box.dataset.readinessItem]);
+                if (box.checked) {
+                    checked += 1;
+                }
+            });
+
+            const total = boxes.length;
+            const percent = total ? Math.round((checked / total) * 100) : 0;
+            const remaining = total - checked;
+
+            progressFill.style.width = `${percent}%`;
+            progressText.textContent = `${percent}% ready`;
+            statusBadge.textContent = remaining === 0 ? 'Ready to respond' : `${remaining} step${remaining > 1 ? 's' : ''} left`;
+            statusBadge.className = remaining === 0
+                ? 'rounded-full bg-emerald-100 px-3 py-1 text-sm font-semibold text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-200'
+                : 'rounded-full bg-amber-100 px-3 py-1 text-sm font-semibold text-amber-700 dark:bg-amber-950/60 dark:text-amber-200';
+        };
+
+        boxes.forEach((box) => {
+            box.addEventListener('change', () => {
+                const state = loadState();
+                state[box.dataset.readinessItem] = box.checked;
+                saveState(state);
+                updateReadiness();
+            });
+        });
+
+        if (copyButton && templateInput && copyStatus) {
+            copyButton.addEventListener('click', async () => {
+                try {
+                    await navigator.clipboard.writeText(templateInput.value);
+                    copyStatus.textContent = 'Copied to clipboard. Send it when you are ready to respond.';
+                } catch (error) {
+                    copyStatus.textContent = 'Clipboard access is unavailable, so copy this text manually.';
+                }
+            });
         }
-    ];
+
+        if (resetButton && templateInput) {
+            resetButton.addEventListener('click', () => {
+                templateInput.value = defaultTemplate;
+                copyStatus.textContent = 'Template reset to the default quick response.';
+            });
+        }
+
+        if (cityTemplateButton && templateInput) {
+            cityTemplateButton.addEventListener('click', () => {
+                templateInput.value = `I am available to donate in <?php echo e($user->city ?? 'my city'); ?>. Please contact me on <?php echo e($user->phone ?? 'my phone number'); ?> if a blood donation request needs urgent help.`;
+                copyStatus.textContent = 'Updated the template with your current city and contact details.';
+            });
+        }
+
+        if (alertToggle && alertsLabel) {
+            const alertStateKey = 'eblood-alerts-preference';
+            const syncAlertState = () => {
+                const enabled = localStorage.getItem(alertStateKey) === 'enabled';
+                alertToggle.textContent = enabled ? 'Disable' : 'Enable';
+                alertsLabel.textContent = enabled ? 'Enabled for local browser alerts' : 'Currently disabled';
+                alertToggle.className = enabled
+                    ? 'rounded-full bg-emerald-600 px-4 py-2 text-sm font-semibold text-white'
+                    : 'rounded-full bg-slate-900 px-4 py-2 text-sm font-semibold text-white dark:bg-white dark:text-slate-900';
+            };
+
+            alertToggle.addEventListener('click', async () => {
+                const currentlyEnabled = localStorage.getItem(alertStateKey) === 'enabled';
+                const nextState = currentlyEnabled ? 'disabled' : 'enabled';
+
+                localStorage.setItem(alertStateKey, nextState);
+
+                if (!currentlyEnabled && typeof window.eBloodSmart?.requestNotificationPermission === 'function') {
+                    await window.eBloodSmart.requestNotificationPermission();
+                }
+
+                syncAlertState();
+            });
+
+            syncAlertState();
+        }
+
+        updateReadiness();
+    })();
 </script>
 <?php $__env->stopPush(); ?>
 

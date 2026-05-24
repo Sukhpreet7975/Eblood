@@ -59,7 +59,16 @@
 
     <div class="grid gap-6 xl:grid-cols-12">
         <aside class="xl:col-span-4">
-            <div class="card-panel dark:card-panel-dark sticky top-24">
+            <div class="card-panel dark:card-panel-dark">
+                <p class="text-sm font-semibold text-slate-900 dark:text-slate-100">Workflow Notes</p>
+                <ul class="mt-3 space-y-2 text-sm text-slate-500 dark:text-slate-400">
+                    <li>• Review each request carefully before approving or rejecting.</li>
+                    <li>• The request message stays hidden until you open the details page.</li>
+                    <li>• Rejections require a clear reason before the save action is allowed.</li>
+                </ul>
+            </div>
+
+            <div class="mt-4 card-panel dark:card-panel-dark">
                 <div class="flex items-center justify-between gap-3">
                     <div>
                         <p class="text-sm font-semibold text-slate-900 dark:text-slate-100">Filters</p>
@@ -104,15 +113,6 @@
                         <a href="<?php echo e(route('admin.requests.index')); ?>" class="btn-secondary">Reset</a>
                     </div>
                 </form>
-            </div>
-
-            <div class="mt-4 card-panel dark:card-panel-dark">
-                <p class="text-sm font-semibold text-slate-900 dark:text-slate-100">Workflow Notes</p>
-                <ul class="mt-3 space-y-2 text-sm text-slate-500 dark:text-slate-400">
-                    <li>• Review each request carefully before approving or rejecting.</li>
-                    <li>• The request message stays hidden until you open the details page.</li>
-                    <li>• Rejections require a clear reason before the save action is allowed.</li>
-                </ul>
             </div>
         </aside>
 
