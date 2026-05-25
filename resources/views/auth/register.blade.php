@@ -15,7 +15,7 @@
                         Join the E-Blood community
                     </h2>
                     <p class="max-w-xl text-sm text-white/80">
-                        Create your account and start managing requests, tracking donations, and supporting urgent patient needs with confidence.
+                        Create your account and start requesting support, tracking updates, and optionally enabling donor mode when you’re ready.
                     </p>
                 </div>
 
@@ -30,7 +30,7 @@
                         <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-white/20 text-white">
                             ✓
                         </span>
-                        <span>Easy role-based registration</span>
+                        <span>Simple user and admin access</span>
                     </div>
                     <div class="inline-flex items-center gap-3 rounded-3xl bg-white/10 px-4 py-3">
                         <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-white/20 text-white">
@@ -42,17 +42,17 @@
             </div>
 
             <div class="rounded-[1.5rem] border border-white/20 bg-white/10 p-5 text-sm text-white/85">
-                <p class="font-semibold">Role descriptions</p>
+                <p class="font-semibold">What you can do</p>
 
                 <ul class="mt-3 space-y-2 text-sm leading-6 text-white/80">
                     <li>
-                        <strong>Donor:</strong> Offer blood donations, manage your availability, view donation history, and receive donation requests.
+                        <strong>User:</strong> Create and track blood requests, search donors, and manage the full request flow.
                     </li>
                     <li>
-                        <strong>Requester:</strong> Create and manage blood requests for patients, track request status, and coordinate with donors and hospitals.
+                        <strong>Donor mode:</strong> A user can enable donor mode later to manage availability and receive matching requests.
                     </li>
                     <li>
-                        <strong>Admin:</strong> Oversee the platform — approve or reject requests, manage users and roles, and access system settings. Admin registration may be restricted.
+                        <strong>Admin:</strong> Oversee the platform and manage requests and users. Admin registration may be restricted.
                     </li>
                 </ul>
             </div>
@@ -168,17 +168,11 @@
 
                         <div>
                             <p class="mb-3 text-sm font-semibold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">Register as</p>
-                            <div class="grid gap-3 sm:grid-cols-3">
+                            <div class="grid gap-3 sm:grid-cols-2">
                                 <div>
-                                    <input id="role-donor" type="radio" name="role" value="donor" {{ old('role', 'donor') === 'donor' ? 'checked' : '' }} class="peer sr-only" required>
-                                    <label for="role-donor" class="block cursor-pointer rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 text-center text-sm font-medium text-slate-700 transition hover:border-red-400 hover:text-red-700 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-200 peer-checked:border-red-600 peer-checked:bg-red-50 peer-checked:text-red-700">
-                                        Donor
-                                    </label>
-                                </div>
-                                <div>
-                                    <input id="role-requester" type="radio" name="role" value="requester" {{ old('role') === 'requester' ? 'checked' : '' }} class="peer sr-only" required>
-                                    <label for="role-requester" class="block cursor-pointer rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 text-center text-sm font-medium text-slate-700 transition hover:border-red-400 hover:text-red-700 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-200 peer-checked:border-red-600 peer-checked:bg-red-50 peer-checked:text-red-700">
-                                        Requester
+                                    <input id="role-user" type="radio" name="role" value="user" {{ old('role', 'user') === 'user' ? 'checked' : '' }} class="peer sr-only" required>
+                                    <label for="role-user" class="block cursor-pointer rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 text-center text-sm font-medium text-slate-700 transition hover:border-red-400 hover:text-red-700 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-200 peer-checked:border-red-600 peer-checked:bg-red-50 peer-checked:text-red-700">
+                                        User
                                     </label>
                                 </div>
                                 <div>
@@ -188,6 +182,10 @@
                                     </label>
                                 </div>
                             </div>
+                            <label class="mt-4 inline-flex items-center gap-2 text-sm text-slate-600 dark:text-slate-300">
+                                <input type="checkbox" name="is_donor" value="1" class="h-4 w-4 rounded border-slate-300 text-red-600 focus:ring-red-500">
+                                Enable donor mode now
+                            </label>
                             @if(isset($adminExists) && $adminExists)
                                 <p class="mt-2 text-xs text-slate-500 dark:text-slate-400">Admin registration is disabled because an admin account already exists.</p>
                             @endif

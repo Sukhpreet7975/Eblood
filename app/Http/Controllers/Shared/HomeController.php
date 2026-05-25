@@ -14,13 +14,11 @@ class HomeController extends Controller
     public function index()
     {
         if (auth()->check()) {
-            if (auth()->user()->role === 'admin') {
+            if (auth()->user()->isAdmin()) {
                 return redirect()->route('admin.dashboard');
             }
 
-            return auth()->user()->role === 'requester'
-                ? redirect()->route('requester.home')
-                : redirect()->route('donor.home');
+            return redirect()->route('dashboard');
         }
 
         return view('home', $this->analyticsService->getGuestHomeData());

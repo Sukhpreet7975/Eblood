@@ -12,10 +12,10 @@
 
                 <div class="space-y-4">
                     <h2 class="text-4xl font-extrabold tracking-tight text-white">
-                        Professional login for donors, requesters and admins
+                        Professional login for users and admins
                     </h2>
                     <p class="max-w-xl text-sm text-white/80">
-                        Sign in with confidence to manage blood requests, view status updates, and help patients faster.
+                        Sign in with confidence to manage blood requests, track your activity, and help patients faster.
                     </p>
                 </div>
 
@@ -24,7 +24,7 @@
                         <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-white/20 text-white">
                             ✓
                         </span>
-                        <span>Secure, role-based access</span>
+                        <span>Secure access for every account type</span>
                     </div>
                     <div class="inline-flex items-center gap-3 rounded-3xl bg-white/10 px-4 py-3">
                         <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-white/20 text-white">
@@ -114,18 +114,12 @@
                         </div>
 
                         <div>
-                            <p class="mb-3 text-sm font-semibold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">Login type</p>
-                            <div class="grid gap-3 sm:grid-cols-3">
+                            <p class="mb-3 text-sm font-semibold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">Account type</p>
+                            <div class="grid gap-3 sm:grid-cols-2">
                                 <div>
-                                    <input id="role-donor" type="radio" name="role" value="donor" {{ old('role', 'donor') === 'donor' ? 'checked' : '' }} class="peer sr-only" required>
-                                    <label for="role-donor" class="block cursor-pointer rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 text-center text-sm font-medium text-slate-700 transition hover:border-red-400 hover:text-red-700 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-200 peer-checked:border-red-600 peer-checked:bg-red-50 peer-checked:text-red-700">
-                                        Donor
-                                    </label>
-                                </div>
-                                <div>
-                                    <input id="role-requester" type="radio" name="role" value="requester" {{ old('role') === 'requester' ? 'checked' : '' }} class="peer sr-only" required>
-                                    <label for="role-requester" class="block cursor-pointer rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 text-center text-sm font-medium text-slate-700 transition hover:border-red-400 hover:text-red-700 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-200 peer-checked:border-red-600 peer-checked:bg-red-50 peer-checked:text-red-700">
-                                        Requester
+                                    <input id="role-user" type="radio" name="role" value="user" {{ old('role', 'user') === 'user' ? 'checked' : '' }} class="peer sr-only" required>
+                                    <label for="role-user" class="block cursor-pointer rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 text-center text-sm font-medium text-slate-700 transition hover:border-red-400 hover:text-red-700 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-200 peer-checked:border-red-600 peer-checked:bg-red-50 peer-checked:text-red-700">
+                                        User
                                     </label>
                                 </div>
                                 <div>
@@ -135,6 +129,7 @@
                                     </label>
                                 </div>
                             </div>
+                            <p class="mt-2 text-xs text-slate-500 dark:text-slate-400">Users can opt into donor mode from their profile if needed.</p>
                             <p id="role-field-error" class="mt-2 hidden text-xs text-red-500"></p>
                             @error('role')
                             <p class="mt-2 text-xs text-red-500">{{ $message }}</p>

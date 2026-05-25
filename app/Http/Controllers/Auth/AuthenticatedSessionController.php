@@ -3,38 +3,21 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-
 use App\Http\Requests\Auth\LoginRequest;
-
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
-
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 
 class AuthenticatedSessionController extends Controller
 {
-    /*
-    |--------------------------------------------------------------------------
-    | Show Login Page
-    |--------------------------------------------------------------------------
-    */
-
     public function create(): View
     {
         return view('auth.login');
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Login User
-    |--------------------------------------------------------------------------
-    */
-
-    public function store(
-        LoginRequest $request
-    ): RedirectResponse|JsonResponse
+    public function store(LoginRequest $request): RedirectResponse|JsonResponse
     {
         $user = $request->authenticate();
 
@@ -42,7 +25,7 @@ class AuthenticatedSessionController extends Controller
 
         $redirectPath = $user->isAdmin()
             ? route('admin.home')
-            : ($user->isRequester() ? route('requester.home') : route('donor.home'));
+            : route('dashboard');
 
         if ($request->expectsJson()) {
             return response()->json([
@@ -54,23 +37,12 @@ class AuthenticatedSessionController extends Controller
         return redirect($redirectPath);
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Logout User
-    |--------------------------------------------------------------------------
-    */
-
-    public function destroy(
-        Request $request
-    ): RedirectResponse
+    public function destroy(Request $request): RedirectResponse
     {
         Auth::guard('web')->logout();
 
-        $request->session()
-            ->invalidate();
-
-        $request->session()
-            ->regenerateToken();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
 
         return redirect('/');
     }

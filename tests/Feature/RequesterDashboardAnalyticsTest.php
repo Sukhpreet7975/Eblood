@@ -1,7 +1,11 @@
 <?php
 
+use App\Http\Controllers\Requester\RequestController;
+use App\Services\RequestService;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Auth;
 
 test('requester home renders a dashboard analytics panel with status metrics and insights', function () {
     $user = (object) [
@@ -49,6 +53,7 @@ test('requester home renders a dashboard analytics panel with status metrics and
         'rejectedRequests' => 0,
         'recentRequests' => $recentRequests,
         'requesterPriorityData' => [],
+        'activeFilterStatus' => 'Pending',
     ])->render();
 
     expect($html)->toContain('dashboard-analytics');
@@ -96,6 +101,12 @@ test('requester home renders a dashboard analytics panel with status metrics and
     expect($html)->toContain('status=Approved');
     expect($html)->toContain('status=Completed');
     expect($html)->toContain('status=Rejected');
+    expect($html)->toContain('Current filter');
+    expect($html)->toContain('Pending');
+    expect($html)->toContain('Clear filter');
+    expect($html)->toContain('bg-amber-200');
+    expect($html)->toContain('text-amber-900');
+    expect($html)->toContain('font-bold');
     expect($html)->toContain('grid-cols-2');
     expect($html)->toContain('sm:grid-cols-4');
     expect($html)->toContain('xl:grid-cols-4');
@@ -106,4 +117,43 @@ test('requester home renders a dashboard analytics panel with status metrics and
     expect($html)->toContain('gap-3');
     expect($html)->toContain('2 pending');
     expect($html)->toContain('3 approved');
+});
+
+test('requester home forwards the active status filter to the request service', function () {
+    $requester = new \App\Models\User();
+    $requester->id = 'requester-1';
+    $requester->role = 'requester';
+    $requester->name = 'Filter Tester';
+
+    Auth::shouldReceive('guard')->andReturnSelf();
+    Auth::shouldReceive('check')->andReturn(true);
+    Auth::shouldReceive('guest')->andReturn(false);
+    Auth::shouldReceive('user')->andReturn($requester);
+
+    $service = \Mockery::mock(RequestService::class);
+    $service->shouldReceive('getRequesterHomeData')
+        ->once()
+        ->withArgs(function ($user, $status = null) use ($requester) {
+            return $user === $requester && $status === 'Pending';
+        })
+        ->andReturn([
+            'user' => $requester,
+            'totalRequests' => 2,
+            'pendingRequests' => 2,
+            'approvedRequests' => 0,
+            'completedRequests' => 0,
+            'rejectedRequests' => 0,
+            'recentRequests' => collect(),
+            'requesterPriorityData' => [],
+        ]);
+
+    $this->app->instance(RequestService::class, $service);
+
+    $controller = app(RequestController::class);
+    $html = $controller->requesterHome(new Request(['status' => 'Pending']))->render();
+
+    expect($html)->toContain('Current filter');
+    expect($html)->toContain('Pending');
+    expect($html)->toContain('2 total');
+    expect($html)->toContain('0 approved');
 });

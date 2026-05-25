@@ -59,13 +59,20 @@
             <h3 class="font-semibold mb-3">Quick Actions</h3>
 
                 <div class="grid grid-cols-2 gap-3">
-                <a href="/profile/edit" class="btn-primary">Edit Profile</a>
-                <a href="{{ route('requester.requests.create') }}" class="btn-secondary">Create Request</a>
-                <a href="{{ route('requester.requests.index') }}" class="btn-secondary">View My Requests</a>
-                <button id="toggle-availability-btn" data-url="{{ route('toggle.availability') }}" class="btn-secondary inline-flex items-center justify-center gap-2">
-                    <span id="toggle-spinner" class="hidden w-4 h-4 border-2 border-transparent border-t-gray-700 rounded-full animate-spin"></span>
-                    Toggle Availability
-                </button>
+                <a href="{{ route('profile.edit') }}" class="btn-primary">Edit Profile</a>
+                <a href="{{ route('requests.create') }}" class="btn-secondary">Create Request</a>
+                <a href="{{ route('requests.index') }}" class="btn-secondary">View My Requests</a>
+
+                @if($user->isDonor())
+                    <button id="toggle-availability-btn" data-url="{{ route('toggle.availability') }}" class="btn-secondary inline-flex items-center justify-center gap-2">
+                        <span id="toggle-spinner" class="hidden w-4 h-4 border-2 border-transparent border-t-gray-700 rounded-full animate-spin"></span>
+                        Toggle Availability
+                    </button>
+                @else
+                    <a href="{{ route('donor.become') }}" class="btn-secondary inline-flex items-center justify-center">
+                        Become a Donor
+                    </a>
+                @endif
             </div>
         </div>
 
@@ -142,7 +149,7 @@
                     <svg class="mx-auto mb-6 w-20 h-20 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4l3 3"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 12A9 9 0 1112 3a9 9 0 019 9z"></path></svg>
                     <h4 class="text-lg font-semibold mb-2">No requests yet</h4>
                     <p class="text-sm text-gray-400 mb-4">Create your first emergency request to help patients in need.</p>
-                    <a href="{{ route('requester.requests.create') }}" class="inline-flex items-center gap-2 bg-red-600 text-white px-4 py-2 rounded-lg">Create Emergency Request</a>
+                    <a href="{{ route('requests.create') }}" class="inline-flex items-center gap-2 bg-red-600 text-white px-4 py-2 rounded-lg">Create Emergency Request</a>
                 </div>
             @endif
         </div>

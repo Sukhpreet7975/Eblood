@@ -2,12 +2,13 @@
 
 namespace App\Models;
 
-use MongoDB\Laravel\Auth\User as Authenticatable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Notifications\Notifiable;
+use MongoDB\Laravel\Auth\User as Authenticatable;
 
 class User extends Authenticatable
 {
-    use Notifiable;
+    use HasFactory, Notifiable;
 
     protected $connection = 'mongodb';
 
@@ -24,6 +25,7 @@ class User extends Authenticatable
         'available',
         'profile_image',
         'role',
+        'is_donor',
     ];
 
     protected $hidden = [
@@ -36,6 +38,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'is_donor' => 'boolean',
         ];
     }
 
@@ -46,12 +49,21 @@ class User extends Authenticatable
 
     public function isDonor(): bool
     {
-        return ($this->role ?? null) === 'donor';
+        if (($this->role ?? null) === 'admin') {
+            return false;
+        }
+
+        return (bool) ($this->is_donor ?? false) || (($this->role ?? null) === 'donor');
     }
 
     public function isRequester(): bool
     {
         return ($this->role ?? null) === 'requester';
+    }
+
+    public function isUser(): bool
+    {
+        return ! $this->isAdmin();
     }
 
     public function scopeAdmins($query)
@@ -61,7 +73,15 @@ class User extends Authenticatable
 
     public function scopeDonors($query)
     {
-        return $query->where('role', 'donor');
+        return $query->where(function ($query) {
+            $query->where('is_donor', true)
+                ->orWhere('role', 'donor');
+        });
+    }
+
+    public function scopeUsers($query)
+    {
+        return $query->where('role', '!=', 'admin');
     }
 
     public function scopeRequesters($query)

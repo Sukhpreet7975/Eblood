@@ -424,12 +424,26 @@
             <p class="text-sm text-slate-500 dark:text-slate-300">Use these shortcuts to view specific request states on the full request list.</p>
         </div>
 
+        @php
+            $activeFilterStatus = $activeFilterStatus ?? null;
+        @endphp
+
         <div class="mt-4 flex flex-wrap gap-2">
-            <a href="{{ route('requester.requests.index') }}" class="inline-flex items-center rounded-full border border-slate-300 px-3 py-1.5 text-sm font-semibold text-slate-700 hover:border-red-400 hover:text-red-600 dark:border-slate-700 dark:text-slate-200">All requests</a>
-            <a href="{{ route('requester.requests.index', ['status' => 'Pending']) }}" class="inline-flex items-center rounded-full border border-amber-200 bg-amber-50 px-3 py-1.5 text-sm font-semibold text-amber-700 hover:bg-amber-100 dark:border-amber-900/60 dark:bg-amber-950/30 dark:text-amber-200">Pending ({{ $pendingRequests }})</a>
-            <a href="{{ route('requester.requests.index', ['status' => 'Approved']) }}" class="inline-flex items-center rounded-full border border-sky-200 bg-sky-50 px-3 py-1.5 text-sm font-semibold text-sky-700 hover:bg-sky-100 dark:border-sky-900/60 dark:bg-sky-950/30 dark:text-sky-200">Approved ({{ $approvedRequests }})</a>
-            <a href="{{ route('requester.requests.index', ['status' => 'Completed']) }}" class="inline-flex items-center rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-sm font-semibold text-emerald-700 hover:bg-emerald-100 dark:border-emerald-900/60 dark:bg-emerald-950/30 dark:text-emerald-200">Completed ({{ $completedRequests }})</a>
-            <a href="{{ route('requester.requests.index', ['status' => 'Rejected']) }}" class="inline-flex items-center rounded-full border border-rose-200 bg-rose-50 px-3 py-1.5 text-sm font-semibold text-rose-700 hover:bg-rose-100 dark:border-rose-900/60 dark:bg-rose-950/30 dark:text-rose-200">Rejected ({{ $rejectedRequests }})</a>
+            <a href="{{ route('requester.requests.index') }}" class="inline-flex items-center rounded-full border px-3 py-1.5 text-sm font-semibold shadow-sm {{ $activeFilterStatus === null ? 'border-red-300 bg-red-50 text-red-700 font-bold' : 'border-slate-300 text-slate-700 hover:border-red-400 hover:text-red-600 dark:border-slate-700 dark:text-slate-200' }}">All requests</a>
+            <a href="{{ route('requester.requests.index', ['status' => 'Pending']) }}" class="inline-flex items-center rounded-full border px-3 py-1.5 text-sm font-semibold shadow-sm {{ $activeFilterStatus === 'Pending' ? 'border-amber-300 bg-amber-200 text-amber-900 font-bold' : 'border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-100 dark:border-amber-900/60 dark:bg-amber-950/30 dark:text-amber-200' }}">Pending ({{ $pendingRequests }})</a>
+            <a href="{{ route('requester.requests.index', ['status' => 'Approved']) }}" class="inline-flex items-center rounded-full border px-3 py-1.5 text-sm font-semibold shadow-sm {{ $activeFilterStatus === 'Approved' ? 'border-sky-300 bg-sky-200 text-sky-900 font-bold' : 'border-sky-200 bg-sky-50 text-sky-700 hover:bg-sky-100 dark:border-sky-900/60 dark:bg-sky-950/30 dark:text-sky-200' }}">Approved ({{ $approvedRequests }})</a>
+            <a href="{{ route('requester.requests.index', ['status' => 'Completed']) }}" class="inline-flex items-center rounded-full border px-3 py-1.5 text-sm font-semibold shadow-sm {{ $activeFilterStatus === 'Completed' ? 'border-emerald-300 bg-emerald-200 text-emerald-900 font-bold' : 'border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 dark:border-emerald-900/60 dark:bg-emerald-950/30 dark:text-emerald-200' }}">Completed ({{ $completedRequests }})</a>
+            <a href="{{ route('requester.requests.index', ['status' => 'Rejected']) }}" class="inline-flex items-center rounded-full border px-3 py-1.5 text-sm font-semibold shadow-sm {{ $activeFilterStatus === 'Rejected' ? 'border-rose-300 bg-rose-200 text-rose-900 font-bold' : 'border-rose-200 bg-rose-50 text-rose-700 hover:bg-rose-100 dark:border-rose-900/60 dark:bg-rose-950/30 dark:text-rose-200' }}">Rejected ({{ $rejectedRequests }})</a>
+        </div>
+
+        <div class="mt-3 inline-flex flex-wrap items-center gap-2">
+            <div class="inline-flex items-center rounded-full bg-slate-100 px-3 py-1 text-sm font-semibold text-slate-700 dark:bg-slate-800 dark:text-slate-100">
+                <span class="mr-1">Current filter:</span>
+                <span>{{ $activeFilterStatus ?? 'All requests' }}</span>
+            </div>
+            @if($activeFilterStatus)
+                <a href="{{ route('requester.requests.index') }}" class="inline-flex items-center rounded-full border border-slate-300 px-3 py-1 text-sm font-semibold text-slate-700 hover:border-red-400 hover:text-red-600 dark:border-slate-700 dark:text-slate-200">Clear filter</a>
+            @endif
         </div>
     </section>
 

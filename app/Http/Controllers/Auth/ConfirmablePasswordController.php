@@ -11,17 +11,11 @@ use Illuminate\View\View;
 
 class ConfirmablePasswordController extends Controller
 {
-    /**
-     * Show the confirm password view.
-     */
     public function show(): View
     {
         return view('auth.confirm-password');
     }
 
-    /**
-     * Confirm the user's password.
-     */
     public function store(Request $request): RedirectResponse
     {
         if (! Auth::guard('web')->validate([
@@ -37,7 +31,8 @@ class ConfirmablePasswordController extends Controller
 
         $redirectPath = $request->user()->isAdmin()
             ? route('admin.home')
-            : ($request->user()->isRequester() ? route('requester.home') : route('donor.home'));
+            : route('dashboard');
+
         return redirect()->intended($redirectPath);
     }
 }

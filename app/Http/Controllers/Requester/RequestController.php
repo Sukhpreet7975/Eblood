@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Requester;
 
 use App\Http\Controllers\Controller;
+use App\Models\BloodRequest;
 use App\Services\RequestService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -16,13 +17,15 @@ class RequestController extends Controller
 
     public function create()
     {
-        if (! Auth::check()) {
+        $user = Auth::user();
+
+        if (! $user) {
             return redirect('/login');
         }
 
-        if (Auth::user()->role !== 'requester') {
-            return redirect(Auth::user()->role === 'admin' ? route('admin.home') : route('donor.home'))
-                ->with('error', 'Only requesters can create emergency requests.');
+        if ($user->isAdmin()) {
+            return redirect()->route('admin.home')
+                ->with('error', 'Admins do not create emergency requests from this view.');
         }
 
         return view('blood-request');
@@ -30,13 +33,15 @@ class RequestController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
-        if (! Auth::check()) {
+        $user = Auth::user();
+
+        if (! $user) {
             return redirect('/login');
         }
 
-        if (Auth::user()->role !== 'requester') {
-            return redirect(Auth::user()->role === 'admin' ? route('admin.home') : route('donor.home'))
-                ->with('error', 'Only requesters can submit emergency requests.');
+        if ($user->isAdmin()) {
+            return redirect()->route('admin.home')
+                ->with('error', 'Admins cannot submit emergency requests.');
         }
 
         $request->validate([
@@ -48,40 +53,64 @@ class RequestController extends Controller
         ]);
 
         $this->requestService->createEmergencyRequest(array_merge($request->all(), [
-            'user_id' => Auth::id(),
+            'user_id' => $user->id,
         ]));
 
-        return redirect('/my-requests')->with('success', 'Emergency blood request submitted!');
+        return redirect()->route('requests.index')->with('success', 'Emergency blood request submitted!');
     }
 
     public function myRequests(Request $request)
     {
-        if (! Auth::check()) {
+        $user = Auth::user();
+
+        if (! $user) {
             return redirect('/login');
         }
 
-        if (Auth::user()->role !== 'requester') {
-            return redirect(Auth::user()->role === 'admin' ? route('admin.home') : route('donor.home'))
-                ->with('error', 'Only requesters can view their requests.');
+        if ($user->isAdmin()) {
+            return redirect()->route('admin.home')
+                ->with('error', 'Admins do not manage personal request lists.');
         }
 
-        $requests = $this->requestService->getRequesterRequests(Auth::user(), $request);
+        $requests = $this->requestService->getRequesterRequests($user, $request);
 
         return view('my-requests', compact('requests'));
     }
 
-    public function requesterHome()
+    public function dashboard(Request $request)
     {
-        if (! Auth::check()) {
+        $user = Auth::user();
+
+        if (! $user) {
             return redirect('/login');
         }
 
-        if (Auth::user()->role !== 'requester') {
-            return redirect(Auth::user()->role === 'admin' ? route('admin.home') : route('donor.home'))
-                ->with('error', 'Only requesters can access the requester dashboard.');
+        if ($user->isAdmin()) {
+            return redirect()->route('admin.home');
         }
 
-        return view('requester.home', $this->requestService->getRequesterHomeData(Auth::user()));
+        $requests = BloodRequest::where('user_id', $user->id)
+            ->latest()
+            ->paginate(5);
+
+        $recentActivity = BloodRequest::where('user_id', $user->id)
+            ->latest()
+            ->take(5)
+            ->get();
+
+        return view('dashboard', [
+            'user' => $user,
+            'requests' => $requests,
+            'recentActivity' => $recentActivity,
+            'totalRequests' => $requests->total(),
+            'approvedRequests' => BloodRequest::where('user_id', $user->id)->where('status', 'Approved')->count(),
+            'completedRequests' => BloodRequest::where('user_id', $user->id)->where('status', 'Completed')->count(),
+        ]);
+    }
+
+    public function requesterHome(Request $request)
+    {
+        return $this->dashboard($request);
     }
 
     public function show($id)
@@ -89,11 +118,11 @@ class RequestController extends Controller
         $req = $this->requestService->getRequestDetail($id);
 
         if (! $req) {
-            return redirect(route('requester.home'))->with('error', 'Request not found');
+            return redirect()->route('dashboard')->with('error', 'Request not found');
         }
 
-        if (Auth::user()->role !== 'admin' && $req->user_id !== Auth::id()) {
-            return redirect(route('requester.home'))->with('error', 'You do not have permission to view this request');
+        if (! Auth::user()?->isAdmin() && $req->user_id !== Auth::id()) {
+            return redirect()->route('dashboard')->with('error', 'You do not have permission to view this request');
         }
 
         return view('request-detail', compact('req'));
@@ -101,22 +130,24 @@ class RequestController extends Controller
 
     public function cancel($id)
     {
-        if (! Auth::check()) {
+        $user = Auth::user();
+
+        if (! $user) {
             return redirect('/login');
         }
 
         $req = $this->requestService->getRequestDetail($id);
 
         if (! $req) {
-            return redirect(route('requester.home'))->with('error', 'Request not found');
+            return redirect()->route('dashboard')->with('error', 'Request not found');
         }
 
-        if ($req->user_id !== Auth::id()) {
-            return redirect(route('requester.home'))->with('error', 'You cannot cancel this request');
+        if ($req->user_id !== $user->id) {
+            return redirect()->route('dashboard')->with('error', 'You cannot cancel this request');
         }
 
-        $this->requestService->cancelRequest($req, Auth::user());
+        $this->requestService->cancelRequest($req, $user);
 
-        return redirect(route('requester.home'))->with('success', 'Request canceled');
+        return redirect()->route('dashboard')->with('success', 'Request canceled');
     }
 }

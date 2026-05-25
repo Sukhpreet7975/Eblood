@@ -28,7 +28,7 @@
             </div>
         </div>
 
-        <form method="GET" action="{{ route('requester.requests.index') }}" class="mt-5 grid gap-4 lg:grid-cols-[1.4fr_1fr_1fr_auto]">
+        <form method="GET" action="{{ route('requests.index') }}" class="mt-5 grid gap-4 lg:grid-cols-[1.4fr_1fr_1fr_auto]">
             <div>
                 <label for="search" class="block text-xs font-semibold uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">Search</label>
                 <input id="search" type="text" name="search" value="{{ request('search') }}" placeholder="Patient, hospital, city, or blood group" class="form-field dark:form-field-dark mt-2" />
@@ -56,7 +56,7 @@
 
             <div class="flex items-end gap-3">
                 <button type="submit" class="btn-primary">Apply filters</button>
-                <a href="{{ route('requester.requests.index') }}" class="btn-secondary">Reset</a>
+                <a href="{{ route('requests.index') }}" class="btn-secondary">Reset</a>
             </div>
         </form>
     </div>
@@ -145,9 +145,9 @@
                             </div>
 
                             <div class="mt-4 flex flex-wrap gap-3">
-                                <a href="{{ route('requester.requests.show', $request->_id) }}" class="btn-primary">View details</a>
+                                <a href="{{ route('requests.show', $request->_id) }}" class="btn-primary">View details</a>
                                 @if($status === 'Pending')
-                                    <form method="POST" action="{{ route('requester.requests.cancel', $request->_id) }}" onsubmit="return confirm('Cancel this request?')">
+                                    <form method="POST" action="{{ route('requests.cancel', $request->_id) }}" onsubmit="return confirm('Cancel this request?')">
                                         @csrf
                                         <button type="submit" class="btn-secondary">Cancel request</button>
                                     </form>

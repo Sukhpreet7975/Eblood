@@ -22,9 +22,18 @@ class RequestService
         return $request;
     }
 
-    public function getRequesterHomeData(User $user): array
+    public function getRequesterHomeData(User $user, ?string $status = null): array
     {
+        $normalizedStatus = $status
+            ? ucfirst(strtolower($status))
+            : null;
+        $allowedStatuses = ['Pending', 'Approved', 'Completed', 'Rejected'];
+        $activeStatus = in_array($normalizedStatus, $allowedStatuses, true) ? $normalizedStatus : null;
+
         $requests = BloodRequest::where('user_id', $user->id)
+            ->when($activeStatus, function ($query) use ($activeStatus) {
+                $query->where('status', $activeStatus);
+            })
             ->select(['_id', 'patient_name', 'blood_group', 'hospital', 'city', 'status', 'admin_message', 'created_at'])
             ->latest()
             ->get();

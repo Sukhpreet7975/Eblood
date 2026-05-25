@@ -18,7 +18,7 @@
         </div>
     @endif
 
-    <form method="POST" action="{{ route('requester.requests.store') }}" class="space-y-5">
+    <form method="POST" action="{{ route('requests.store') }}" class="space-y-5">
         @csrf
         <div>
             <label class="block mb-2 font-semibold text-slate-700 dark:text-slate-200">

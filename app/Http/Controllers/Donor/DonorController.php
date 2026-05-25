@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Donor;
 
 use App\Http\Controllers\Controller;
-use App\Models\BloodRequest;
 use App\Models\User;
 use App\Services\DonorRecommendationService;
 use Illuminate\Http\Request;
@@ -12,7 +11,7 @@ class DonorController extends Controller
 {
     public function __construct(protected DonorRecommendationService $donorRecommendationService)
     {
-        $this->middleware(['auth', 'donor'])->except(['home', 'search', 'liveSearch']);
+        $this->middleware('auth')->except(['home', 'search', 'liveSearch']);
     }
 
     public function home()
@@ -30,8 +29,12 @@ class DonorController extends Controller
             return redirect('/login');
         }
 
-        if ($user->role === 'admin') {
-            return redirect('/admin');
+        if ($user->isAdmin()) {
+            return redirect()->route('admin.home');
+        }
+
+        if (! $user->isDonor()) {
+            return redirect()->route('dashboard')->with('error', 'Enable donor mode to access the donor dashboard.');
         }
 
         return view('donor.home', $this->donorRecommendationService->getDonorHomeData($user));
@@ -41,8 +44,12 @@ class DonorController extends Controller
     {
         $user = auth()->user();
 
-        if ($user && $user->role === 'admin') {
-            return redirect('/admin');
+        if (! $user) {
+            return redirect('/login');
+        }
+
+        if ($user->isAdmin()) {
+            return redirect()->route('admin.home');
         }
 
         return view('profile', compact('user'));
@@ -52,8 +59,12 @@ class DonorController extends Controller
     {
         $user = auth()->user();
 
-        if ($user && $user->role === 'admin') {
-            return redirect('/admin');
+        if (! $user) {
+            return redirect('/login');
+        }
+
+        if ($user->isAdmin()) {
+            return redirect()->route('admin.home');
         }
 
         return view('edit-profile', compact('user'));
@@ -63,8 +74,12 @@ class DonorController extends Controller
     {
         $user = auth()->user();
 
-        if ($user && $user->role === 'admin') {
-            return redirect('/admin');
+        if (! $user) {
+            return redirect('/login');
+        }
+
+        if ($user->isAdmin()) {
+            return redirect()->route('admin.home');
         }
 
         $request->validate([
@@ -80,7 +95,7 @@ class DonorController extends Controller
         $user->address = trim($request->address);
         $user->save();
 
-        return redirect('/profile')->with('success', 'Profile updated successfully!');
+        return redirect()->route('profile')->with('success', 'Profile updated successfully!');
     }
 
     public function create()
@@ -92,8 +107,12 @@ class DonorController extends Controller
     {
         $user = auth()->user();
 
-        if ($user && $user->role === 'admin') {
-            return redirect('/admin');
+        if (! $user) {
+            return redirect('/login');
+        }
+
+        if ($user->isAdmin()) {
+            return redirect()->route('admin.home');
         }
 
         $request->validate([
@@ -103,19 +122,23 @@ class DonorController extends Controller
             'address' => 'required|min:5',
         ]);
 
-        $user = User::find(auth()->user()->id);
         $user->phone = $request->phone;
         $user->blood_group = trim($request->blood_group);
         $user->city = trim($request->city);
         $user->address = trim($request->address);
         $user->available = 'yes';
+        $user->is_donor = true;
         $user->save();
 
-        return redirect('/')->with('success', 'Donor profile created successfully!');
+        return redirect()->route('dashboard')->with('success', 'Donor mode enabled successfully!');
     }
 
     public function search(Request $request)
     {
+        if (auth()->check() && auth()->user()->isDonor()) {
+            return redirect()->route('donor.home');
+        }
+
         $donors = $this->donorRecommendationService->getDonorSearchResults($request);
 
         return view('search', compact('donors'));
@@ -125,8 +148,12 @@ class DonorController extends Controller
     {
         $user = auth()->user();
 
-        if ($user && $user->role === 'admin') {
-            return redirect('/admin');
+        if (! $user) {
+            return redirect('/login');
+        }
+
+        if ($user->isAdmin()) {
+            return redirect()->route('admin.home');
         }
 
         $request->validate([
@@ -141,21 +168,29 @@ class DonorController extends Controller
             $user->save();
         }
 
-        return redirect('/profile')->with('success', 'Profile image uploaded!');
+        return redirect()->route('profile')->with('success', 'Profile image uploaded!');
     }
 
     public function toggleStatus()
     {
         $user = auth()->user();
 
-        if ($user && $user->role === 'admin') {
-            return redirect('/admin');
+        if (! $user) {
+            return redirect('/login');
+        }
+
+        if ($user->isAdmin()) {
+            return redirect()->route('admin.home');
+        }
+
+        if (! $user->isDonor()) {
+            return redirect()->route('donor.become')->with('error', 'Enable donor mode before changing availability.');
         }
 
         $user->available = $user->available === 'yes' ? 'no' : 'yes';
         $user->save();
 
-        return redirect('/profile')->with('success', 'Availability status updated!');
+        return redirect()->route('profile')->with('success', 'Availability status updated!');
     }
 
     public function toggleAvailability(Request $request)
@@ -164,11 +199,15 @@ class DonorController extends Controller
             return response()->json(['success' => false, 'message' => 'Unauthenticated'], 401);
         }
 
-        if (auth()->user()->role === 'admin') {
+        $user = auth()->user();
+
+        if ($user->isAdmin()) {
             return response()->json(['success' => false, 'message' => 'Admins cannot change availability'], 403);
         }
 
-        $user = auth()->user();
+        if (! $user->isDonor()) {
+            return response()->json(['success' => false, 'message' => 'Enable donor mode before changing availability'], 403);
+        }
 
         try {
             $user->available = $user->available === 'yes' ? 'no' : 'yes';
@@ -185,6 +224,10 @@ class DonorController extends Controller
 
     public function liveSearch(Request $request)
     {
+        if (auth()->check() && auth()->user()->isDonor()) {
+            return redirect()->route('donor.home');
+        }
+
         return response()->json($this->donorRecommendationService->getLiveSearchResults($request));
     }
 }

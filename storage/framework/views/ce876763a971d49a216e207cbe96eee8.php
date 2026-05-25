@@ -10,7 +10,7 @@
         <?php echo app('Illuminate\Foundation\Vite')(['resources/css/app.css', 'resources/js/app.js']); ?>
 
         <script>
-            window.__ebloodCurrentRole = <?php echo json_encode(auth()->check() ? auth()->user()->role : 'guest', 15, 512) ?>;
+            window.__ebloodCurrentRole = <?php echo json_encode(auth()->check() ? (auth()->user()->isAdmin() ? 'admin' : (auth()->user()->isDonor() ? 'donor' : 'user')) : 'guest', 15, 512) ?>;
         </script>
     </head>
     <body class="flex min-h-screen flex-col bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 antialiased">
@@ -42,17 +42,19 @@
                             <a href="<?php echo e(route('admin.donors.index')); ?>" class="<?php echo e($adminLinkClasses); ?> <?php echo e(request()->routeIs('admin.donors.*') ? $adminActiveClasses : $adminInactiveClasses); ?>">Manage Donors</a>
                             <a href="<?php echo e(route('admin.requesters.index')); ?>" class="<?php echo e($adminLinkClasses); ?> <?php echo e(request()->routeIs('admin.requesters.*') ? $adminActiveClasses : $adminInactiveClasses); ?>">Manage Requesters</a>
                             <a href="<?php echo e(route('admin.requests.index')); ?>" class="<?php echo e($adminLinkClasses); ?> <?php echo e(request()->routeIs('admin.requests.*') ? $adminActiveClasses : $adminInactiveClasses); ?>">Emergency Requests</a>
-                        <?php elseif(auth()->user()->isRequester()): ?>
-                            <a href="<?php echo e(route('requester.home')); ?>" class="rounded-full px-4 py-2 text-slate-700 hover:bg-red-50 hover:text-red-600 dark:text-slate-200 dark:hover:bg-slate-800">Home</a>
-                            <a href="<?php echo e(route('requester.search.index')); ?>" class="rounded-full px-4 py-2 text-slate-700 hover:bg-red-50 hover:text-red-600 dark:text-slate-200 dark:hover:bg-slate-800">Search Donors</a>
-                            <a href="<?php echo e(route('requester.requests.create')); ?>" class="rounded-full px-4 py-2 text-slate-700 hover:bg-red-50 hover:text-red-600 dark:text-slate-200 dark:hover:bg-slate-800">Create Request</a>
-                            <a href="<?php echo e(route('requester.requests.index')); ?>" class="rounded-full px-4 py-2 text-slate-700 hover:bg-red-50 hover:text-red-600 dark:text-slate-200 dark:hover:bg-slate-800">My Requests</a>
-                            <a href="/profile" class="rounded-full px-4 py-2 text-slate-700 hover:bg-red-50 hover:text-red-600 dark:text-slate-200 dark:hover:bg-slate-800">Profile</a>
                         <?php elseif(auth()->user()->isDonor()): ?>
                             <a href="<?php echo e(route('donor.home')); ?>" class="rounded-full px-4 py-2 text-slate-700 hover:bg-red-50 hover:text-red-600 dark:text-slate-200 dark:hover:bg-slate-800">Home</a>
-                            <a href="/profile" class="rounded-full px-4 py-2 text-slate-700 hover:bg-red-50 hover:text-red-600 dark:text-slate-200 dark:hover:bg-slate-800">Profile</a>
-                            <a href="/profile#availability" class="rounded-full px-4 py-2 text-slate-700 hover:bg-red-50 hover:text-red-600 dark:text-slate-200 dark:hover:bg-slate-800">Availability</a>
-                            <a href="<?php echo e(route('donor.home')); ?>#achievements" class="rounded-full px-4 py-2 text-slate-700 hover:bg-red-50 hover:text-red-600 dark:text-slate-200 dark:hover:bg-slate-800">Achievements</a>
+                            <a href="<?php echo e(route('search.index')); ?>" class="rounded-full px-4 py-2 text-slate-700 hover:bg-red-50 hover:text-red-600 dark:text-slate-200 dark:hover:bg-slate-800">Search Donors</a>
+                            <a href="<?php echo e(route('requests.create')); ?>" class="rounded-full px-4 py-2 text-slate-700 hover:bg-red-50 hover:text-red-600 dark:text-slate-200 dark:hover:bg-slate-800">Create Request</a>
+                            <a href="<?php echo e(route('requests.index')); ?>" class="rounded-full px-4 py-2 text-slate-700 hover:bg-red-50 hover:text-red-600 dark:text-slate-200 dark:hover:bg-slate-800">My Requests</a>
+                            <a href="<?php echo e(route('profile')); ?>" class="rounded-full px-4 py-2 text-slate-700 hover:bg-red-50 hover:text-red-600 dark:text-slate-200 dark:hover:bg-slate-800">Profile</a>
+                            <a href="<?php echo e(route('profile')); ?>#availability" class="rounded-full px-4 py-2 text-slate-700 hover:bg-red-50 hover:text-red-600 dark:text-slate-200 dark:hover:bg-slate-800">Availability</a>
+                        <?php else: ?>
+                            <a href="<?php echo e(route('dashboard')); ?>" class="rounded-full px-4 py-2 text-slate-700 hover:bg-red-50 hover:text-red-600 dark:text-slate-200 dark:hover:bg-slate-800">Dashboard</a>
+                            <a href="<?php echo e(route('search.index')); ?>" class="rounded-full px-4 py-2 text-slate-700 hover:bg-red-50 hover:text-red-600 dark:text-slate-200 dark:hover:bg-slate-800">Search Donors</a>
+                            <a href="<?php echo e(route('requests.create')); ?>" class="rounded-full px-4 py-2 text-slate-700 hover:bg-red-50 hover:text-red-600 dark:text-slate-200 dark:hover:bg-slate-800">Create Request</a>
+                            <a href="<?php echo e(route('requests.index')); ?>" class="rounded-full px-4 py-2 text-slate-700 hover:bg-red-50 hover:text-red-600 dark:text-slate-200 dark:hover:bg-slate-800">My Requests</a>
+                            <a href="<?php echo e(route('profile')); ?>" class="rounded-full px-4 py-2 text-slate-700 hover:bg-red-50 hover:text-red-600 dark:text-slate-200 dark:hover:bg-slate-800">Profile</a>
                         <?php endif; ?>
 
                         <form method="POST" action="<?php echo e(route('logout')); ?>" class="inline">
@@ -88,17 +90,19 @@
                         <a href="<?php echo e(route('admin.donors.index')); ?>" class="<?php echo e($mobileAdminLinkClasses); ?> <?php echo e(request()->routeIs('admin.donors.*') ? $mobileAdminActiveClasses : $mobileAdminInactiveClasses); ?>">Manage Donors</a>
                         <a href="<?php echo e(route('admin.requesters.index')); ?>" class="<?php echo e($mobileAdminLinkClasses); ?> <?php echo e(request()->routeIs('admin.requesters.*') ? $mobileAdminActiveClasses : $mobileAdminInactiveClasses); ?>">Manage Requesters</a>
                         <a href="<?php echo e(route('admin.requests.index')); ?>" class="<?php echo e($mobileAdminLinkClasses); ?> <?php echo e(request()->routeIs('admin.requests.*') ? $mobileAdminActiveClasses : $mobileAdminInactiveClasses); ?>">Emergency Requests</a>
-                    <?php elseif(auth()->user()->isRequester()): ?>
-                        <a href="<?php echo e(route('requester.home')); ?>" class="block rounded-2xl px-4 py-3 text-slate-900 hover:bg-red-100 hover:text-red-700 dark:text-slate-100 dark:hover:bg-slate-800">Home</a>
-                        <a href="<?php echo e(route('requester.search.index')); ?>" class="block rounded-2xl px-4 py-3 text-slate-900 hover:bg-red-100 hover:text-red-700 dark:text-slate-100 dark:hover:bg-slate-800">Search Donors</a>
-                        <a href="<?php echo e(route('requester.requests.create')); ?>" class="block rounded-2xl px-4 py-3 text-slate-900 hover:bg-red-100 hover:text-red-700 dark:text-slate-100 dark:hover:bg-slate-800">Create Request</a>
-                        <a href="<?php echo e(route('requester.requests.index')); ?>" class="block rounded-2xl px-4 py-3 text-slate-900 hover:bg-red-100 hover:text-red-700 dark:text-slate-100 dark:hover:bg-slate-800">My Requests</a>
-                        <a href="/profile" class="block rounded-2xl px-4 py-3 text-slate-900 hover:bg-red-100 hover:text-red-700 dark:text-slate-100 dark:hover:bg-slate-800">Profile</a>
                     <?php elseif(auth()->user()->isDonor()): ?>
                         <a href="<?php echo e(route('donor.home')); ?>" class="block rounded-2xl px-4 py-3 text-slate-900 hover:bg-red-100 hover:text-red-700 dark:text-slate-100 dark:hover:bg-slate-800">Home</a>
-                        <a href="/profile" class="block rounded-2xl px-4 py-3 text-slate-900 hover:bg-red-100 hover:text-red-700 dark:text-slate-100 dark:hover:bg-slate-800">Profile</a>
-                        <a href="/profile#availability" class="block rounded-2xl px-4 py-3 text-slate-900 hover:bg-red-100 hover:text-red-700 dark:text-slate-100 dark:hover:bg-slate-800">Availability</a>
-                        <a href="<?php echo e(route('donor.home')); ?>#achievements" class="block rounded-2xl px-4 py-3 text-slate-900 hover:bg-red-100 hover:text-red-700 dark:text-slate-100 dark:hover:bg-slate-800">Achievements</a>
+                        <a href="<?php echo e(route('search.index')); ?>" class="block rounded-2xl px-4 py-3 text-slate-900 hover:bg-red-100 hover:text-red-700 dark:text-slate-100 dark:hover:bg-slate-800">Search Donors</a>
+                        <a href="<?php echo e(route('requests.create')); ?>" class="block rounded-2xl px-4 py-3 text-slate-900 hover:bg-red-100 hover:text-red-700 dark:text-slate-100 dark:hover:bg-slate-800">Create Request</a>
+                        <a href="<?php echo e(route('requests.index')); ?>" class="block rounded-2xl px-4 py-3 text-slate-900 hover:bg-red-100 hover:text-red-700 dark:text-slate-100 dark:hover:bg-slate-800">My Requests</a>
+                        <a href="<?php echo e(route('profile')); ?>" class="block rounded-2xl px-4 py-3 text-slate-900 hover:bg-red-100 hover:text-red-700 dark:text-slate-100 dark:hover:bg-slate-800">Profile</a>
+                        <a href="<?php echo e(route('profile')); ?>#availability" class="block rounded-2xl px-4 py-3 text-slate-900 hover:bg-red-100 hover:text-red-700 dark:text-slate-100 dark:hover:bg-slate-800">Availability</a>
+                    <?php else: ?>
+                        <a href="<?php echo e(route('dashboard')); ?>" class="block rounded-2xl px-4 py-3 text-slate-900 hover:bg-red-100 hover:text-red-700 dark:text-slate-100 dark:hover:bg-slate-800">Dashboard</a>
+                        <a href="<?php echo e(route('search.index')); ?>" class="block rounded-2xl px-4 py-3 text-slate-900 hover:bg-red-100 hover:text-red-700 dark:text-slate-100 dark:hover:bg-slate-800">Search Donors</a>
+                        <a href="<?php echo e(route('requests.create')); ?>" class="block rounded-2xl px-4 py-3 text-slate-900 hover:bg-red-100 hover:text-red-700 dark:text-slate-100 dark:hover:bg-slate-800">Create Request</a>
+                        <a href="<?php echo e(route('requests.index')); ?>" class="block rounded-2xl px-4 py-3 text-slate-900 hover:bg-red-100 hover:text-red-700 dark:text-slate-100 dark:hover:bg-slate-800">My Requests</a>
+                        <a href="<?php echo e(route('profile')); ?>" class="block rounded-2xl px-4 py-3 text-slate-900 hover:bg-red-100 hover:text-red-700 dark:text-slate-100 dark:hover:bg-slate-800">Profile</a>
                     <?php endif; ?>
                     <form method="POST" action="<?php echo e(route('logout')); ?>" class="w-full">
                         <?php echo csrf_field(); ?>
@@ -125,15 +129,11 @@
                         <h4 class="font-semibold text-white">Quick Links</h4>
                         <ul class="space-y-2 text-slate-300 text-sm">
                             <li><a href="/" class="hover:text-red-400">Home</a></li>
-                            <?php if(auth()->check() && auth()->user()->isRequester()): ?>
-                                <li><a href="<?php echo e(route('requester.search.index')); ?>" class="hover:text-red-400">Search Donors</a></li>
-                            <?php endif; ?>
                             <?php if(auth()->guard()->check()): ?>
-                                <?php if(auth()->user()->isRequester()): ?>
-                                    <li><a href="<?php echo e(route('requester.requests.create')); ?>" class="hover:text-red-400">Emergency Request</a></li>
-                                <?php endif; ?>
                                 <?php if (! (auth()->user()->isAdmin())): ?>
-                                    <li><a href="/profile" class="hover:text-red-400">Profile</a></li>
+                                    <li><a href="<?php echo e(route('search.index')); ?>" class="hover:text-red-400">Search Donors</a></li>
+                                    <li><a href="<?php echo e(route('requests.create')); ?>" class="hover:text-red-400">Emergency Request</a></li>
+                                    <li><a href="<?php echo e(route('profile')); ?>" class="hover:text-red-400">Profile</a></li>
                                 <?php endif; ?>
                             <?php endif; ?>
                         </ul>

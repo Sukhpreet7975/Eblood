@@ -18,7 +18,7 @@
     ])
 
     <script>
-        window.__ebloodCurrentRole = @json(auth()->check() ? auth()->user()->role : 'guest');
+        window.__ebloodCurrentRole = @json(auth()->check() ? (auth()->user()->isAdmin() ? 'admin' : (auth()->user()->isDonor() ? 'donor' : 'user')) : 'guest');
     </script>
 
 </head>
@@ -59,17 +59,19 @@
                         <a href="{{ route('admin.donors.index') }}" class="{{ $adminLinkClasses }} {{ request()->routeIs('admin.donors.*') ? $adminActiveClasses : $adminInactiveClasses }}">Manage Donors</a>
                         <a href="{{ route('admin.requesters.index') }}" class="{{ $adminLinkClasses }} {{ request()->routeIs('admin.requesters.*') ? $adminActiveClasses : $adminInactiveClasses }}">Manage Requesters</a>
                         <a href="{{ route('admin.requests.index') }}" class="{{ $adminLinkClasses }} {{ request()->routeIs('admin.requests.*') ? $adminActiveClasses : $adminInactiveClasses }}">Emergency Requests</a>
-                    @elseif(auth()->user()->isRequester())
-                        <a href="{{ route('requester.home') }}" class="rounded-full px-4 py-2 text-slate-700 hover:bg-red-50 hover:text-red-600 dark:text-slate-200 dark:hover:bg-slate-800">Home</a>
-                        <a href="{{ route('requester.search.index') }}" class="rounded-full px-4 py-2 text-slate-700 hover:bg-red-50 hover:text-red-600 dark:text-slate-200 dark:hover:bg-slate-800">Search Donors</a>
-                        <a href="{{ route('requester.requests.create') }}" class="rounded-full px-4 py-2 text-slate-700 hover:bg-red-50 hover:text-red-600 dark:text-slate-200 dark:hover:bg-slate-800">Create Request</a>
-                        <a href="{{ route('requester.requests.index') }}" class="rounded-full px-4 py-2 text-slate-700 hover:bg-red-50 hover:text-red-600 dark:text-slate-200 dark:hover:bg-slate-800">My Requests</a>
-                        <a href="/profile" class="rounded-full px-4 py-2 text-slate-700 hover:bg-red-50 hover:text-red-600 dark:text-slate-200 dark:hover:bg-slate-800">Profile</a>
                     @elseif(auth()->user()->isDonor())
                         <a href="{{ route('donor.home') }}" class="rounded-full px-4 py-2 text-slate-700 hover:bg-red-50 hover:text-red-600 dark:text-slate-200 dark:hover:bg-slate-800">Home</a>
-                        <a href="/profile" class="rounded-full px-4 py-2 text-slate-700 hover:bg-red-50 hover:text-red-600 dark:text-slate-200 dark:hover:bg-slate-800">Profile</a>
-                        <a href="/profile#availability" class="rounded-full px-4 py-2 text-slate-700 hover:bg-red-50 hover:text-red-600 dark:text-slate-200 dark:hover:bg-slate-800">Availability</a>
-                        <a href="{{ route('donor.home') }}#achievements" class="rounded-full px-4 py-2 text-slate-700 hover:bg-red-50 hover:text-red-600 dark:text-slate-200 dark:hover:bg-slate-800">Achievements</a>
+                        <a href="{{ route('search.index') }}" class="rounded-full px-4 py-2 text-slate-700 hover:bg-red-50 hover:text-red-600 dark:text-slate-200 dark:hover:bg-slate-800">Search Donors</a>
+                        <a href="{{ route('requests.create') }}" class="rounded-full px-4 py-2 text-slate-700 hover:bg-red-50 hover:text-red-600 dark:text-slate-200 dark:hover:bg-slate-800">Create Request</a>
+                        <a href="{{ route('requests.index') }}" class="rounded-full px-4 py-2 text-slate-700 hover:bg-red-50 hover:text-red-600 dark:text-slate-200 dark:hover:bg-slate-800">My Requests</a>
+                        <a href="{{ route('profile') }}" class="rounded-full px-4 py-2 text-slate-700 hover:bg-red-50 hover:text-red-600 dark:text-slate-200 dark:hover:bg-slate-800">Profile</a>
+                        <a href="{{ route('profile') }}#availability" class="rounded-full px-4 py-2 text-slate-700 hover:bg-red-50 hover:text-red-600 dark:text-slate-200 dark:hover:bg-slate-800">Availability</a>
+                    @else
+                        <a href="{{ route('dashboard') }}" class="rounded-full px-4 py-2 text-slate-700 hover:bg-red-50 hover:text-red-600 dark:text-slate-200 dark:hover:bg-slate-800">Dashboard</a>
+                        <a href="{{ route('search.index') }}" class="rounded-full px-4 py-2 text-slate-700 hover:bg-red-50 hover:text-red-600 dark:text-slate-200 dark:hover:bg-slate-800">Search Donors</a>
+                        <a href="{{ route('requests.create') }}" class="rounded-full px-4 py-2 text-slate-700 hover:bg-red-50 hover:text-red-600 dark:text-slate-200 dark:hover:bg-slate-800">Create Request</a>
+                        <a href="{{ route('requests.index') }}" class="rounded-full px-4 py-2 text-slate-700 hover:bg-red-50 hover:text-red-600 dark:text-slate-200 dark:hover:bg-slate-800">My Requests</a>
+                        <a href="{{ route('profile') }}" class="rounded-full px-4 py-2 text-slate-700 hover:bg-red-50 hover:text-red-600 dark:text-slate-200 dark:hover:bg-slate-800">Profile</a>
                     @endif
 
                     <form method="POST" action="{{ route('logout') }}" class="inline">
@@ -125,17 +127,19 @@
                     <a href="{{ route('admin.donors.index') }}" class="{{ $mobileAdminLinkClasses }} {{ request()->routeIs('admin.donors.*') ? $mobileAdminActiveClasses : $mobileAdminInactiveClasses }}">Manage Donors</a>
                     <a href="{{ route('admin.requesters.index') }}" class="{{ $mobileAdminLinkClasses }} {{ request()->routeIs('admin.requesters.*') ? $mobileAdminActiveClasses : $mobileAdminInactiveClasses }}">Manage Requesters</a>
                     <a href="{{ route('admin.requests.index') }}" class="{{ $mobileAdminLinkClasses }} {{ request()->routeIs('admin.requests.*') ? $mobileAdminActiveClasses : $mobileAdminInactiveClasses }}">Emergency Requests</a>
-                @elseif(auth()->user()->isRequester())
-                    <a href="{{ route('requester.home') }}" class="block rounded-2xl px-4 py-3 text-slate-900 hover:bg-red-100 hover:text-red-700 dark:text-slate-100 dark:hover:bg-slate-800">Home</a>
-                    <a href="{{ route('requester.search.index') }}" class="block rounded-2xl px-4 py-3 text-slate-900 hover:bg-red-100 hover:text-red-700 dark:text-slate-100 dark:hover:bg-slate-800">Search Donors</a>
-                    <a href="{{ route('requester.requests.create') }}" class="block rounded-2xl px-4 py-3 text-slate-900 hover:bg-red-100 hover:text-red-700 dark:text-slate-100 dark:hover:bg-slate-800">Create Request</a>
-                    <a href="{{ route('requester.requests.index') }}" class="block rounded-2xl px-4 py-3 text-slate-900 hover:bg-red-100 hover:text-red-700 dark:text-slate-100 dark:hover:bg-slate-800">My Requests</a>
-                    <a href="/profile" class="block rounded-2xl px-4 py-3 text-slate-900 hover:bg-red-100 hover:text-red-700 dark:text-slate-100 dark:hover:bg-slate-800">Profile</a>
                 @elseif(auth()->user()->isDonor())
                     <a href="{{ route('donor.home') }}" class="block rounded-2xl px-4 py-3 text-slate-900 hover:bg-red-100 hover:text-red-700 dark:text-slate-100 dark:hover:bg-slate-800">Home</a>
-                    <a href="/profile" class="block rounded-2xl px-4 py-3 text-slate-900 hover:bg-red-100 hover:text-red-700 dark:text-slate-100 dark:hover:bg-slate-800">Profile</a>
-                    <a href="/profile#availability" class="block rounded-2xl px-4 py-3 text-slate-900 hover:bg-red-100 hover:text-red-700 dark:text-slate-100 dark:hover:bg-slate-800">Availability</a>
-                    <a href="{{ route('donor.home') }}#achievements" class="block rounded-2xl px-4 py-3 text-slate-900 hover:bg-red-100 hover:text-red-700 dark:text-slate-100 dark:hover:bg-slate-800">Achievements</a>
+                    <a href="{{ route('search.index') }}" class="block rounded-2xl px-4 py-3 text-slate-900 hover:bg-red-100 hover:text-red-700 dark:text-slate-100 dark:hover:bg-slate-800">Search Donors</a>
+                    <a href="{{ route('requests.create') }}" class="block rounded-2xl px-4 py-3 text-slate-900 hover:bg-red-100 hover:text-red-700 dark:text-slate-100 dark:hover:bg-slate-800">Create Request</a>
+                    <a href="{{ route('requests.index') }}" class="block rounded-2xl px-4 py-3 text-slate-900 hover:bg-red-100 hover:text-red-700 dark:text-slate-100 dark:hover:bg-slate-800">My Requests</a>
+                    <a href="{{ route('profile') }}" class="block rounded-2xl px-4 py-3 text-slate-900 hover:bg-red-100 hover:text-red-700 dark:text-slate-100 dark:hover:bg-slate-800">Profile</a>
+                    <a href="{{ route('profile') }}#availability" class="block rounded-2xl px-4 py-3 text-slate-900 hover:bg-red-100 hover:text-red-700 dark:text-slate-100 dark:hover:bg-slate-800">Availability</a>
+                @else
+                    <a href="{{ route('dashboard') }}" class="block rounded-2xl px-4 py-3 text-slate-900 hover:bg-red-100 hover:text-red-700 dark:text-slate-100 dark:hover:bg-slate-800">Dashboard</a>
+                    <a href="{{ route('search.index') }}" class="block rounded-2xl px-4 py-3 text-slate-900 hover:bg-red-100 hover:text-red-700 dark:text-slate-100 dark:hover:bg-slate-800">Search Donors</a>
+                    <a href="{{ route('requests.create') }}" class="block rounded-2xl px-4 py-3 text-slate-900 hover:bg-red-100 hover:text-red-700 dark:text-slate-100 dark:hover:bg-slate-800">Create Request</a>
+                    <a href="{{ route('requests.index') }}" class="block rounded-2xl px-4 py-3 text-slate-900 hover:bg-red-100 hover:text-red-700 dark:text-slate-100 dark:hover:bg-slate-800">My Requests</a>
+                    <a href="{{ route('profile') }}" class="block rounded-2xl px-4 py-3 text-slate-900 hover:bg-red-100 hover:text-red-700 dark:text-slate-100 dark:hover:bg-slate-800">Profile</a>
                 @endif
                 <form method="POST" action="{{ route('logout') }}" class="w-full">
                     @csrf
@@ -188,15 +192,11 @@
                     <h4 class="font-semibold text-white">Quick Links</h4>
                     <ul class="space-y-2 text-slate-300 text-sm">
                         <li><a href="/" class="hover:text-red-400">Home</a></li>
-                        @if(auth()->check() && auth()->user()->isRequester())
-                            <li><a href="{{ route('requester.search.index') }}" class="hover:text-red-400">Search Donors</a></li>
-                        @endif
                         @auth
-                            @if(auth()->user()->isRequester())
-                                <li><a href="{{ route('requester.requests.create') }}" class="hover:text-red-400">Emergency Request</a></li>
-                            @endif
                             @unless(auth()->user()->isAdmin())
-                                <li><a href="/profile" class="hover:text-red-400">Profile</a></li>
+                                <li><a href="{{ route('search.index') }}" class="hover:text-red-400">Search Donors</a></li>
+                                <li><a href="{{ route('requests.create') }}" class="hover:text-red-400">Emergency Request</a></li>
+                                <li><a href="{{ route('profile') }}" class="hover:text-red-400">Profile</a></li>
                             @endunless
                         @endauth
                     </ul>

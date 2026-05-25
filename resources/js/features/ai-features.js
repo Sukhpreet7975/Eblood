@@ -564,16 +564,21 @@ function initSearchIntelligence() {
 }
 
 function calculatePriorityLevel(requests) {
-    if (!requests.length) {
-        return { level: 'Low', score: 0, message: 'No active requests available right now.' };
+    const pendingRequests = requests.filter((request) => (request.status || 'Pending') === 'Pending');
+
+    if (!pendingRequests.length) {
+        return {
+            level: 'Low',
+            score: 0,
+            pendingCount: 0,
+            message: 'No pending requests available right now.',
+        };
     }
 
     let score = 0;
 
-    requests.forEach((request) => {
-        if ((request.status || 'Pending') === 'Pending') {
-            score += 30;
-        }
+    pendingRequests.forEach((request) => {
+        score += 30;
 
         if (RARITY[request.blood_group]) {
             score += RARITY[request.blood_group];
@@ -597,6 +602,7 @@ function calculatePriorityLevel(requests) {
         return {
             level: 'High',
             score,
+            pendingCount: pendingRequests.length,
             message: 'High-priority care is needed. Review the most urgent requests first.',
         };
     }
@@ -605,6 +611,7 @@ function calculatePriorityLevel(requests) {
         return {
             level: 'Medium',
             score,
+            pendingCount: pendingRequests.length,
             message: 'The queue needs attention soon. Consider contacting the requester for updates.',
         };
     }
@@ -612,7 +619,8 @@ function calculatePriorityLevel(requests) {
     return {
         level: 'Low',
         score,
-        message: 'Current requests are manageable and can be checked on a normal cadence.',
+        pendingCount: pendingRequests.length,
+        message: 'Current pending requests are manageable and can be checked on a normal cadence.',
     };
 }
 
@@ -626,13 +634,14 @@ function initRequesterPriority() {
 
     const requests = JSON.parse(data.textContent || '[]');
     const priority = calculatePriorityLevel(requests);
+    const statusFocus = priority.pendingCount ? 'Pending queue' : 'No pending queue';
 
     container.innerHTML = `
         <div class="flex flex-col gap-3">
             <div class="flex items-center justify-between gap-3">
                 <div>
                     <p class="text-sm font-semibold text-slate-900">Emergency priority detection</p>
-                    <p class="text-sm text-slate-500">Local rule-based analysis for your latest requests</p>
+                    <p class="text-sm text-slate-500">Local rule-based analysis for your latest pending requests</p>
                 </div>
                 <span class="rounded-full px-3 py-1 text-xs font-semibold ${priority.level === 'High' ? 'bg-red-100 text-red-700' : priority.level === 'Medium' ? 'bg-amber-100 text-amber-700' : 'bg-emerald-100 text-emerald-700'}">${priority.level}</span>
             </div>
@@ -648,7 +657,7 @@ function initRequesterPriority() {
                 </div>
                 <div class="rounded-2xl bg-slate-50 px-4 py-3">
                     <p class="text-xs uppercase tracking-[0.2em] text-slate-400">Status focus</p>
-                    <p class="mt-2 text-sm font-semibold text-slate-900">${priority.level === 'High' ? 'Immediate attention' : 'Normal review'}</p>
+                    <p class="mt-2 text-sm font-semibold text-slate-900">${statusFocus}</p>
                 </div>
             </div>
         </div>

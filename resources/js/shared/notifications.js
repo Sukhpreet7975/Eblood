@@ -1,6 +1,6 @@
 const STORAGE_KEY = 'eblood-notifications-v1';
 
-const VALID_ROLES = ['admin', 'donor', 'requester'];
+const VALID_ROLES = ['admin', 'donor', 'user'];
 
 const getCurrentRole = () => {
     const role = window.__ebloodCurrentRole;
@@ -55,23 +55,23 @@ const getDefaultNotificationsForRole = (role) => {
         ];
     }
 
-    if (role === 'requester') {
+    if (role === 'user') {
         return [
             {
-                id: 'requester-search-tip',
+                id: 'user-search-tip',
                 title: 'Search tip',
                 message: 'Use city and blood group filters to find the most compatible donors quickly.',
                 type: 'announcement',
                 read: false,
-                role: 'requester',
+                role: 'user',
             },
             {
-                id: 'requester-follow-up',
+                id: 'user-follow-up',
                 title: 'Follow-up reminder',
                 message: 'Keep your request details current so donors and admins can respond effectively.',
                 type: 'reminder',
                 read: false,
-                role: 'requester',
+                role: 'user',
             },
         ];
     }
