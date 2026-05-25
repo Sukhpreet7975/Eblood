@@ -117,19 +117,13 @@
             : round($pendingWaitDays->avg(), 1);
         $queueHealthLabel = 'Healthy';
         $queueHealthCopy = 'Your pending queue is in good shape.';
-        $queueHealthTone = 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-200';
-        $queueHealthBorder = 'border-emerald-200 dark:border-emerald-800/60';
 
         if ($averagePendingWait >= 5) {
             $queueHealthLabel = 'Critical';
             $queueHealthCopy = 'Several pending requests are waiting too long and need attention.';
-            $queueHealthTone = 'bg-rose-50 text-rose-700 dark:bg-rose-950/30 dark:text-rose-200';
-            $queueHealthBorder = 'border-rose-200 dark:border-rose-800/60';
         } elseif ($averagePendingWait >= 2) {
             $queueHealthLabel = 'Watch';
             $queueHealthCopy = 'Pending requests are aging and should be reviewed soon.';
-            $queueHealthTone = 'bg-amber-50 text-amber-700 dark:bg-amber-950/30 dark:text-amber-200';
-            $queueHealthBorder = 'border-amber-200 dark:border-amber-800/60';
         }
 
         $oldestPendingId = $oldestPendingRequest
@@ -289,14 +283,10 @@
                         <p class="mt-2 text-sm font-semibold text-slate-900 dark:text-white"><?php echo e($momentumLabel); ?></p>
                         <p class="mt-1 text-xs text-slate-500 dark:text-slate-300"><?php echo e($momentumCopy); ?></p>
                     </div>
-                    <div class="rounded-[1rem] border <?php echo e($queueHealthBorder); ?> bg-white px-4 py-3 shadow-sm dark:bg-slate-950/50">
-                        <div class="flex items-center justify-between gap-3">
-                            <div>
-                                <p class="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">Queue health</p>
-                                <p class="mt-2 text-sm font-semibold text-slate-900 dark:text-white"><?php echo e($queueHealthCopy); ?></p>
-                            </div>
-                            <span class="queue-health-pill inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-semibold <?php echo e($queueHealthTone); ?>"><?php echo e($queueHealthLabel); ?></span>
-                        </div>
+                    <div class="rounded-[1rem] bg-white px-4 py-3 shadow-sm dark:bg-slate-950/50">
+                        <p class="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">Queue health</p>
+                        <p class="mt-2 text-sm font-semibold text-slate-900 dark:text-white"><?php echo e($queueHealthLabel); ?></p>
+                        <p class="mt-1 text-xs text-slate-500 dark:text-slate-300"><?php echo e($queueHealthCopy); ?></p>
                     </div>
                 </div>
             </div>
@@ -365,59 +355,6 @@
             </div>
         </div>
 
-        <div class="mt-6 grid gap-4 md:grid-cols-3">
-                <div class="rounded-[1rem] bg-white px-4 py-3 shadow-sm dark:bg-slate-950/50">
-                    <p class="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">Newest update</p>
-                    <p class="mt-2 text-sm font-semibold text-slate-900 dark:text-white"><?php echo e($latestStatusLabel); ?> • <?php echo e($latestUpdateLabel); ?></p>
-                </div>
-                <div class="rounded-[1rem] bg-white px-4 py-3 shadow-sm dark:bg-slate-950/50">
-                    <p class="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">Current focus</p>
-                    <p class="mt-2 text-sm font-semibold text-slate-900 dark:text-white"><?php echo e($focusCopy); ?></p>
-                </div>
-                <div class="rounded-[1rem] bg-white px-4 py-3 shadow-sm dark:bg-slate-950/50">
-                    <p class="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">Momentum</p>
-                    <p class="mt-2 text-sm font-semibold text-slate-900 dark:text-white"><?php echo e($momentumLabel); ?></p>
-                    <p class="mt-1 text-xs text-slate-500 dark:text-slate-300"><?php echo e($momentumCopy); ?></p>
-                </div>
-            </div>
-
-            <div class="mt-4 rounded-[1rem] bg-white px-4 py-3 shadow-sm dark:bg-slate-950/50">
-                <p class="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">Suggested next step</p>
-                <p class="mt-2 text-sm font-semibold text-slate-900 dark:text-white"><?php echo e($suggestedNextStep); ?></p>
-            </div>
-
-            <div class="mt-4 rounded-[1rem] bg-white px-4 py-3 shadow-sm dark:bg-slate-950/50">
-                <div class="flex items-center justify-between gap-3">
-                    <div>
-                        <p class="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">Status breakdown</p>
-                        <p class="mt-1 text-sm text-slate-500 dark:text-slate-300">A quick split of where your requests sit right now.</p>
-                    </div>
-                    <div class="text-sm font-semibold text-slate-900 dark:text-white"><?php echo e($totalRequests); ?> total</div>
-                </div>
-
-                <div class="mt-4 space-y-3">
-                    <?php $__currentLoopData = $statusBreakdown; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $label => $status): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                        <div>
-                            <div class="flex items-center justify-between text-xs font-semibold text-slate-500 dark:text-slate-300">
-                                <span><?php echo e($label); ?></span>
-                                <span><?php echo e($status['count']); ?> • <?php echo e($status['percent']); ?>%</span>
-                            </div>
-                            <div class="mt-1 h-2 rounded-full bg-slate-200 dark:bg-slate-800">
-                                <div class="h-2 rounded-full <?php echo e($status['tone']); ?>" style="width: <?php echo e(max($status['percent'], 3)); ?>%"></div>
-                            </div>
-                        </div>
-                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                </div>
-            </div>
-
-            <div class="mt-4 flex flex-wrap gap-3 text-xs text-slate-500 dark:text-slate-300">
-                <span class="inline-flex items-center gap-2"><span class="h-2.5 w-2.5 rounded-full bg-amber-400"></span> Pending</span>
-                <span class="inline-flex items-center gap-2"><span class="h-2.5 w-2.5 rounded-full bg-sky-500"></span> Approved</span>
-                <span class="inline-flex items-center gap-2"><span class="h-2.5 w-2.5 rounded-full bg-emerald-500"></span> Completed</span>
-                <span class="inline-flex items-center gap-2"><span class="h-2.5 w-2.5 rounded-full bg-rose-500"></span> Rejected</span>
-            </div>
-        </div>
-
         <div class="mt-6 grid gap-4 grid-cols-1 sm:grid-cols-2 xl:grid-cols-4">
             <div class="rounded-[1.5rem] bg-slate-50 px-4 py-4 dark:bg-slate-900/70">
                 <p class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">Approval rate</p>
@@ -442,6 +379,60 @@
         </div>
     </section>
 
+    <section class="card-panel dark:card-panel-dark">
+        <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+                <p class="text-sm font-semibold uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">Urgent actions</p>
+                <h3 class="mt-2 text-lg font-bold text-slate-900 dark:text-white">Stay ahead of the queue</h3>
+                <p class="mt-1 text-sm text-slate-500 dark:text-slate-300">Use these quick actions to move the most important requests forward.</p>
+            </div>
+            <a href="<?php echo e(route('requester.requests.index')); ?>" class="inline-flex w-full items-center justify-center rounded-full bg-red-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-700 sm:w-auto">View all requests</a>
+        </div>
+
+        <div class="mt-4 grid gap-3 xl:grid-cols-3">
+            <div class="rounded-[1.25rem] border border-rose-100 bg-rose-50 px-4 py-4 dark:border-rose-900/60 dark:bg-rose-950/30">
+                <p class="text-xs font-semibold uppercase tracking-[0.2em] text-rose-700 dark:text-rose-200">Review oldest pending request</p>
+                <p class="mt-3 text-sm font-semibold text-slate-900 dark:text-white"><?php echo e($oldestPendingLabel); ?></p>
+                <p class="mt-2 text-sm text-slate-600 dark:text-slate-300"><?php echo e($oldestPendingDays); ?> days waiting • <?php echo e(optional($oldestPendingRequest)->blood_group ?? 'Unknown'); ?> • <?php echo e(optional($oldestPendingRequest)->hospital ?? 'Unknown'); ?></p>
+                <?php if($oldestPendingUrl): ?>
+                    <a href="<?php echo e($oldestPendingUrl); ?>" class="mt-4 inline-flex items-center rounded-full bg-red-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-red-700">Open request</a>
+                <?php endif; ?>
+            </div>
+
+            <div class="rounded-[1.25rem] border border-amber-100 bg-amber-50 px-4 py-4 dark:border-amber-900/70 dark:bg-amber-950/30">
+                <p class="text-xs font-semibold uppercase tracking-[0.2em] text-amber-700 dark:text-amber-200">Queue health</p>
+                <p class="mt-3 text-2xl font-bold text-slate-900 dark:text-white"><?php echo e($queueHealthLabel); ?></p>
+                <p class="mt-2 text-sm text-slate-600 dark:text-slate-300"><?php echo e($queueHealthCopy); ?></p>
+                <a href="<?php echo e(route('requester.requests.index')); ?>" class="mt-4 inline-flex items-center rounded-full bg-amber-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-amber-700">Review queue</a>
+            </div>
+
+            <div class="rounded-[1.25rem] border border-emerald-100 bg-emerald-50 px-4 py-4 dark:border-emerald-900/70 dark:bg-emerald-950/30">
+                <p class="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-700 dark:text-emerald-200">Create follow-up</p>
+                <p class="mt-3 text-sm font-semibold text-slate-900 dark:text-white">Add a new request when urgent help is needed.</p>
+                <p class="mt-2 text-sm text-slate-600 dark:text-slate-300">Keep the latest details visible so you can respond faster.</p>
+                <a href="<?php echo e(route('requester.requests.create')); ?>" class="mt-4 inline-flex items-center rounded-full bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-emerald-700">New request</a>
+            </div>
+        </div>
+    </section>
+
+    <section class="card-panel dark:card-panel-dark">
+        <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+                <p class="text-sm font-semibold uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">Quick filters</p>
+                <h3 class="mt-2 text-lg font-bold text-slate-900 dark:text-white">Jump straight to the requests you need</h3>
+            </div>
+            <p class="text-sm text-slate-500 dark:text-slate-300">Use these shortcuts to view specific request states on the full request list.</p>
+        </div>
+
+        <div class="mt-4 flex flex-wrap gap-2">
+            <a href="<?php echo e(route('requester.requests.index')); ?>" class="inline-flex items-center rounded-full border border-slate-300 px-3 py-1.5 text-sm font-semibold text-slate-700 hover:border-red-400 hover:text-red-600 dark:border-slate-700 dark:text-slate-200">All requests</a>
+            <a href="<?php echo e(route('requester.requests.index', ['status' => 'Pending'])); ?>" class="inline-flex items-center rounded-full border border-amber-200 bg-amber-50 px-3 py-1.5 text-sm font-semibold text-amber-700 hover:bg-amber-100 dark:border-amber-900/60 dark:bg-amber-950/30 dark:text-amber-200">Pending (<?php echo e($pendingRequests); ?>)</a>
+            <a href="<?php echo e(route('requester.requests.index', ['status' => 'Approved'])); ?>" class="inline-flex items-center rounded-full border border-sky-200 bg-sky-50 px-3 py-1.5 text-sm font-semibold text-sky-700 hover:bg-sky-100 dark:border-sky-900/60 dark:bg-sky-950/30 dark:text-sky-200">Approved (<?php echo e($approvedRequests); ?>)</a>
+            <a href="<?php echo e(route('requester.requests.index', ['status' => 'Completed'])); ?>" class="inline-flex items-center rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-sm font-semibold text-emerald-700 hover:bg-emerald-100 dark:border-emerald-900/60 dark:bg-emerald-950/30 dark:text-emerald-200">Completed (<?php echo e($completedRequests); ?>)</a>
+            <a href="<?php echo e(route('requester.requests.index', ['status' => 'Rejected'])); ?>" class="inline-flex items-center rounded-full border border-rose-200 bg-rose-50 px-3 py-1.5 text-sm font-semibold text-rose-700 hover:bg-rose-100 dark:border-rose-900/60 dark:bg-rose-950/30 dark:text-rose-200">Rejected (<?php echo e($rejectedRequests); ?>)</a>
+        </div>
+    </section>
+
     <div id="priority-insight" class="card-panel dark:card-panel-dark"></div>
     <div id="requester-priority-data" class="hidden">
         <?php echo json_encode($requesterPriorityData ?? [], 15, 512) ?>
@@ -458,6 +449,12 @@
 
         <div class="recent-requests-list space-y-4">
             <?php $__empty_1 = true; $__currentLoopData = $recentRequests; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $request): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+                <?php
+                    $requestId = optional($request)->_id ?? optional($request)->id;
+                    $requestUrl = $requestId ? route('requester.requests.show', ['id' => $requestId]) : null;
+                    $requestAge = optional($request->created_at)->diffInDays(now()) ?? 0;
+                ?>
+
                 <div class="rounded-[1.5rem] border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-slate-900/70">
                     <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                         <div class="min-w-0 flex-1">
@@ -469,7 +466,18 @@
                     <?php if($request->admin_message): ?>
                         <p class="mt-3 text-sm text-slate-500 dark:text-slate-400">Admin message: <?php echo e($request->admin_message); ?></p>
                     <?php endif; ?>
-                    <p class="mt-3 text-xs text-slate-400">Submitted <?php echo e(optional($request->created_at)->diffForHumans()); ?></p>
+                    <div class="mt-3 flex flex-wrap items-center gap-2 text-xs text-slate-500 dark:text-slate-300">
+                        <span>Days waiting: <?php echo e($requestAge); ?></span>
+                        <span>•</span>
+                        <span>Submitted <?php echo e(optional($request->created_at)->diffForHumans()); ?></span>
+                    </div>
+                    <?php if($requestUrl): ?>
+                        <div class="mt-4">
+                            <a href="<?php echo e($requestUrl); ?>" class="inline-flex items-center rounded-full bg-red-600 px-3 py-1.5 text-xs font-semibold text-white shadow-sm transition hover:bg-red-700">
+                                View details
+                            </a>
+                        </div>
+                    <?php endif; ?>
                 </div>
             <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                 <p class="text-slate-500">No recent requests yet. Start by creating a new emergency request.</p>
