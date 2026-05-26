@@ -5,7 +5,7 @@
     <div class="grid gap-5 xl:grid-cols-[1.05fr_1.35fr]">
         <div class="space-y-5">
             <div class="hero-panel rounded-[2rem] px-5 py-7 sm:px-8 sm:py-8">
-                <div class="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+                <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
                     <div class="max-w-2xl">
                         <p class="text-sm font-semibold uppercase tracking-[0.24em] text-white/85">Welcome back</p>
                         <h1 class="mt-3 text-2xl font-bold leading-tight sm:text-3xl">Hello, <?php echo e($user->name); ?></h1>
@@ -14,16 +14,16 @@
                         </p>
                     </div>
 
-                    <div class="flex flex-wrap gap-3">
-                        <span class="rounded-full bg-white/20 px-4 py-2 text-sm font-semibold text-white backdrop-blur-sm">
+                    <div class="flex w-full flex-wrap items-stretch gap-2 sm:w-auto sm:justify-end">
+                        <span class="w-full rounded-full bg-white/20 px-3 py-2 text-center text-sm font-semibold text-white backdrop-blur-sm sm:w-auto sm:px-4">
                             Blood: <?php echo e($user->blood_group ?? 'N/A'); ?>
 
                         </span>
-                        <span class="rounded-full bg-white/20 px-4 py-2 text-sm font-semibold text-white backdrop-blur-sm">
+                        <span class="w-full rounded-full bg-white/20 px-3 py-2 text-center text-sm font-semibold text-white backdrop-blur-sm sm:w-auto sm:px-4">
                             City: <?php echo e($user->city ?? 'N/A'); ?>
 
                         </span>
-                        <span id="availability-badge" class="rounded-full px-4 py-2 text-sm font-bold backdrop-blur-sm <?php echo e($user->isDonor() && $user->available == 'yes' ? 'bg-emerald-100 text-emerald-900' : 'bg-rose-100 text-rose-900'); ?>">
+                        <span id="availability-badge" class="w-full rounded-full px-3 py-2 text-center text-sm font-bold backdrop-blur-sm sm:w-auto sm:px-4 <?php echo e($user->isDonor() && $user->available == 'yes' ? 'bg-emerald-100 text-emerald-900' : 'bg-rose-100 text-rose-900'); ?>">
                             <?php echo e($user->isDonor() ? ($user->available == 'yes' ? 'Available' : 'Unavailable') : 'Donor mode off'); ?>
 
                         </span>
@@ -31,7 +31,7 @@
                 </div>
             </div>
 
-            <div class="grid gap-3 grid-cols-2 xl:grid-cols-4">
+            <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
                 <div class="card-panel dark:card-panel-dark">
                     <p class="text-sm font-medium text-slate-500 dark:text-slate-400">Total Requests</p>
                     <p class="mt-2 text-2xl font-bold tracking-tight text-red-600 sm:text-3xl"><?php echo e($totalRequests ?? 0); ?></p>

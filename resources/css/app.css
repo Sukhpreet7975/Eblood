@@ -76,6 +76,17 @@
         @apply inline-flex items-center justify-center rounded-full border border-slate-300 bg-white px-5 py-3 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-slate-400 hover:bg-slate-50;
     }
 
+    html.dark .btn-secondary {
+        border-color: rgb(51 65 85);
+        background-color: rgb(15 23 42);
+        color: rgb(248 250 252);
+    }
+
+    html.dark .btn-secondary:hover {
+        border-color: rgb(71 85 105);
+        background-color: rgb(15 23 42 / 0.96);
+    }
+
     .section-panel {
         @apply rounded-[2rem] border border-slate-200/60 bg-white/90 p-8 shadow-xl shadow-slate-500/10;
     }
