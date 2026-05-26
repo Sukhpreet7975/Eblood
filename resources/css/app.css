@@ -53,11 +53,11 @@
     }
 
     .card-panel {
-        @apply rounded-[1.75rem] border border-slate-200/70 bg-white/90 p-6 shadow-xl shadow-slate-500/10;
+        @apply rounded-[1.75rem] border border-slate-200/70 bg-white/90 p-6 shadow-xl shadow-slate-500/10 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-2xl;
     }
 
     .card-panel-dark {
-        @apply rounded-[1.75rem] border border-slate-700/70 bg-slate-950/80 p-6 shadow-xl shadow-slate-950/30;
+        @apply rounded-[1.75rem] border border-slate-700/70 bg-slate-950/80 p-6 shadow-xl shadow-slate-950/30 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_28px_90px_-35px_rgba(0,0,0,0.75)];
     }
 
     .form-field {
