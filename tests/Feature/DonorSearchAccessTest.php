@@ -2,7 +2,7 @@
 
 use App\Models\User;
 
-test('donor users cannot access donor search routes', function () {
+test('donor users can access the donor search routes', function () {
     $donor = User::create([
         'name' => 'Donor User',
         'email' => 'donor@example.com',
@@ -15,11 +15,12 @@ test('donor users cannot access donor search routes', function () {
 
     $this->actingAs($donor)
         ->get('/search')
-        ->assertRedirect('/donor/home');
+        ->assertOk()
+        ->assertSee('Find the right donor');
 
     $this->actingAs($donor)
         ->getJson('/live-search')
-        ->assertRedirect('/donor/home');
+        ->assertOk();
 });
 
 test('requester users can search available donors and see limited donor details', function () {

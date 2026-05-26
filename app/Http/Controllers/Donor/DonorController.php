@@ -135,10 +135,6 @@ class DonorController extends Controller
 
     public function search(Request $request)
     {
-        if (auth()->check() && auth()->user()->isDonor()) {
-            return redirect()->route('donor.home');
-        }
-
         $donors = $this->donorRecommendationService->getDonorSearchResults($request);
 
         return view('search', compact('donors'));
@@ -224,10 +220,6 @@ class DonorController extends Controller
 
     public function liveSearch(Request $request)
     {
-        if (auth()->check() && auth()->user()->isDonor()) {
-            return redirect()->route('donor.home');
-        }
-
         return response()->json($this->donorRecommendationService->getLiveSearchResults($request));
     }
 }
