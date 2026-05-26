@@ -21,21 +21,17 @@
                     <h2 class="mt-4 text-2xl font-bold"><?php echo e($user->name); ?></h2>
                     <p class="text-sm text-gray-500 mt-1">Member since <?php echo e(optional($user->created_at)->format('M Y')); ?></p>
 
-                    <div id="availability" class="mt-4 flex items-center gap-2">
+                    <div class="mt-4 flex flex-wrap justify-center gap-2">
                         <span class="inline-flex items-center px-3 py-1 rounded-full bg-red-50 text-red-700 font-semibold"><?php echo e($user->blood_group ?? 'N/A'); ?></span>
-                        <?php if($user->available == 'yes'): ?>
-                            <span id="profile-availability" class="inline-flex items-center px-3 py-1 rounded-full bg-green-100 text-green-800">Available</span>
-                        <?php else: ?>
-                            <span id="profile-availability" class="inline-flex items-center px-3 py-1 rounded-full bg-red-100 text-red-800">Unavailable</span>
-                        <?php endif; ?>
+                        <span class="inline-flex items-center px-3 py-1 rounded-full <?php echo e($user->available == 'yes' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'); ?>">
+                            <?php echo e($user->available == 'yes' ? 'Available' : 'Unavailable'); ?>
+
+                        </span>
                     </div>
 
                     <div class="mt-6 flex gap-3">
                         <button id="open-edit-modal" class="bg-gradient-to-r from-red-500 to-pink-500 text-white px-4 py-2 rounded-lg hover:opacity-95 transition">Edit Profile</button>
-                        <form method="POST" action="<?php echo e(route('toggle.availability')); ?>" id="profile-availability-form">
-                            <?php echo csrf_field(); ?>
-                            <button type="button" id="profile-toggle-btn" class="px-4 py-2 rounded-lg bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 transition">Toggle</button>
-                        </form>
+                        <a href="<?php echo e(route('availability')); ?>" class="px-4 py-2 rounded-lg bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 transition">Manage Availability</a>
                     </div>
                 </div>
             </div>
@@ -103,38 +99,14 @@
 <?php $__env->startPush('scripts'); ?>
 <script>
 document.addEventListener('DOMContentLoaded', function(){
-    // Modal controls
     const open = document.getElementById('open-edit-modal');
     const modal = document.getElementById('edit-modal');
     const close = document.getElementById('close-edit-modal');
     const close2 = document.getElementById('close-edit-modal-2');
+
     if(open){ open.addEventListener('click', ()=> modal.classList.remove('hidden')) }
     if(close){ close.addEventListener('click', ()=> modal.classList.add('hidden')) }
     if(close2){ close2.addEventListener('click', ()=> modal.classList.add('hidden')) }
-
-    // Profile availability toggle (AJAX)
-    const toggleBtn = document.getElementById('profile-toggle-btn');
-    const badge = document.getElementById('profile-availability');
-    if(toggleBtn){
-        toggleBtn.addEventListener('click', async function(){
-            toggleBtn.disabled = true;
-            const csrf = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-            try{
-                const res = await fetch('<?php echo e(route('toggle.availability')); ?>', { method: 'POST', headers: { 'X-CSRF-TOKEN': csrf, 'Accept': 'application/json' } });
-                const data = await res.json();
-                if(res.ok && data.success){
-                    if(badge){
-                        badge.textContent = data.available === 'yes' ? 'Available' : 'Unavailable';
-                        badge.className = data.available === 'yes' ? 'inline-flex items-center px-3 py-1 rounded-full bg-green-100 text-green-800' : 'inline-flex items-center px-3 py-1 rounded-full bg-red-100 text-red-800';
-                    }
-                } else {
-                    alert(data.message || 'Could not update availability');
-                }
-            } catch(e){
-                alert('Network error');
-            } finally { toggleBtn.disabled = false; }
-        });
-    }
 });
 </script>
 <?php $__env->stopPush(); ?>

@@ -48,7 +48,7 @@
                             <a href="{{ route('requests.create') }}" class="rounded-full px-4 py-2 text-slate-700 hover:bg-red-50 hover:text-red-600 dark:text-slate-200 dark:hover:bg-slate-800">Create Request</a>
                             <a href="{{ route('requests.index') }}" class="rounded-full px-4 py-2 text-slate-700 hover:bg-red-50 hover:text-red-600 dark:text-slate-200 dark:hover:bg-slate-800">My Requests</a>
                             <a href="{{ route('profile') }}" class="rounded-full px-4 py-2 text-slate-700 hover:bg-red-50 hover:text-red-600 dark:text-slate-200 dark:hover:bg-slate-800">Profile</a>
-                            <a href="{{ route('profile') }}#availability" class="rounded-full px-4 py-2 text-slate-700 hover:bg-red-50 hover:text-red-600 dark:text-slate-200 dark:hover:bg-slate-800">Availability</a>
+                            <a href="{{ route('availability') }}" class="rounded-full px-4 py-2 text-slate-700 hover:bg-red-50 hover:text-red-600 dark:text-slate-200 dark:hover:bg-slate-800">Availability</a>
                         @else
                             <a href="{{ route('dashboard') }}" class="rounded-full px-4 py-2 text-slate-700 hover:bg-red-50 hover:text-red-600 dark:text-slate-200 dark:hover:bg-slate-800">Dashboard</a>
                             <a href="{{ route('search.index') }}" class="rounded-full px-4 py-2 text-slate-700 hover:bg-red-50 hover:text-red-600 dark:text-slate-200 dark:hover:bg-slate-800">Search Donors</a>
@@ -96,7 +96,7 @@
                         <a href="{{ route('requests.create') }}" class="block rounded-2xl px-4 py-3 text-slate-900 hover:bg-red-100 hover:text-red-700 dark:text-slate-100 dark:hover:bg-slate-800">Create Request</a>
                         <a href="{{ route('requests.index') }}" class="block rounded-2xl px-4 py-3 text-slate-900 hover:bg-red-100 hover:text-red-700 dark:text-slate-100 dark:hover:bg-slate-800">My Requests</a>
                         <a href="{{ route('profile') }}" class="block rounded-2xl px-4 py-3 text-slate-900 hover:bg-red-100 hover:text-red-700 dark:text-slate-100 dark:hover:bg-slate-800">Profile</a>
-                        <a href="{{ route('profile') }}#availability" class="block rounded-2xl px-4 py-3 text-slate-900 hover:bg-red-100 hover:text-red-700 dark:text-slate-100 dark:hover:bg-slate-800">Availability</a>
+                        <a href="{{ route('availability') }}" class="block rounded-2xl px-4 py-3 text-slate-900 hover:bg-red-100 hover:text-red-700 dark:text-slate-100 dark:hover:bg-slate-800">Availability</a>
                     @else
                         <a href="{{ route('dashboard') }}" class="block rounded-2xl px-4 py-3 text-slate-900 hover:bg-red-100 hover:text-red-700 dark:text-slate-100 dark:hover:bg-slate-800">Dashboard</a>
                         <a href="{{ route('search.index') }}" class="block rounded-2xl px-4 py-3 text-slate-900 hover:bg-red-100 hover:text-red-700 dark:text-slate-100 dark:hover:bg-slate-800">Search Donors</a>

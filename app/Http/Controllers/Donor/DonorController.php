@@ -55,6 +55,21 @@ class DonorController extends Controller
         return view('profile', compact('user'));
     }
 
+    public function availability()
+    {
+        $user = auth()->user();
+
+        if (! $user) {
+            return redirect('/login');
+        }
+
+        if ($user->isAdmin()) {
+            return redirect()->route('admin.home');
+        }
+
+        return view('availability', compact('user'));
+    }
+
     public function edit()
     {
         $user = auth()->user();

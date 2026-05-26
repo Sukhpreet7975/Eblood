@@ -8,6 +8,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/become-donor', [DonorController::class, 'create'])->name('donor.become');
     Route::post('/save-donor', [DonorController::class, 'store'])->name('donor.store');
     Route::get('/profile', [DonorController::class, 'profile'])->name('profile');
+    Route::get('/availability', [DonorController::class, 'availability'])->name('availability');
     Route::get('/profile/edit', [DonorController::class, 'edit'])->name('profile.edit');
     Route::post('/profile/update', [DonorController::class, 'update'])->name('profile.update');
     Route::get('/toggle-status', [DonorController::class, 'toggleStatus'])->name('donor.status.toggle');
