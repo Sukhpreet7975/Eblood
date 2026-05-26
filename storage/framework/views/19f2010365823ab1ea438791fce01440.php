@@ -1,10 +1,10 @@
 <?php $__env->startSection('title', 'Dashboard - E-Blood'); ?>
 
 <?php $__env->startSection('content'); ?>
-<div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-    <div class="grid gap-6 xl:grid-cols-[1.05fr_1.35fr]">
-        <div class="space-y-6">
-            <div class="hero-panel rounded-[2rem]">
+<div class="mx-auto max-w-7xl px-4 pb-6 pt-4 sm:px-6 lg:px-8">
+    <div class="grid gap-5 xl:grid-cols-[1.05fr_1.35fr]">
+        <div class="space-y-5">
+            <div class="hero-panel rounded-[2rem] px-5 py-7 sm:px-8 sm:py-8">
                 <div class="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
                     <div class="max-w-2xl">
                         <p class="text-sm font-semibold uppercase tracking-[0.24em] text-white/85">Welcome back</p>
@@ -107,7 +107,7 @@
             </div>
         </div>
 
-        <div class="space-y-6">
+        <div class="space-y-5">
             <div class="card-panel dark:card-panel-dark">
                 <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                     <div>
