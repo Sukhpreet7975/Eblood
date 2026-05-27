@@ -19,7 +19,7 @@
                 </div>
                 <h1 class="mt-4 text-3xl font-bold tracking-tight sm:text-4xl">Emergency Requests</h1>
                 <p class="mt-3 text-sm leading-7 text-white/90 sm:text-base">
-                    Review every requester submission, validate the details, and respond with a professional approval or rejection workflow.
+                    Review every request submission, validate the details, and respond with a professional approval or rejection workflow.
                 </p>
             </div>
 
@@ -72,7 +72,7 @@
                 <div class="flex items-center justify-between gap-3">
                     <div>
                         <p class="text-sm font-semibold text-slate-900 dark:text-slate-100">Filters</p>
-                        <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Narrow requests by patient, requester, blood group, or status.</p>
+                        <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Narrow requests by patient, requesting user, blood group, or status.</p>
                     </div>
                     <span class="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600 dark:bg-slate-800 dark:text-slate-200">Live</span>
                 </div>
@@ -84,8 +84,8 @@
                     </div>
 
                     <div>
-                        <label class="block text-xs font-semibold uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">Requester Email</label>
-                        <input type="text" name="requester_email" value="<?php echo e(request('requester_email') ?? request('donor_email')); ?>" placeholder="requester@example.com" class="form-field dark:form-field-dark mt-2" />
+                        <label class="block text-xs font-semibold uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">Requesting user email</label>
+                        <input type="text" name="requester_email" value="<?php echo e(request('requester_email') ?? request('donor_email')); ?>" placeholder="user@example.com" class="form-field dark:form-field-dark mt-2" />
                     </div>
 
                     <div>
@@ -152,7 +152,7 @@
                                         <div class="flex flex-wrap items-start gap-3">
                                             <div>
                                                 <p class="text-base font-semibold text-slate-900 dark:text-slate-100"><?php echo e($request->patient_name); ?></p>
-                                                <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Requester: <?php echo e(optional($request->user)->email ?? 'Unknown'); ?></p>
+                                                <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Requesting user: <?php echo e(optional($request->user)->email ?? 'Unknown'); ?></p>
                                             </div>
                                             <span class="inline-flex items-center gap-2 rounded-full px-3 py-1 text-[11px] font-semibold uppercase ring-1 <?php echo e($statusClass); ?>">
                                                 <span class="h-2 w-2 rounded-full" style="background: currentColor; opacity: .75"></span>

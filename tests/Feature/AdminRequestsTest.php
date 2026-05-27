@@ -30,7 +30,7 @@ test('admin emergency requests page shows requester wording and hides the messag
         'approvedRequests' => 0,
     ])->render();
 
-    expect($html)->toContain('Requester: requester@example.com');
+    expect($html)->toContain('Requesting user: requester@example.com');
     expect($html)->not->toContain('Donor Email');
     expect($html)->not->toContain('Urgent blood needed for surgery.');
     expect($html)->toContain('Message available on View');

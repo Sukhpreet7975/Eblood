@@ -7,7 +7,7 @@
             <p class="text-sm font-semibold uppercase tracking-[0.3em] text-red-600">Admin analytics</p>
             <h1 class="mt-3 text-3xl font-bold text-slate-900 dark:text-white sm:text-4xl">Community blood support dashboard</h1>
             <p class="mt-3 max-w-2xl text-sm text-slate-600 dark:text-slate-300">
-                Monitor donor availability, requester activity, and current emergency demand from one place.
+                Monitor donor availability, user activity, and current emergency demand from one place.
             </p>
         </div>
 
@@ -32,15 +32,15 @@
         </div>
 
         <div class="rounded-[1.75rem] border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-900">
-            <p class="text-sm text-slate-500 dark:text-slate-300">Requesters</p>
-            <p class="mt-3 text-3xl font-bold text-sky-600">{{ $totalRequesters }}</p>
-            <p class="mt-2 text-sm text-slate-500 dark:text-slate-300">Active requester accounts</p>
+            <p class="text-sm text-slate-500 dark:text-slate-300">Total users</p>
+            <p class="mt-3 text-3xl font-bold text-sky-600">{{ $totalUsers ?? 0 }}</p>
+            <p class="mt-2 text-sm text-slate-500 dark:text-slate-300">Registered platform users</p>
         </div>
 
         <div class="rounded-[1.75rem] border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-900">
             <p class="text-sm text-slate-500 dark:text-slate-300">Requests this period</p>
             <p class="mt-3 text-3xl font-bold text-amber-500">{{ $bloodRequests }}</p>
-            <p class="mt-2 text-sm text-slate-500 dark:text-slate-300">Average {{ $requestsPerRequester }} per requester</p>
+            <p class="mt-2 text-sm text-slate-500 dark:text-slate-300">Average {{ $requestsPerUser }} per user</p>
         </div>
     </div>
 
@@ -98,11 +98,11 @@
 
         <div class="rounded-[1.75rem] border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-900">
             <div>
-                <h2 class="text-xl font-bold text-slate-900 dark:text-white">Requester demand</h2>
-                <p class="mt-1 text-sm text-slate-500 dark:text-slate-300">Requester activity and request hotspots by city.</p>
+                <h2 class="text-xl font-bold text-slate-900 dark:text-white">Request hotspots</h2>
+                <p class="mt-1 text-sm text-slate-500 dark:text-slate-300">Emergency requests by city and demand concentration.</p>
             </div>
             <div class="mt-5 h-72">
-                <canvas id="requesterCityChart"></canvas>
+                <canvas id="requestHotspotsChart"></canvas>
             </div>
         </div>
     </div>
@@ -138,7 +138,7 @@
             <div class="flex flex-wrap items-center justify-between gap-4">
                 <div>
                     <h2 class="text-xl font-bold text-slate-900 dark:text-white">Recent requests</h2>
-                    <p class="mt-1 text-sm text-slate-500 dark:text-slate-300">Most recent emergency requests submitted by requesters.</p>
+                    <p class="mt-1 text-sm text-slate-500 dark:text-slate-300">Most recent emergency requests submitted by users.</p>
                 </div>
                 <a href="{{ route('admin.requests.index') }}" class="text-sm font-semibold text-red-600">Open requests</a>
             </div>
@@ -170,18 +170,18 @@
     let bloodChart = null;
     let availabilityChart = null;
     let donorCityChart = null;
-    let requesterCityChart = null;
+    let requestHotspotsChart = null;
 
     const renderCharts = () => {
         if (bloodChart) bloodChart.destroy();
         if (availabilityChart) availabilityChart.destroy();
         if (donorCityChart) donorCityChart.destroy();
-        if (requesterCityChart) requesterCityChart.destroy();
+        if (requestHotspotsChart) requestHotspotsChart.destroy();
 
         const bloodCtx = document.getElementById('bloodChart');
         const availabilityCtx = document.getElementById('availabilityChart');
         const donorCityCtx = document.getElementById('donorCityChart');
-        const requesterCityCtx = document.getElementById('requesterCityChart');
+        const requestHotspotsCtx = document.getElementById('requestHotspotsChart');
 
         if (bloodCtx) {
             bloodChart = new Chart(bloodCtx, {
@@ -240,13 +240,13 @@
             });
         }
 
-        if (requesterCityCtx) {
-            requesterCityChart = new Chart(requesterCityCtx, {
+        if (requestHotspotsCtx) {
+            requestHotspotsChart = new Chart(requestHotspotsCtx, {
                 type: 'pie',
                 data: {
-                    labels: @json($requesterCityLabels ?? []),
+                    labels: @json($requestsByCityLabels ?? []),
                     datasets: [{
-                        data: @json($requesterCityData ?? []),
+                        data: @json($requestsByCityData ?? []),
                         backgroundColor: baseColors
                     }]
                 },

@@ -57,8 +57,10 @@
                         <a href="{{ route('admin.home') }}" class="{{ $adminLinkClasses }} {{ request()->routeIs('admin.home') ? $adminActiveClasses : $adminInactiveClasses }}">Home</a>
                         <a href="{{ route('admin.dashboard') }}" class="{{ $adminLinkClasses }} {{ request()->routeIs('admin.dashboard') ? $adminActiveClasses : $adminInactiveClasses }}">Dashboard</a>
                         <a href="{{ route('admin.donors.index') }}" class="{{ $adminLinkClasses }} {{ request()->routeIs('admin.donors.*') ? $adminActiveClasses : $adminInactiveClasses }}">Manage Donors</a>
-                        <a href="{{ route('admin.requesters.index') }}" class="{{ $adminLinkClasses }} {{ request()->routeIs('admin.requesters.*') ? $adminActiveClasses : $adminInactiveClasses }}">Manage Requesters</a>
+                        <a href="{{ route('admin.users.index') }}" class="{{ $adminLinkClasses }} {{ request()->routeIs('admin.users.*') ? $adminActiveClasses : $adminInactiveClasses }}">Manage Users</a>
+                        <a href="{{ route('admin.analytics') }}" class="{{ $adminLinkClasses }} {{ request()->routeIs('admin.analytics') ? $adminActiveClasses : $adminInactiveClasses }}">Donor Analytics</a>
                         <a href="{{ route('admin.requests.index') }}" class="{{ $adminLinkClasses }} {{ request()->routeIs('admin.requests.*') ? $adminActiveClasses : $adminInactiveClasses }}">Emergency Requests</a>
+                        <a href="{{ route('admin.notifications') }}" class="{{ $adminLinkClasses }} {{ request()->routeIs('admin.notifications') ? $adminActiveClasses : $adminInactiveClasses }}">Notifications</a>
                     @elseif(auth()->user()->isDonor())
                         <a href="{{ route('donor.home') }}" class="rounded-full px-4 py-2 text-slate-700 hover:bg-red-50 hover:text-red-600 dark:text-slate-200 dark:hover:bg-slate-800">Home</a>
                         <a href="{{ route('search.index') }}" class="rounded-full px-4 py-2 text-slate-700 hover:bg-red-50 hover:text-red-600 dark:text-slate-200 dark:hover:bg-slate-800">Search Donors</a>
@@ -125,8 +127,10 @@
                     <a href="{{ route('admin.home') }}" class="{{ $mobileAdminLinkClasses }} {{ request()->routeIs('admin.home') ? $mobileAdminActiveClasses : $mobileAdminInactiveClasses }}">Home</a>
                     <a href="{{ route('admin.dashboard') }}" class="{{ $mobileAdminLinkClasses }} {{ request()->routeIs('admin.dashboard') ? $mobileAdminActiveClasses : $mobileAdminInactiveClasses }}">Dashboard</a>
                     <a href="{{ route('admin.donors.index') }}" class="{{ $mobileAdminLinkClasses }} {{ request()->routeIs('admin.donors.*') ? $mobileAdminActiveClasses : $mobileAdminInactiveClasses }}">Manage Donors</a>
-                    <a href="{{ route('admin.requesters.index') }}" class="{{ $mobileAdminLinkClasses }} {{ request()->routeIs('admin.requesters.*') ? $mobileAdminActiveClasses : $mobileAdminInactiveClasses }}">Manage Requesters</a>
+                    <a href="{{ route('admin.users.index') }}" class="{{ $mobileAdminLinkClasses }} {{ request()->routeIs('admin.users.*') ? $mobileAdminActiveClasses : $mobileAdminInactiveClasses }}">Manage Users</a>
+                    <a href="{{ route('admin.analytics') }}" class="{{ $mobileAdminLinkClasses }} {{ request()->routeIs('admin.analytics') ? $mobileAdminActiveClasses : $mobileAdminInactiveClasses }}">Donor Analytics</a>
                     <a href="{{ route('admin.requests.index') }}" class="{{ $mobileAdminLinkClasses }} {{ request()->routeIs('admin.requests.*') ? $mobileAdminActiveClasses : $mobileAdminInactiveClasses }}">Emergency Requests</a>
+                    <a href="{{ route('admin.notifications') }}" class="{{ $mobileAdminLinkClasses }} {{ request()->routeIs('admin.notifications') ? $mobileAdminActiveClasses : $mobileAdminInactiveClasses }}">Notifications</a>
                 @elseif(auth()->user()->isDonor())
                     <a href="{{ route('donor.home') }}" class="block rounded-2xl px-4 py-3 text-slate-900 hover:bg-red-100 hover:text-red-700 dark:text-slate-100 dark:hover:bg-slate-800">Home</a>
                     <a href="{{ route('search.index') }}" class="block rounded-2xl px-4 py-3 text-slate-900 hover:bg-red-100 hover:text-red-700 dark:text-slate-100 dark:hover:bg-slate-800">Search Donors</a>

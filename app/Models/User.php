@@ -53,12 +53,23 @@ class User extends Authenticatable
             return false;
         }
 
+        // Prefer the explicit `is_donor` flag, fall back to legacy `role === 'donor'` for compatibility.
         return (bool) ($this->is_donor ?? false) || (($this->role ?? null) === 'donor');
     }
 
     public function isRequester(): bool
     {
-        return ($this->role ?? null) === 'requester';
+        // Requester concept has been unified into `user` — treat non-admin, non-donor users as requesters for compatibility.
+        if ($this->isAdmin()) {
+            return false;
+        }
+
+        if (($this->role ?? null) === 'requester') {
+            return true; // legacy support
+        }
+
+        // New semantics: a regular `user` who is not donor-enabled is considered a requester-equivalent.
+        return (($this->role ?? null) === 'user' || ($this->role ?? null) === null) && ! ($this->is_donor ?? false);
     }
 
     public function isUser(): bool
@@ -81,12 +92,26 @@ class User extends Authenticatable
 
     public function scopeUsers($query)
     {
-        return $query->where('role', '!=', 'admin');
+        // All non-admin accounts. Keeps compatibility with legacy role values.
+        return $query->where(function ($q) {
+            $q->where('role', '!=', 'admin')
+                ->orWhereNull('role');
+        });
     }
 
     public function scopeRequesters($query)
     {
-        return $query->where('role', 'requester');
+        // Requesters are users who are not admins and not donor-enabled. Keep legacy 'requester' role as fallback.
+        return $query->where(function ($q) {
+            $q->where('role', 'requester')
+                ->orWhere(function ($q2) {
+                    $q2->where(function ($q3) {
+                        $q3->where('role', 'user')->orWhereNull('role');
+                    })->where(function ($q4) {
+                        $q4->where('is_donor', '!=', true)->orWhereNull('is_donor');
+                    });
+                });
+        });
     }
 
     public function requests()

@@ -12,6 +12,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Maatwebsite\Excel\Facades\Excel;
+use MongoDB\BSON\Regex;
 
 class AdminController extends Controller
 {
@@ -32,18 +33,68 @@ class AdminController extends Controller
         return view('admin.home', $this->analyticsService->getAdminHomeData());
     }
 
-    public function manageDonors()
+    public function analytics()
     {
-        $donors = User::where('role', 'donor')->latest()->paginate(12);
-
-        return view('admin.manage-donors', compact('donors'));
+        return view('admin.analytics', $this->analyticsService->getAdminDashboardData());
     }
 
-    public function manageRequesters()
+    public function notifications()
     {
-        $requesters = User::where('role', 'requester')->latest()->paginate(12);
+        $service = new \App\Services\NotificationService();
+        $notifications = $service->roleNotifications('admin');
 
-        return view('admin.manage-requesters', compact('requesters'));
+        return view('admin.notifications', compact('notifications'));
+    }
+
+    public function manageDonors(Request $request)
+    {
+        $search = trim((string) $request->input('search', ''));
+        $perPage = (int) $request->input('per_page', 12);
+        $perPage = in_array($perPage, [12, 25, 50, 100], true) ? $perPage : 12;
+        $filter = $request->input('filter', 'all');
+
+        $query = User::donors();
+
+        if ($filter === 'available') {
+            $query->where('available', 'yes');
+        } elseif ($filter === 'unavailable') {
+            $query->where('available', '!=', 'yes');
+        }
+
+        if ($search !== '') {
+            $query->where(function ($subQuery) use ($search) {
+                $regex = new Regex(preg_quote($search), 'i');
+                $subQuery->where('name', 'regex', $regex)
+                    ->orWhere('email', 'regex', $regex)
+                    ->orWhere('city', 'regex', $regex);
+            });
+        }
+
+        $donors = $query->latest()->paginate($perPage)->withQueryString();
+
+        return view('admin.manage-donors', compact('donors', 'search', 'perPage', 'filter'));
+    }
+
+    public function manageRequesters(Request $request)
+    {
+        $search = trim((string) $request->input('search', ''));
+        $perPage = (int) $request->input('per_page', 25);
+        $perPage = in_array($perPage, [12, 25, 50, 100], true) ? $perPage : 25;
+
+        $query = User::requesters();
+
+        if ($search !== '') {
+            $query->where(function ($subQuery) use ($search) {
+                $regex = new Regex(preg_quote($search), 'i');
+                $subQuery->where('name', 'regex', $regex)
+                    ->orWhere('email', 'regex', $regex)
+                    ->orWhere('city', 'regex', $regex);
+            });
+        }
+
+        $requesters = $query->latest()->paginate($perPage)->withQueryString();
+
+        return view('admin.manage-requesters', compact('requesters', 'search', 'perPage'));
     }
 
     public function requests(Request $request)
@@ -123,6 +174,77 @@ class AdminController extends Controller
         $user->delete();
 
         return redirect('/admin')->with('success', 'User deleted successfully!');
+    }
+
+    public function manageUsers(Request $request)
+    {
+        $search = trim((string) $request->input('search', ''));
+        $perPage = (int) $request->input('per_page', 25);
+        $perPage = in_array($perPage, [12, 25, 50, 100], true) ? $perPage : 25;
+        $filter = $request->input('filter', 'all'); // all | donors | non-donors
+
+        $query = User::where(function ($q) {
+            $q->where('role', '!=', 'admin')->orWhereNull('role');
+        });
+
+        if ($filter === 'donors') {
+            $query->where(function ($q) {
+                $q->where('is_donor', true)->orWhere('role', 'donor');
+            });
+        } elseif ($filter === 'non-donors') {
+            $query->where(function ($q) {
+                $q->where(function ($q2) {
+                    $q2->where('role', 'user')->orWhereNull('role');
+                })->where(function ($q3) {
+                    $q3->where('is_donor', '!=', true)->orWhereNull('is_donor');
+                });
+            });
+        }
+
+        if ($search !== '') {
+            $query->where(function ($subQuery) use ($search) {
+                $regex = new \MongoDB\BSON\Regex(preg_quote($search), 'i');
+                $subQuery->where('name', 'regex', $regex)
+                    ->orWhere('email', 'regex', $regex)
+                    ->orWhere('city', 'regex', $regex);
+            });
+        }
+
+        $users = $query->latest()->paginate($perPage)->withQueryString();
+
+        return view('admin.manage-users', compact('users', 'search', 'perPage', 'filter'));
+    }
+
+    public function suspendUser($id)
+    {
+        $user = User::find($id);
+
+        if (! $user) {
+            return redirect()->back()->with('error', 'User not found.');
+        }
+
+        if ($user->role === 'admin') {
+            return redirect()->back()->with('error', 'Cannot suspend an admin.');
+        }
+
+        $user->suspended = ! ($user->suspended ?? false);
+        $user->save();
+
+        return redirect()->back()->with('success', 'User suspension toggled.');
+    }
+
+    public function toggleDonorMode($id)
+    {
+        $user = User::find($id);
+
+        if (! $user) {
+            return redirect()->back()->with('error', 'User not found.');
+        }
+
+        $user->is_donor = ! ($user->is_donor ?? false);
+        $user->save();
+
+        return redirect()->back()->with('success', 'Donor mode updated.');
     }
 
     public function exportExcel()

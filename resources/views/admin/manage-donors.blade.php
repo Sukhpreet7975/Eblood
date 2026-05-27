@@ -11,7 +11,37 @@
         <a href="{{ route('admin.dashboard') }}" class="rounded-2xl border border-slate-200 px-5 py-3 text-sm font-semibold text-slate-700 transition hover:border-red-300 hover:text-red-600 dark:border-slate-700 dark:text-slate-100">Back to dashboard</a>
     </div>
 
-    <div class="overflow-hidden rounded-[1.75rem] border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-900">
+    <div class="grid gap-4 md:grid-cols-[1fr_240px] items-end mt-6">
+        <form method="GET" action="{{ route('admin.donors.index') }}" class="grid gap-3 sm:grid-cols-[1fr_auto] items-end">
+            <div>
+                <label for="search" class="sr-only">Search donors</label>
+                <input id="search" name="search" value="{{ $search ?? '' }}" placeholder="Search by name, email, or city" class="form-field dark:form-field-dark w-full" type="search">
+            </div>
+            <button type="submit" class="inline-flex items-center justify-center rounded-full bg-red-600 px-5 py-3 text-sm font-semibold text-white shadow-sm hover:bg-red-700">Search</button>
+        </form>
+
+        <form method="GET" action="{{ route('admin.donors.index') }}" class="flex flex-wrap items-center gap-3">
+            <input type="hidden" name="search" value="{{ $search ?? '' }}">
+            <label for="filter" class="text-sm font-semibold text-slate-700 dark:text-slate-300">Availability</label>
+            <select id="filter" name="filter" onchange="this.form.submit()" class="form-field dark:form-field-dark rounded-full px-4 py-3 text-sm">
+                @foreach(['all' => 'All donors', 'available' => 'Available', 'unavailable' => 'Unavailable'] as $k => $label)
+                    <option value="{{ $k }}" @selected(($filter ?? 'all') == $k)>{{ $label }}</option>
+                @endforeach
+            </select>
+            <label for="per_page" class="text-sm font-semibold text-slate-700 dark:text-slate-300">Show</label>
+            <select id="per_page" name="per_page" onchange="this.form.submit()" class="form-field dark:form-field-dark rounded-full px-4 py-3 text-sm">
+                @foreach([12,25,50,100] as $size)
+                    <option value="{{ $size }}" @selected(($perPage ?? 12) == $size)>{{ $size }}</option>
+                @endforeach
+            </select>
+        </form>
+    </div>
+
+    <div class="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 dark:border-slate-700 dark:bg-slate-950/30 dark:text-slate-300 mt-4">
+        Showing {{ $donors->firstItem() ?? 0 }} to {{ $donors->lastItem() ?? 0 }} of {{ $donors->total() }} donors.
+    </div>
+
+    <div class="overflow-hidden rounded-[1.75rem] border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-900 mt-4">
         <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-slate-200 dark:divide-slate-700">
                 <thead class="bg-slate-50 dark:bg-slate-950/80">

@@ -6,7 +6,7 @@
                 <p class="inline-flex rounded-full bg-red-100 px-4 py-1 text-xs font-semibold uppercase tracking-[0.3em] text-red-700 dark:bg-red-950/80 dark:text-red-200">Admin home</p>
                 <h1 class="mt-4 text-3xl font-bold text-slate-900 dark:text-white sm:text-4xl">Welcome back, <?php echo e($admin->name); ?>.</h1>
                 <p class="mt-4 text-sm leading-7 text-slate-600 dark:text-slate-300">
-                    Review the latest system activity, keep emergency requests moving, and jump into donor or requester management in one place.
+                    Review the latest system activity, keep emergency requests moving, and jump into donor or user management in one place.
                 </p>
             </div>
 
@@ -55,19 +55,19 @@
             <div class="mt-5 grid gap-3 sm:grid-cols-2">
                 <a href="<?php echo e(route('admin.dashboard')); ?>" class="rounded-[1.5rem] border border-slate-200 p-4 transition hover:border-red-300 hover:bg-red-50 dark:border-slate-700 dark:hover:border-red-500 dark:hover:bg-slate-800">
                     <p class="text-sm font-semibold text-slate-900 dark:text-white">Open analytics</p>
-                    <p class="mt-2 text-sm text-slate-500 dark:text-slate-300">Review charts, donor coverage, and requester demand.</p>
+                    <p class="mt-2 text-sm text-slate-500 dark:text-slate-300">Review charts, donor coverage, and request hotspots.</p>
+                </a>
+                <a href="<?php echo e(route('admin.analytics')); ?>" class="rounded-[1.5rem] border border-slate-200 p-4 transition hover:border-red-300 hover:bg-red-50 dark:border-slate-700 dark:hover:border-red-500 dark:hover:bg-slate-800">
+                    <p class="text-sm font-semibold text-slate-900 dark:text-white">Donor analytics</p>
+                    <p class="mt-2 text-sm text-slate-500 dark:text-slate-300">Inspect donor distribution and availability trends.</p>
+                </a>
+                <a href="<?php echo e(route('admin.users.index')); ?>" class="rounded-[1.5rem] border border-slate-200 p-4 transition hover:border-red-300 hover:bg-red-50 dark:border-slate-700 dark:hover:border-red-500 dark:hover:bg-slate-800">
+                    <p class="text-sm font-semibold text-slate-900 dark:text-white">Manage users</p>
+                    <p class="mt-2 text-sm text-slate-500 dark:text-slate-300">Search and control user accounts across the platform.</p>
                 </a>
                 <a href="<?php echo e(route('admin.requests.index')); ?>" class="rounded-[1.5rem] border border-slate-200 p-4 transition hover:border-red-300 hover:bg-red-50 dark:border-slate-700 dark:hover:border-red-500 dark:hover:bg-slate-800">
                     <p class="text-sm font-semibold text-slate-900 dark:text-white">Manage requests</p>
                     <p class="mt-2 text-sm text-slate-500 dark:text-slate-300">Review open cases and update request statuses.</p>
-                </a>
-                <a href="<?php echo e(route('admin.donors.index')); ?>" class="rounded-[1.5rem] border border-slate-200 p-4 transition hover:border-red-300 hover:bg-red-50 dark:border-slate-700 dark:hover:border-red-500 dark:hover:bg-slate-800">
-                    <p class="text-sm font-semibold text-slate-900 dark:text-white">Manage donors</p>
-                    <p class="mt-2 text-sm text-slate-500 dark:text-slate-300">Audit donor records and support quick cleanup.</p>
-                </a>
-                <a href="<?php echo e(route('admin.requesters.index')); ?>" class="rounded-[1.5rem] border border-slate-200 p-4 transition hover:border-red-300 hover:bg-red-50 dark:border-slate-700 dark:hover:border-red-500 dark:hover:bg-slate-800">
-                    <p class="text-sm font-semibold text-slate-900 dark:text-white">Manage requesters</p>
-                    <p class="mt-2 text-sm text-slate-500 dark:text-slate-300">Review requester profiles and their activity.</p>
                 </a>
             </div>
         </div>
@@ -145,7 +145,7 @@
                         <div class="flex flex-wrap items-center justify-between gap-3">
                             <div>
                                 <p class="font-semibold text-slate-900 dark:text-white"><?php echo e($request->patient_name ?? 'Anonymous patient'); ?></p>
-                                <p class="mt-1 text-sm text-slate-500 dark:text-slate-300"><?php echo e(optional($request->user)->email ?? 'Requester unavailable'); ?></p>
+                                <p class="mt-1 text-sm text-slate-500 dark:text-slate-300"><?php echo e(optional($request->user)->email ?? 'Requesting user unavailable'); ?></p>
                             </div>
                             <span class="inline-flex rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-slate-700 dark:bg-slate-800 dark:text-slate-100"><?php echo e($request->status ?? 'Pending'); ?></span>
                         </div>

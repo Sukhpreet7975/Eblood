@@ -4,29 +4,32 @@ namespace App\Services;
 
 use App\Models\BloodRequest;
 use App\Models\User;
-use Illuminate\Support\Collection;
+// Collection not required here
 
 class AnalyticsService
 {
     public function getAdminDashboardData(): array
     {
-        $totalDonors = User::where('role', 'donor')->count();
-        $availableDonors = User::where('role', 'donor')->where('available', 'yes')->count();
-        $totalRequesters = User::where('role', 'requester')->count();
-        $activeRequesters = User::where('role', 'requester')->whereHas('requests')->count();
+        // Users
+        $totalUsers = User::users()->count();
+        $activeUsers = User::users()->whereHas('requests')->count();
 
+        // Donor-specific counts (use scopeDonors which respects `is_donor`)
+        $totalDonors = User::donors()->count();
+        $availableDonors = User::donors()->where('available', 'yes')->count();
+
+        // Requests
         $bloodRequests = BloodRequest::count();
         $pendingRequests = BloodRequest::where('status', 'Pending')->count();
         $approvedRequests = BloodRequest::where('status', 'Approved')->count();
         $completedRequests = BloodRequest::where('status', 'Completed')->count();
         $rejectedRequests = BloodRequest::where('status', 'Rejected')->count();
-
-        $recentDonors = User::where('role', 'donor')->latest()->take(5)->get();
-        $recentRequesters = User::where('role', 'requester')->latest()->take(5)->get();
+        $recentDonors = User::donors()->latest()->take(5)->get();
+        $recentUsers = User::users()->latest()->take(5)->get();
         $latestRequests = BloodRequest::latest()->take(5)->get();
 
         $donorBloodGroups = ['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'];
-        $donorList = User::where('role', 'donor')->get(['blood_group', 'city']);
+        $donorList = User::donors()->get(['blood_group', 'city']);
         $bloodGroupData = array_fill(0, count($donorBloodGroups), 0);
         $donorCityCounts = [];
 
@@ -51,16 +54,17 @@ class AnalyticsService
             max($totalDonors - $availableDonors, 0),
         ];
 
-        $requesterCityCounts = [];
-        $requesterList = User::where('role', 'requester')->get(['city']);
-        foreach ($requesterList as $requester) {
-            $city = trim((string) ($requester->city ?? 'Unknown')) ?: 'Unknown';
-            $requesterCityCounts[$city] = ($requesterCityCounts[$city] ?? 0) + 1;
+        // User (non-admin) city distribution for user analytics
+        $userCityCounts = [];
+        $userList = User::users()->get(['city']);
+        foreach ($userList as $u) {
+            $city = trim((string) ($u->city ?? 'Unknown')) ?: 'Unknown';
+            $userCityCounts[$city] = ($userCityCounts[$city] ?? 0) + 1;
         }
 
-        arsort($requesterCityCounts);
-        $requesterCityLabels = array_slice(array_keys($requesterCityCounts), 0, 8);
-        $requesterCityData = array_values(array_slice($requesterCityCounts, 0, 8));
+        arsort($userCityCounts);
+        $userCityLabels = array_slice(array_keys($userCityCounts), 0, 8);
+        $userCityData = array_values(array_slice($userCityCounts, 0, 8));
 
         $requestsByCityCounts = [];
         $requestCities = BloodRequest::whereNotNull('city')->get(['city']);
@@ -73,60 +77,69 @@ class AnalyticsService
         $requestsByCityLabels = array_slice(array_keys($requestsByCityCounts), 0, 8);
         $requestsByCityData = array_values(array_slice($requestsByCityCounts, 0, 8));
 
-        $requestsPerRequester = $totalRequesters > 0 ? round($bloodRequests / $totalRequesters, 1) : 0;
-        $activeRequesterSeries = [
-            $activeRequesters,
-            max($totalRequesters - $activeRequesters, 0),
+        $requestsPerUser = $totalUsers > 0 ? round($bloodRequests / $totalUsers, 1) : 0;
+        $activeUserSeries = [
+            $activeUsers,
+            max($totalUsers - $activeUsers, 0),
         ];
-
-        return compact(
+        // Return both new semantic keys and legacy keys for compatibility.
+        $data = compact(
+            'totalUsers',
             'totalDonors',
             'availableDonors',
-            'totalRequesters',
-            'activeRequesters',
             'bloodRequests',
             'pendingRequests',
             'approvedRequests',
             'completedRequests',
             'rejectedRequests',
             'recentDonors',
-            'recentRequesters',
+            'recentUsers',
             'latestRequests',
             'bloodGroupData',
             'donorBloodGroups',
             'donorCityLabels',
             'donorCityData',
             'donorAvailabilityData',
-            'requesterCityLabels',
-            'requesterCityData',
+            'userCityLabels',
+            'userCityData',
             'requestsByCityLabels',
             'requestsByCityData',
-            'requestsPerRequester',
-            'activeRequesterSeries'
+            'requestsPerUser',
+            'activeUserSeries'
         );
+
+        // Legacy aliases
+        $data['totalRequesters'] = $totalUsers;
+        $data['activeRequesters'] = $activeUsers;
+        $data['requesterCityLabels'] = $userCityLabels;
+        $data['requesterCityData'] = $userCityData;
+        $data['requestsPerRequester'] = $requestsPerUser;
+        $data['activeRequesterSeries'] = $activeUserSeries;
+
+        return $data;
     }
 
     public function getAdminHomeData(): array
     {
         $admin = auth()->user();
 
-        $totalDonors = User::where('role', 'donor')->count();
-        $availableDonors = User::where('role', 'donor')->where('available', 'yes')->count();
+        $totalDonors = User::donors()->count();
+        $availableDonors = User::donors()->where('available', 'yes')->count();
         $totalRequests = BloodRequest::count();
         $pendingRequests = BloodRequest::where('status', 'Pending')->count();
-        $latestDonors = User::where('role', 'donor')->latest()->take(4)->get();
+        $latestDonors = User::donors()->latest()->take(4)->get();
         $recentActivities = BloodRequest::with('user')->latest()->take(4)->get();
-        $totalRequesters = User::where('role', 'requester')->count();
+        $totalUsers = User::users()->count();
 
         return compact(
             'admin',
+            'totalUsers',
             'totalDonors',
             'availableDonors',
             'totalRequests',
             'pendingRequests',
             'latestDonors',
-            'recentActivities',
-            'totalRequesters'
+            'recentActivities'
         );
     }
 

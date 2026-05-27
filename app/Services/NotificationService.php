@@ -61,6 +61,25 @@ class NotificationService
                     'role' => 'requester',
                 ],
             ],
+            // `user` is the new unified role for requester + regular users. Keep parity with requester messages.
+            'user' => [
+                [
+                    'id' => 'user-search-tip',
+                    'title' => 'Search tip',
+                    'message' => 'Use city and blood group filters to find the most compatible donors quickly.',
+                    'type' => 'announcement',
+                    'read' => false,
+                    'role' => 'user',
+                ],
+                [
+                    'id' => 'user-follow-up',
+                    'title' => 'Follow-up reminder',
+                    'message' => 'Keep your request details current so donors and admins can respond effectively.',
+                    'type' => 'reminder',
+                    'read' => false,
+                    'role' => 'user',
+                ],
+            ],
             default => [],
         };
     }
