@@ -110,7 +110,20 @@ class RequestController extends Controller
 
     public function requesterHome(Request $request)
     {
-        return $this->dashboard($request);
+        $user = Auth::user();
+
+        if (! $user) {
+            return redirect('/login');
+        }
+
+        if ($user->isAdmin()) {
+            return redirect()->route('admin.home');
+        }
+
+        $data = $this->requestService->getRequesterHomeData($user, $request->status);
+        $data['activeFilterStatus'] = $request->status ?? 'Pending';
+
+        return view('requester.home', $data);
     }
 
     public function show($id)

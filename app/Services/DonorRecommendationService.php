@@ -110,12 +110,23 @@ class DonorRecommendationService
             ->select(['name', 'city', 'blood_group', 'available', 'profile_image', 'updated_at']);
 
         if ($request->filled('blood_group')) {
-            $query->where('blood_group', trim((string) $request->blood_group));
+            $raw = (string) $request->blood_group;
+            // Replace common URL-decoded representations before trimming so a plus isn't lost.
+            $normalized = str_replace(['%2B', '%20', ' '], '+', $raw);
+            $blood = trim($normalized);
+            // Accept prefix matches if the plus/minus was lost (e.g. "O" -> match "O+"/"O-").
+            if (strpos($blood, '+') === false && strpos($blood, '-') === false) {
+                $query->where('blood_group', 'like', $blood . '%');
+            } else {
+                $query->where('blood_group', $blood);
+            }
         }
 
         if ($request->filled('city')) {
             $query->where('city', 'like', '%' . trim((string) $request->city) . '%');
         }
+
+        
 
         return $query;
     }

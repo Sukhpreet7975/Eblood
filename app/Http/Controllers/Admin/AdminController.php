@@ -77,24 +77,8 @@ class AdminController extends Controller
 
     public function manageRequesters(Request $request)
     {
-        $search = trim((string) $request->input('search', ''));
-        $perPage = (int) $request->input('per_page', 25);
-        $perPage = in_array($perPage, [12, 25, 50, 100], true) ? $perPage : 25;
-
-        $query = User::requesters();
-
-        if ($search !== '') {
-            $query->where(function ($subQuery) use ($search) {
-                $regex = new Regex(preg_quote($search), 'i');
-                $subQuery->where('name', 'regex', $regex)
-                    ->orWhere('email', 'regex', $regex)
-                    ->orWhere('city', 'regex', $regex);
-            });
-        }
-
-        $requesters = $query->latest()->paginate($perPage)->withQueryString();
-
-        return view('admin.manage-requesters', compact('requesters', 'search', 'perPage'));
+        // Legacy admin route alias for older requester management links.
+        return $this->manageUsers($request);
     }
 
     public function requests(Request $request)

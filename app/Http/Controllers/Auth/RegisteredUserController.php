@@ -27,7 +27,7 @@ class RegisteredUserController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', Rule::unique('users', 'email')],
             'password' => ['required', 'confirmed', Rules\Password::defaults()->min(8)],
-            'role' => ['required', 'in:user,admin'],
+            'role' => ['nullable', 'in:user,admin'],
             'is_donor' => ['nullable', 'boolean'],
         ]);
 
@@ -41,7 +41,7 @@ class RegisteredUserController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'role' => $request->role,
+            'role' => $request->role ?: 'user',
             'is_donor' => $request->boolean('is_donor'),
         ]);
 
